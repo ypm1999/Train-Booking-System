@@ -1,0 +1,53 @@
+{%include 'base_header.html'%}
+      <h1>订单详情</h1>
+        <div>
+            <table class="table"> 
+                <tr>
+                    <th>车次</th>
+                    <th>日期</th>
+                    <th>起始站</th>
+                    <th>出站时间</th> 
+                    <th>终点站</th>
+                    <th>到站时间</th>
+                    <th>票价</th>
+                </tr>
+                <tr>
+                    <td>{{order.train}}</td> 
+                    <td>{{order.date}}</td> 
+                    <td>{{order.from}}</td> 
+                    <td>{{order.st_time}}</td>
+                    <td>{{order.to}}</td>
+                    <td>{{order.ed_time}}</td>
+                    <td>{{order.cost}}</td>
+                </tr>
+            </table>
+            {%if result%}
+                {%ifequal result "success"%}
+                <table class="table"> 
+                    <tr>
+                        <th>姓名</th>
+                        <th>身份证</th>
+                    </tr>
+                    <tr>
+                        <td>{{user.passenger.name}}</td>
+                        <td>{{user.passenger.identity}}</td>
+                    </tr>
+                </table>
+                    <p>订票成功！</p>
+                {%endifequal%}
+                {%ifequal result "error"%}
+                    <p>下订单失败！请重新下订单！</p>
+                {%endifequal%}
+                {%ifequal result "notenough"%}
+                    <p>余票不足，请重新查询！</p>
+                {%endifequal%}
+            {%else%}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <button class="btn btn-primary">支付</button>
+                    </form>
+                   <a href="javascript:history.back(-1)"><button class="btn">取消</button></a>
+            {%endif%}
+        </div>
+{%include 'base_footer.html'%}
+

@@ -1,0 +1,56 @@
+{% include 'base_header.html'%}
+      <h1>车次详情</h1>
+        <div>
+            <table class="table"> 
+                <tr>
+                    <th>车次</th>
+                    <th>起始站</th>
+                    <th>终点站</th>
+                    <th>总用时</th> 
+                    <th>座数</th>
+                </tr>
+                <tr>
+                    <td rowspan="3">{{train.name}}</td>
+                    <td>{{train.from}}</td>
+                    <td>{{train.to}}</td>
+                    <td>{{train.cost_hours}}</td>
+                    <td>{{train.seat}}</td>
+                </tr>
+                <tr>
+                    <th>出站时间</th>
+                    <th>到站时间</th>
+                    <th>发车频率(天)</th>
+                    <th>全程票价</th>
+                </tr>
+                <tr>
+                    <td>{{train.st_time}}</td> 
+                    <td>{{train.ed_time}}</td> 
+                    <td>{{train.frequency_days}}</td> 
+                    <td>{{train.cost}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="span6 offset3">
+            <table class="table"> 
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>站名</th>
+                    <th>到站时间</th>
+                    <th>票价</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for i in train.line%}
+                <tr>
+                    <td>{{i.order}}</td>
+                    <td>{{i.station}}</td>
+                    <td>{{i.time}}</td>
+                    <td>{{i.cost}}</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+            </table>
+        </div>
+{% include 'base_footer.html'%}
+

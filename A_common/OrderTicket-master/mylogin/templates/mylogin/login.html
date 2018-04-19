@@ -1,0 +1,9 @@
+{%include 'base_header.html'%}
+<h1>登录</h1>
+
+<form action="" method="post">
+{% csrf_token %}
+	{{ form.as_p }}
+	<input type="submit" value="登录">
+</form>
+{%include 'base_footer.html'%}

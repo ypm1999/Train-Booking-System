@@ -1,0 +1,70 @@
+{% include 'base_header.html'%}
+ <div >
+            <h1>查询订票</h1>
+                <form method="POST" action=""> 
+{% csrf_token %}
+
+                     <table>
+                        <tr>
+                            <td>
+                            <label for="id_start">起始站</label>
+                            {{form.start}}</td>
+                            <td>
+                            <label for="id_end">终点站</label>
+                            {{form.end}}</td>
+                            <td>
+                            <label for="id_date">日期</label>
+                            {{form.date}}</td>
+                            <td>
+                            <input class="btn btn-primary" type="submit" value="查询">
+                            </td>
+                        </tr>
+                    </table>  
+                </form> 
+     <script type="text/javascript">
+$(document).ready(function(){ 
+        $(".form_datetime").datetimepicker({
+    format: "yyyy-mm-dd",
+    autoclose: true,
+    minView: "month"});
+});
+     </script> 
+        </div>
+    {%if message%}
+       数据库中查无此线路 
+    {%endif%}
+   {%if result%} 
+    <div class="span8">
+        <table class="table">
+            <tr>
+                <th>车次</th>
+                <th>起始站</th>
+                <th>出站时间</th>
+                <th>终点站</th>
+                <th>到站时间</th>
+                <th>票价</th>
+                <th>余票</th>
+                <th>操作</th>
+            <tr>
+        {%for i in result%}
+            <tr>
+                <td><a  target="_blank" href="/train/{{i.train}}">{{i.train}}</a></td>
+                <td>{{i.start}}</td>
+                <td>{{i.st_time}}</td>
+                <td>{{i.end}}</td>
+                <td>{{i.ed_time}}</td>
+                <td>{{i.cost}}</td>
+                <td>{{i.rem}}</td>
+                <td>
+                {%ifequal i.rem 0%}
+                <button class="btn disabled">预订</button>
+                {% else %}
+                <a href="/order/{{i.id}}/{{i.st_order}}/{{i.ed_order}}"><button class="btn btn-primary" >预订</button></a>
+                {%endifequal%}
+                </td>
+            </tr>
+        {%endfor%}
+       </table> 
+    </div>  
+    {%endif%}
+{% include 'base_footer.html'%}

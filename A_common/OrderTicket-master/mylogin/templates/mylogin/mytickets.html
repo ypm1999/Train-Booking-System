@@ -1,0 +1,27 @@
+{%include 'base_header.html'%}
+<h1>我的订单</h1>
+<table class="table">
+    <tr>
+        <th>车次</th>
+        <th>订票时间</th>
+        <th>姓名</th>
+        <th>身份证</th>
+        <th>日期</th>
+        <th>起始站</th>
+        <th>终点站</th>
+        <th>票价</th>
+    </tr>
+    {%for i in tickets%}
+    <tr>
+        <td>{{i.train}}</td>
+        <td>{{i.order_time}}</td>
+        <td>{{i.name}}</td>
+        <td>{{i.identity}}</td>
+        <td>{{i.date}}</td>
+        <td>{{i.st}}</td>
+        <td>{{i.ed}}</td>
+        <td>{{i.cost}}</td>
+    </tr>
+    {%endfor%}
+</table>
+{%include 'base_footer.html'%}
