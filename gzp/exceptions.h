@@ -7,14 +7,12 @@ using namespace std;
 
 class Exception {
 protected:
-	const String variant = "";
-	String detail = "";
+	const String variant;
+	String detail;
 public:
 	Exception() {}
-	Exception(const Expection &ec) : variant(ec.variant), detail(ec.detail){}
-	virtual String what() {
-		return variant + " " + detail;
-	}
+	Exception(const Exception &ec) : variant(ec.variant), detail(ec.detail){}
+	virtual String what() {}
 };
 
 class index_out_of_bound : public exception {
