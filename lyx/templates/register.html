@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block body %}
+	<form action="{{ url_for('add_user') }}" method="post">
+	    <legend>Input the post title</legend>
+	    <p><input name="username" placeholder="Your username"></p>
+	    <p><input name="password" placeholder="password"></p>
+	    <p><input name="repeatpassword" placeholder="repeat your password"></p>
+	    <p><button type="submit">Submit</button></p>
+  	</form>
+	<a href="{{ url_for('home') }}">Return Home</a>
+{% endblock %}
