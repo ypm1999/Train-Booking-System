@@ -9,7 +9,7 @@ using namespace std;
 
 //Bplustree
 
-template <class T>
+template <class Key>
 class Bplustree {
 private:
 	static const int miniDegree = 2;
@@ -28,8 +28,9 @@ private:
 		Data data[maxKeyNum];
 		int keyNum;
 		bool isLeaf;
+		bool isRead;
 		Node *child[maxDegree];
-		T key[maxKeyNum];
+		Key key[maxKeyNum];
 		static int file_name;
 	};
 
@@ -41,6 +42,32 @@ private:
 	Node *leftHead;
 
 public:
+
+	class iterator {
+		friend class Bplustree;
+	private:
+		Bplustree * tree_ptr = NULL;
+		Node *node_ptr = NULL;
+
+	public:
+		iterator() = default;
+		iterator(Bplustree *_t, Node *_n) {
+			tree_ptr = _t;
+			node_ptr = _n;
+		}
+		iterator(const iterator &other) {
+			tree_ptr = other.tree_ptr;
+			node_ptr = other.node_ptr;
+		}
+
+		iterator operator++(int) {
+
+		}
+
+		iterator &operator++() {
+
+		}
+	};
 	//constructor
 	Bplustree() {
 		root = NULL;
@@ -53,17 +80,17 @@ public:
 	}
 
 	//find data
-	Data find(T _key) {
+	Data find(Key _key) {
 
 	}
 
 	//insert node
-	void insert(T _key, Data _data) {
+	void insert(Key _key, Data _data) {
 
 	}
 
 	//erase node
-	void erase(T _key) {
+	void erase(Key _key) {
 
 	}
 };
