@@ -6,67 +6,65 @@
 #include <cmath>;
 #include <cstdio>;
 using namespace std;
-//B+Ê÷
 
-template <class Key, class T>
+//Bplustree
+
+template <class T>
 class Bplustree {
 private:
-	struct Node{};
-	Node *root;
-	int nowsize;
+	static const int miniDegree = 2;
+	static const int maxDegree = 100;
+	static const int miniKeyNum = 1;
+	static const int maxKeyNum = 99;
 
-public:
-	typedef pair<const Key, T> value_type;
-
-	class const_iterator;
-	class iterator {
-	public:
-		iterator() {};
-		iterator(const iterator &other) {};
-		iterator operator++(int) {};
-		iterator & operator++() {};
-		iterator operator--(int) {};
-		iterator & operator--() {};
-		value_type & operator*() const {};
-		bool operator==(const iterator &rhs) const {};
-		bool operator==(const const_iterator &rhs) const {};
-		bool operator!=(const iterator &rhs) const {};
-		bool operator!=(const const_iterator &rhs) const {};
-		value_type* operator->() const noexcept {};
+	//data
+	struct Data {
+		size_t offset;
+		size_t dataSize;
 	};
 
-	class const_iterator {};
+	//node
+	struct Node {
+		Data data[maxKeyNum];
+		int keyNum;
+		bool isLeaf;
+		Node *child[maxDegree];
+		T key[maxKeyNum];
+		static int file_name;
+	};
 
-	Bplustree() {};
-	Bplustree(const Bplustree &other) {};
-	Bplustree & operator=(const Bplustree &other) {};
-	~Bplustree() {};
+	void split(Node *_node) {
 
-	T & at(const Key &key) {};
-	const T & at(const Key &key) const {};
+	}
 
-	T & operator[](const Key &key) {};
-	const T & operator[](const Key &key) const {};
+	Node *root;
+	Node *leftHead;
 
-	iterator begin() {};
-	const_iterator cbegin() const {};
-	iterator end() {};
-	const_iterator cend() const {};
+public:
+	//constructor
+	Bplustree() {
+		root = NULL;
+		leftHead = NULL;
+	}
 
-	bool empty() const {};
+	//destructor
+	~Bplustree() {
+		
+	}
 
-	size_t size() const {};
+	//find data
+	Data find(T _key) {
 
-	void clear() {};
+	}
 
-	pair<iterator, bool> insert(const value_type &pvalue) {};
+	//insert node
+	void insert(T _key, Data _data) {
 
-	void erase(iterator it) {};
+	}
 
-	size_t count(const Key &key) const {};
+	//erase node
+	void erase(T _key) {
 
-	iterator find(const Key &key) {};
-
-	const_iterator find(const Key &key) const {};
+	}
 };
 #endif
