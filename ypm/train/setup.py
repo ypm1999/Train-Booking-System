@@ -6,14 +6,6 @@ web = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@web.route('/signin', methods = ['GET'])
-def signin_form():
-    return render_template('sigin.html')
-
-
-@web.route('/signin', methods = ['POST'])
-def signin_suc():
-    pass
 
 @web.route('/register', methods = ['GET'])
 def register_form():
@@ -24,10 +16,10 @@ def userRegister(name, passwd, email, phone):
 
 @web.route('/register', methods = ['POST'])
 def check_register():
-    name = request.form['username']
-    passwd = request.form('userpasswd')
-    email = request.form('useremail')
-    phone = request.form('userphone')
+    name = request.form['userName']
+    passwd = request.form['userPasswd']
+    email = request.form['userEmail']
+    phone = request.form['userPhone']
     if userRegister(name, passwd, email, phone):
         return render_template('register_successfully.html', username = name)
     else:
