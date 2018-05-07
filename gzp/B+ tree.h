@@ -2,36 +2,44 @@
 #define _Bplus
 
 #include <iostream>;
-#include <cstring>;
+#include "String.h";
 #include <cmath>;
 #include <cstdio>;
+#include <fstream>;
 using namespace std;
 
 //Bplustree
 
-template <class Key>
+template <class Key, class T>
 class Bplustree {
 private:
 	static const int miniDegree = 2;
 	static const int maxDegree = 100;
 	static const int miniKeyNum = 1;
 	static const int maxKeyNum = 99;
-
-	//data
-	struct Data {
-		size_t offset;
-		size_t dataSize;
-	};
-
+	static String file_name;
 	//node
 	struct Node {
-		Data data[maxKeyNum];
+		size_t offset;
+		size_t size;
 		int keyNum;
 		bool isLeaf;
 		bool isRead;
 		Node *child[maxDegree];
 		Key key[maxKeyNum];
-		static int file_name;
+		T data[maxKeyNum];
+
+		Node() : keyNum(0), isLeaf(false), isRead(false) {}
+
+		void write() {
+			List.seekp(offset, ios::beg);
+			List.write(reinterpret_cast<const char *> this, sizeof(*this));
+			if (isLeaf) {
+				for (int i = 0; i < keyNum; i++) {
+					data[i].write();
+				}
+			}
+		}
 	};
 
 	void split(Node *_node) {
@@ -40,6 +48,8 @@ private:
 
 	Node *root;
 	Node *leftHead;
+	fstream List;
+	fstream Data;
 
 public:
 
@@ -69,25 +79,20 @@ public:
 		}
 	};
 	//constructor
-	Bplustree() {
-		root = NULL;
-		leftHead = NULL;
-	}
+	Bplustree(const String &_file) {}
 
 	//destructor
-	~Bplustree() {
-		
-	}
+	~Bplustree() {}
 
 	//find data
-	Data find(Key _key) {
+	T find(Key _key) {
 
 	}
 
 	//insert node
-	void insert(Key _key, Data _data) {
+	void insert(const Key &x, const T &_data) {}
 
-	}
+	
 
 	//erase node
 	void erase(Key _key) {
