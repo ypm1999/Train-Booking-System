@@ -12,42 +12,56 @@ using namespace std;
 
 template <class Key, class T>
 class Bplustree {
+	friend class iterator;
 private:
 	static const int miniDegree = 2;
 	static const int maxDegree = 100;
 	static const int miniKeyNum = 1;
 	static const int maxKeyNum = 99;
+	static const int maxDataNum = 99;
 	static String file_name;
+	static const int idxNodeSize = sizeof(idxNode);
+	static const int dataNodeSize = sizeof(dataNode);
 	//node
-	struct Node {
-		size_t offset;
-		size_t size;
-		int keyNum;
+	struct idxNode {
+		size_t offset[maxDegree];
 		bool isLeaf;
+		int keyNum;
 		bool isRead;
-		Node *child[maxDegree];
+		void *child[maxDegree];
 		Key key[maxKeyNum];
-		T data[maxKeyNum];
 
-		Node() : keyNum(0), isLeaf(false), isRead(false) {}
+		Node() : keyNum(0), isRead(false) {}
 
-		void write() {
-			List.seekp(offset, ios::beg);
-			List.write(reinterpret_cast<const char *> this, sizeof(*this));
-			if (isLeaf) {
-				for (int i = 0; i < keyNum; i++) {
-					data[i].write();
-				}
-			}
-		}
 	};
 
-	void split(Node *_node) {
+	struct dataNode {
+		size_t nextoffset;
+		int keyNum;
+		Key key[maxDataNum];
+		T data[maxDataNum];
+		dataNode *next;
+		dataNode():len(0){}
+	};
 
-	}
+	void makeEmpty(idxNode *t);
 
-	Node *root;
-	Node *leftHead;
+	T search(const Key &_k, void * _Node);
+
+	bool find(const Key &_k, void * _Node);
+
+	idxNode *insert(const Key &_k, const T &_data, idxNode *t);
+
+	dataNode *insertData(const Key &_k, const T &_data, dataNode *t);
+
+	idxNode *addIdxBlk(idxNode *n, idxNode *t);
+
+	idxNode *addDataBlk(dataNode *n, idxNode *t);
+
+	idxNode *root = NULL;
+	dataNode *leftHead = NULL;
+	size_t idxNodeNum = 0;
+	size_t dataNodeNum = 0;
 	fstream List;
 	fstream Data;
 
@@ -57,7 +71,7 @@ public:
 		friend class Bplustree;
 	private:
 		Bplustree * tree_ptr = NULL;
-		Node *node_ptr = NULL;
+		dataNode *node_ptr = NULL;
 
 	public:
 		iterator() = default;
@@ -71,32 +85,39 @@ public:
 		}
 
 		iterator operator++(int) {
-
+			iterator *tmp = this;
+			node_ptr = node_ptr->next;
+			return tmp;
 		}
 
 		iterator &operator++() {
-
+			node_ptr = node_ptr->next;
+			return *this;
 		}
 	};
 	//constructor
-	Bplustree(const String &_file) {}
+	Bplustree(const String &_file);
 
 	//destructor
-	~Bplustree() {}
+	~Bplustree();
 
 	//find data
-	T find(Key _key) {
+	T search(const Key &_k)const {
+		List.seekg(0, ios::beg);
+		List.read(reinterpret_cast<char *>, idxNodeSize);
+		return search(_k, root);
+	}
 
+	bool find(const Key &_k) const {
+		List.seekg(0, ios::beg);
+		List.read(reinterpret_cast<char *>, idxNodeSize);
+		return find(_k, root);
 	}
 
 	//insert node
-	void insert(const Key &x, const T &_data) {}
-
-	
+	void insert(const Key &_k, const T &_data);
 
 	//erase node
-	void erase(Key _key) {
-
-	}
+	void erase(const Key &_k);
 };
 #endif
