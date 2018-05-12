@@ -295,7 +295,11 @@ Bplustree<Key, T>::idxNode
 
 	if (Node == NULL) return NULL;
 	else {
-		if (t->isLeaf == 0) return addIdx(Node, t);
+		if (t == root) {
+			root = t->child[0];
+			idxNodeNum--;
+		}
+		else if (t->isLeaf == 0) return addIdx(Node, t);
 		else return addData(Node, t);
 	}
 }
@@ -400,7 +404,7 @@ Bplustree<Key, T>::idxNode
 			t->key[j] = t->key[j + 1];
 		}
 		t->keyNum--;
-		if (t->keyNum < miniKeyNum) return t;
+		if (t->keyNum < min) return t;
 		else return NULL;
 	}
 	else if (next->keyNum == min) {
