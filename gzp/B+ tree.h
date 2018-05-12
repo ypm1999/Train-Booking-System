@@ -3,6 +3,7 @@
 
 #include <iostream>;
 #include "String.h";
+#include "exceptions.h"
 #include <cmath>;
 #include <cstdio>;
 #include <fstream>;
@@ -16,9 +17,10 @@ class Bplustree {
 private:
 	static const int miniDegree = 2;
 	static const int maxDegree = 100;
-	static const int miniKeyNum = 1;
+	static const int miniKeyNum = 50;
 	static const int maxKeyNum = 99;
 	static const int maxDataNum = 99;
+	static const int miniDataNum = 50;
 	static String file_name;
 	static const int idxNodeSize = sizeof(idxNode);
 	static const int dataNodeSize = sizeof(dataNode);
@@ -31,7 +33,7 @@ private:
 		void *child[maxDegree];
 		Key key[maxKeyNum];
 
-		Node() : keyNum(0), isRead(false) {}
+		idxNode() : keyNum(0), isRead(false) {}
 
 	};
 
@@ -41,7 +43,7 @@ private:
 		Key key[maxDataNum];
 		T data[maxDataNum];
 		dataNode *next;
-		dataNode():len(0){}
+		dataNode():keyNum(0){}
 	};
 
 	void makeEmpty(idxNode *t);
@@ -57,6 +59,14 @@ private:
 	idxNode *addIdxBlk(idxNode *n, idxNode *t);
 
 	idxNode *addDataBlk(dataNode *n, idxNode *t);
+
+	idxNode *erase(const Key &_k, idxNode *t);
+
+	dataNode *eraseData(const Key &_k, dataNode *t);
+
+	idxNode *addData(dataNode *n, idxNode *t);
+
+	idxNode *addIdx(idxNode *n, idxNode *t);
 
 	idxNode *root = NULL;
 	dataNode *leftHead = NULL;
