@@ -2,7 +2,6 @@ from flask import Flask, request, render_template
 
 web = Flask(__name__)
 
-
 @web.route('/', methods = ['GET', 'POST'])
 def index():
     return render_template('index.html')
