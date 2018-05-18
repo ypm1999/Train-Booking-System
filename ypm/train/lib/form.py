@@ -6,8 +6,8 @@ from wtforms import StringField, PasswordField, HiddenField, IntegerField, Boole
 from wtforms.validators import *
 
 class SigninForm(FlaskForm):
-    name = StringField(validators = [DataRequired(u'用户名必填！'), Length(min = 3, max = 20, message=u"请输入用户名")])
-    password = PasswordField(validators = [DataRequired(u'密码必填！'), Length(min = 5, max = 20, message = u"请输入密码")])
+    name = StringField(validators = [DataRequired('用户名必填！'), Length(min = 3, max = 20, message=u"请输入用户名")])
+    password = PasswordField(validators = [DataRequired('密码必填！'), Length(min = 5, max = 20, message = u"请输入密码")])
 
 class SignupForm(FlaskForm):
     name = StringField(validators = [DataRequired(u'用户名必填！'),Length(min = 3, max = 20, message = u"请输入用户名，长度在3～20字符之间")])

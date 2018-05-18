@@ -1,45 +1,58 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
 import os
-from flask import Flask, request, render_template, redirect
+from flask import *
 from form import *
-from user import loginManager
+from database import *
+from flask_login import LoginManager
+from user import User
 
+LM = LoginManager()
 app = Flask(__name__)
-loginManager.init_app(app)
+app.config['SECRET_KEY'] = os.urandom(24)
+LM.init_app(app)
+LM.login_view = 'login'
+LM.login_message = 'please login!'
+LM.session_protection = 'strong'
 
-app.config.update(dict(
-    SECRET_KEY=os.urandom(24)
-))
+@LM.user_loader
+def load_user(name):
+    return User.getuser(name)
+
 
 @app.route('/', methods = ['GET', 'POST'])
 def index():
     return render_template('index.html')
 
-def register(name, passwd, email, phone):
-    print name
-    print passwd
-    print email
-    print phone
-    return True
-
 @app.route('/register', methods = ['GET', 'POST'])
-def register_form():
+def try_register():
     user = SignupForm(request.form)
     if user.validate_on_submit():
         if register(user.name.data, user.password.data, user.email.data, user.phone.data):
             return redirect('/')
         else:
             return render_template('register.html', note = 'something wrong', form = user)
-    return render_template('register.html', note = '', form = user)
+    return render_template('register.html', note = '', form = user,)
 
-"""
-@app.route('/register', methods = ['POST'])
-def check_register():
-    user = SignupForm(request.form)
-    if register(user.name, user.password, user.email, user.phone):
-        return render_template('register_successfully.html', username = user.name)
-    else:
-        return render_template('register.html', note = 'something wrong')
-"""
+@app.route('/login', methods = ['POST'])
+def try_login():
+    username = request.form["username"]
+    password = request.form["password"]
+    if login(username, password):
+        usert = User()
+        user = usert.getuser(username)
+        login_user(user,True)
+        flash('Logged in successfully.')
+        next = request.args.get('next')
+        if not next_is_valid(next):
+            return abort(400)
+        return redirect(next or '/')
+    return render_template('login.html')
+
+@app.route('/login', methods = ['GET'])
+def login_page():
+    return render_template("login.html")
 
 
 @app.route('/manage', methods = ['GET', 'POST'])
