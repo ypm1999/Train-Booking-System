@@ -1,33 +1,47 @@
 #!/usr/bin/python
+
 # -*- coding:utf-8 -*-
 
 # if success return id
 # else return -1
 def register(name, password, email, phone):
-    print name
-    print password
+    f = open('user.tmp', "a");
+    f.write(name + ' ')
+    f.write(password + ' ')
+    f.write(email + ' ')
+    f.write(phone + '\n')
+    f.close();
     return True
 
-class USER:
-    id = 2018
-    name = "name"
-    password = "password"
-    email = "a@email.com"
-    phone = "12334556721"
-    success = 1
 
 # if success return 1
 # else return 0
 def login(id, password):
-    print id
-    print password
-    return True
+    f = open('user.tmp', "r");
+    while True:
+        line  = f.readline()
+        if not line:
+            break
+        str = line.split();
+        print str
+        if str[0] == id and str[1] == password:
+            return True
+    return False
 
 # return user profiles:
 #	*name*, *email*, *phone*, *privilege*
 # if cannot find return 0
 def query_profile(username):
-	return USER()
+    f = open('user.tmp', "r");
+    while True:
+        line  = f.readline()
+        if not line:
+            break
+        str = line.split();
+        print str
+        if str[0] == username
+            return {'name':str[0], 'password':str[1], 'email':str[2], 'phone':str[3], 'sucessed':True}
+    return {'sucessed':False}
 
 # if success return 1
 # else return 0
