@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 # -*- coding:utf-8 -*-
 
 # if success return id
@@ -9,22 +8,25 @@ def register(name, password, email, phone):
     f.write(name + ' ')
     f.write(password + ' ')
     f.write(email + ' ')
-    f.write(phone + '\n')
+    f.write(phone + ' ')
+    f.write('0\n')
     f.close();
-    return True
+    return False
 
 
 # if success return 1
 # else return 0
-def login(id, password):
+def try_login(username, password):
     f = open('user.tmp', "r");
     while True:
         line  = f.readline()
         if not line:
             break
-        str = line.split();
-        print str
-        if str[0] == id and str[1] == password:
+        temp = line.split()
+        print (temp[0], temp[1])
+        print username == temp[0]
+        print password == temp[1]
+        if temp[0] == username and temp[1] == password:
             return True
     return False
 
@@ -37,10 +39,9 @@ def query_profile(username):
         line  = f.readline()
         if not line:
             break
-        str = line.split();
-        print str
-        if str[0] == username
-            return {'name':str[0], 'password':str[1], 'email':str[2], 'phone':str[3], 'sucessed':True}
+        temp = line.split();
+        if temp[0] == username:
+            return {'name':temp[0], 'password':temp[1], 'email':temp[2], 'phone':temp[3], 'admin':(temp[4] == '1'), 'sucessed':True}
     return {'sucessed':False}
 
 # if success return 1

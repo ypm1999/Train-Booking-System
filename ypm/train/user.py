@@ -11,7 +11,6 @@ LM.login_message = 'please login!'
 LM.session_protection = 'strong'
 
 class User(UserMixin):
-    id = int()
     name = ''
     password = ''
     email = ''
@@ -21,22 +20,21 @@ class User(UserMixin):
         temp = query_profile(username);
         if temp == None:
             return None
-        self.name = ['name']
-        self.id = temp['id']
+        self.name = temp['name']
         self.password = temp['password']
         self.email = temp['email']
         self.phone = temp['phone']
         self.admin = temp['admin']
         return self
 
-    def is_authenicated():
+    def is_authenicated(self):
         return True
 
     def is_admin(self):
         return self.admin
 
     def get_id(self):
-        return unicode(self.id)
+        return unicode(self.name)
     def __repr__(self):
         return '<User %r>' % (self.name)
 

@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-
+import sys
 import os
+reload(sys)
+sys.setdefaultencoding('utf-8')
 from flask import *
 from form import *
 from database import *
@@ -9,37 +11,38 @@ from flask_login import (LoginManager, current_user, login_required, login_user,
 from user import LM, User
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'ASSUEIIJSUIIJJLL'
+app.config['SECRET_KEY'] = 'ASSUEIIJSUasdfdsfeIIJJLL'
 LM.init_app(app)
 
 @app.route('/', methods = ['GET', 'POST'])
 def home():
+    print current_user.name
     return render_template('index.html')
 
 @app.route('/register', methods = ['GET', 'POST'])
 def user_register():
-    user = SignupForm(request.form)
-    if user.validate_on_submit():
+    user = UserForm(request.form)
+    if request.method == 'POST':
         if register(user.name.data, user.password.data, user.email.data, user.phone.data):
             return redirect('/')
         else:
-            return render_template('register.html', note = 'something wrong', form = user)
-    return render_template('register.html', note = '', form = user,)
+            return render_template('register.html', note = '注册失败', form = user)
+    return render_template('register.html', note = '注册', form = user)
 
 @app.route('/login', methods = ['POST', 'GET'])
 def user_login():
     if request.method == 'POST':
         username = request.form["username"]
         password = request.form["password"]
-        if login(username, password):
-            usert = User()
-            user = usert.getuser(username)
-            login_user(user,True)
-            next = request.args.get('next')
-            return render_template(url_for(home))
-        return render_template('login.html')
-    else:
-        return render_template("login.html")
+        if try_login(username, password):
+            print "%s login" % username
+            user = User()
+            user.getuser(username)
+            login_user(user, remember=True)
+#            next = request.args.get('next')
+
+            return redirect('/')
+    return render_template("login.html")
 
 @app.route('/logout')
 @login_required

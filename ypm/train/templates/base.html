@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh_CN">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -37,7 +37,7 @@
 		              <li><a href="#contact">Contact</a></li>
 		            </ul>
 					{% if not current_user.is_authenicated %}
-
+							{{ current_user.name }}
 							<a class="btn btn-success pull-right" href="/register">注册</a>
 							<form class = "form-inline pull-right" method = "POST" action = "/login">
 			  					<input type="text" name="username" class="form-control" placeholder="User name" required>
