@@ -1,0 +1,32 @@
+﻿  test.cpp
+c:\users\gzp\desktop\data structure\train order system\train booking system\train booking system\test.cpp(9): warning C4273: “rand”: dll 链接不一致
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\stdlib.h(347): note: 参见“rand”的前一个定义
+c:\users\gzp\desktop\data structure\train order system\train booking system\train booking system\test.cpp(12): warning C4244: “return”: 从“__int64”转换到“int”，可能丢失数据
+c:\users\gzp\desktop\data structure\train order system\train booking system\train booking system\bplustree.h(281): warning C4101: “newIdx”: 未引用的局部变量
+  c:\users\gzp\desktop\data structure\train order system\train booking system\train booking system\bplustree.h(257): note: 编译 类 模板 成员函数 "sjtu::Bplustree<Key,Data>::idxNode *sjtu::Bplustree<Key,Data>::erase(const Key &,sjtu::Bplustree<Key,Data>::idxNode *)" 时
+          with
+          [
+              Key=Key
+          ]
+  c:\users\gzp\desktop\data structure\train order system\train booking system\train booking system\bplustree.h(629): note: 参见对正在编译的函数 模板 实例化“sjtu::Bplustree<Key,Data>::idxNode *sjtu::Bplustree<Key,Data>::erase(const Key &,sjtu::Bplustree<Key,Data>::idxNode *)”的引用
+          with
+          [
+              Key=Key
+          ]
+  c:\users\gzp\desktop\data structure\train order system\train booking system\train booking system\test.cpp(53): note: 参见对正在编译的 类 模板 实例化 "sjtu::Bplustree<Key,Data>" 的引用
+c:\users\gzp\desktop\data structure\train order system\train booking system\train booking system\bplustree.h(140): warning C4101: “newIdx”: 未引用的局部变量
+  c:\users\gzp\desktop\data structure\train order system\train booking system\train booking system\bplustree.h(116): note: 编译 类 模板 成员函数 "sjtu::Bplustree<Key,Data>::idxNode *sjtu::Bplustree<Key,Data>::insert(const Key &,const T &,sjtu::Bplustree<Key,T>::idxNode *)" 时
+          with
+          [
+              Key=Key,
+              T=Data
+          ]
+  c:\users\gzp\desktop\data structure\train order system\train booking system\train booking system\bplustree.h(602): note: 参见对正在编译的函数 模板 实例化“sjtu::Bplustree<Key,Data>::idxNode *sjtu::Bplustree<Key,Data>::insert(const Key &,const T &,sjtu::Bplustree<Key,T>::idxNode *)”的引用
+          with
+          [
+              Key=Key,
+              T=Data
+          ]
+c:\users\gzp\desktop\data structure\train order system\train booking system\train booking system\bplustree.h(87): warning C4715: “sjtu::Bplustree<Key,Data>::dataSearch”: 不是所有的控件路径都返回值
+c:\users\gzp\desktop\data structure\train order system\train booking system\train booking system\bplustree.h(114): warning C4715: “sjtu::Bplustree<Key,Data>::dataFind”: 不是所有的控件路径都返回值
+  Train booking system.vcxproj -> C:\Users\gzp\Desktop\data structure\train order system\Train booking system\Debug\Train booking system.exe
