@@ -17,6 +17,7 @@ class SignupForm(FlaskForm):
     phone = StringField(validators =[Length(min = 1, max = 11, message = u"请输入合法的手机号码")])
 
 class UserForm(FlaskForm):
+    id = HiddenField()
     name = StringField()
     password = PasswordField()
     email = StringField()

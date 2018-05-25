@@ -11,15 +11,17 @@ LM.login_message = 'please login!'
 LM.session_protection = 'strong'
 
 class User(UserMixin):
+    id = ''
     name = ''
     password = ''
     email = ''
     phone = ''
     admin = bool(False)
-    def getuser(self, username):
-        temp = query_profile(username);
+    def getuser(self, ID):
+        temp = query_profile(ID);
         if temp == None:
             return None
+        self.id = temp['id']
         self.name = temp['name']
         self.password = temp['password']
         self.email = temp['email']
@@ -30,15 +32,22 @@ class User(UserMixin):
     def is_authenicated(self):
         return True
 
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
     def is_admin(self):
         return self.admin
 
     def get_id(self):
-        return unicode(self.name)
+        return unicode(self.id)
+
     def __repr__(self):
-        return '<User %r>' % (self.name)
+        return '<User %r>' % (self.id)
 
 @LM.user_loader
-def load_user(name):
+def load_user(ID):
     user = User();
-    return user.getuser(name)
+    return user.getuser(ID)

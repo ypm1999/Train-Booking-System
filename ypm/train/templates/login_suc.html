@@ -1,13 +1,133 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap 101 Template</title>
-    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<head>
+  <meta charset="utf-8">
+  <title>修改个人信息 | Online Judge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link href="http://acm.sjtu.edu.cn/OnlineJudge/css/bootstrap.min.css" rel="stylesheet">
+
+
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
   </head>
-    <body>
-        <h1 align = "center"> log in as {{user_name}} successfully</h1>
-    </body>
+<body onload="prettyPrint()">
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" href="/OnlineJudge">Online Judge</a>
+              <div class="btn-group pull-right">
+          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+            <i class="icon-user"></i> 当前用户：517030910421            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="/OnlineJudge/email/verify">Email：yangpm1999@sjtu.edu.cn</a></li>
+            <li class="divider"></li>
+            <li><a href="/OnlineJudge/change/info">修改个人信息</a></li>
+            <li><a href="/OnlineJudge/change/password">修改密码</a></li>
+            <li class="divider"></li>
+            <li><a href="/OnlineJudge/logout">登出</a></li>
+          </ul>
+        </div>
+        <div class="navbar-text pull-right">
+          <time>服务器时间：2018-05-20 21:24:08</time>
+        </div>
+            <div class="nav-collapse">
+        <ul class="nav">
+          <li class="nav-home"><a href="/OnlineJudge/">首页</a></li>
+          <!--<li class="nav-sets"><a href="/OnlineJudge/sets">Problem Sets</a></li>-->
+          <li class="nav-problems"><a href="/OnlineJudge/problems">题库</a></li>
+          <li class="nav-reports"><a href="/OnlineJudge/contests">比赛</a></li>
+          <li class="nav-homework"><a href="/OnlineJudge/homework">作业</a></li>
+                      <li class="nav-submit"><a href="/OnlineJudge/submit">提交</a></li>
+                    <li class="nav-status"><a href="/OnlineJudge/status">评测状态</a></li>
+          <!--<li class="nav-ranklist"><a href="/OnlineJudge/ranklist">排名</a></li>-->
+                                        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+<div id="wrap">
+<div class="container">
+<div class="page-header">
+  <h1>修改个人信息</h1>
+</div>
+<form action="/OnlineJudge/change/info" method="POST" class="form-horizontal">
+  <fieldset>
+    <div class="control-group">
+      <label class="control-label" for="realname">姓名 (必填)</label>
+      <div class="controls">
+        <input type="text" class="input-medium" id="realname" name="realname" placeholder="姓名" value="杨培铭">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label">性别 (必填)</label>
+      <div class="controls">
+                <label style="display:inline"><input type="radio" name="gender" value="男" checked> 男</label>
+        <label style="display:inline"><input type="radio" name="gender" value="女"> 女</label>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="school">学校</label>
+      <div class="controls">
+        <input type="text" class="input-xlarge" id="school" name="school" placeholder="学校" value="上海交通大学">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="major">专业</label>
+      <div class="controls">
+        <input type="text" class="input-xlarge" id="major" name="major" placeholder="专业" value="计算机科学">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="grade">年级</label>
+      <div class="controls">
+        <input type="number" class="input-small" id="grade" name="grade" value="2017">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="phone">手机 (必填)</label>
+      <div class="controls">
+        <input type="text" class="input-medium" id="phone" name="phone" placeholder="手机" value="17717080017">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="qq">QQ</label>
+      <div class="controls">
+        <input type="text" class="input-medium" id="qq" name="qq" placeholder="QQ" value="1259244901">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-success">修改我的个人信息</button>
+      <a class="btn" href="javascript:history.go(-1);void(0);">取消</a>
+    </div>
+  </fieldset>
+</form>
+<div id="push"></div>
+</div> <!-- /container -->
+</div><!--wrap-->
+
+<div class="footer">
+  <div class="container">
+  	<hr>
+	  Powered by <a href="http://php.net/">PHP Technologies</a> |
+  	<a href="/OnlineJudge/page/contributors">Contributors</a>
+  	<br>
+  	Copyright &copy; 2011-2018 <a href="http://acm.sjtu.edu.cn/">ACM Class</a>.
+  	All rights reserved.
+  	<br>
+  	2.6785 - render 2.6624 - instru  0.0008 - 2 queries - 0.3398 @ portal  </div>
+</div>
+
+<script>
+$(function() {
+  $("[rel=tooltip]").tooltip();
+});
+</script>
+</body>
 </html>
