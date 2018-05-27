@@ -170,6 +170,8 @@ namespace sjtu {
 				}
 				t->keyNum = newKeyNum;
 				idxNodeNum++;
+				newNode->next = t->next;
+				t->next = newNode;
 				return newNode;
 			}
 		}
@@ -225,11 +227,6 @@ namespace sjtu {
 			}
 			t->key[i] = newNode->key[0];
 			t->child[i + 1] = newNode;
-			dataNode *d1 = (dataNode *)t->child[i];
-			dataNode *d2 = (dataNode *)t->child[i + 1];
-			dataNode *d3 = (dataNode *)t->child[i + 2];
-			if (d1 != NULL) d1->next = d2;
-			d2->next = d3;
 			t->offset[i + 1] = _offset;
 			List.seekp(_offset);
 			List.write(reinterpret_cast<char *>(newNode), Bplustree<Key, T>::dataNodeSize);
@@ -524,7 +521,7 @@ namespace sjtu {
 
 		public:
 			iterator() = default;
-			iterator(Bplustree *_t, void *_n) {
+			iterator(Bplustree *_t, dataNode *_n) {
 				tree_ptr = _t;
 				node_ptr = _n;
 			}
@@ -535,13 +532,23 @@ namespace sjtu {
 
 			iterator operator++(int) {
 				iterator *tmp = this;
-				node_ptr = Next(node_ptr);
-				return tmp;
+				node_ptr = node_ptr->next;
+				if (node_ptr == NULL) throw index_out_of_bound();
+				return *tmp;
 			}
 
 			iterator &operator++() {
 				node_ptr = node_ptr->next;
+				if (node_ptr == NULL) throw index_out_of_bound();
 				return *this;
+			}
+
+			Key itkey() {
+				return node_ptr->key[0];
+			}
+
+			size_t itkeyNum() {
+				return node_ptr->keyNum;
 			}
 		};
 		//constructor
@@ -549,7 +556,7 @@ namespace sjtu {
 			path = "C:\\Users\\gzp\\Desktop\\data structure\\train order system\\Train booking system\\dataBase\\" + _file;
 			ofstream newList(path + "_List.txt");
 			ofstream newData(path + "_data.txt");
-			List.open(path + "_list");
+			List.open(path + "_list", ios::binary | ios::in | ios::out);
 			Data.open(path + "_data");
 			root = NULL;
 			leftHead = NULL;
@@ -585,6 +592,7 @@ namespace sjtu {
 				root->isLeaf = true;
 				root->child[0] = new Bplustree<Key, T>::dataNode;
 				Bplustree<Key, T>::dataNode *p = (Bplustree<Key, T>::dataNode *)root->child[0];
+				leftHead = p;
 				p->keyNum = 1;
 				p->key[0] = _k;
 				p->data[0] = _data;
@@ -640,6 +648,10 @@ namespace sjtu {
 
 		size_t size() {
 			return Size;
+		}
+
+		iterator begin() {
+			return iterator(this, leftHead);
 		}
 	};
 
