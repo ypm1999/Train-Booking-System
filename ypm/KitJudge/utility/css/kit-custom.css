@@ -1,0 +1,40 @@
+.body-footer {
+    text-align: center;
+    padding-top: 20px;
+    color: gray;
+    border-top: 1px solid #e5e5e5;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    clear: both;
+    font-size: 100%;
+}
+
+@media all and (max-width: 771px) {
+    body {
+        padding-top: 75px;
+    }
+}
+
+@media all and (min-width: 771px) {
+    body {
+        padding-top: 75px;
+    }
+}
+
+.kit-form-center {
+    text-align: left;
+}
+
+.box-shadow-5 {
+    -webkit-box-shadow: 0 0 10px rgba(192, 192, 192, .5);
+    -moz-box-shadow: 0 0 10px rgba(192, 192, 192, .5);
+    box-shadow: 0 0 14px rgba(192, 192, 192, .5);
+}
+
+p.kit-text-error-id {
+    font-size: 1000%;
+}
+
+p.kit-text-error-msg {
+    font-size: 400%;
+}

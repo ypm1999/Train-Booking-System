@@ -1,0 +1,1 @@
+/usr/bin/c++   -g   CMakeFiles/pbsbox.cpp.dir/pbsbox.cpp.o  -o pbsbox.cpp 

@@ -1,0 +1,78 @@
+.kit-status-form {
+    text-align: center;
+    vertical-align: center;
+    line-height: 25px;
+    min-height: 25px;
+    height: 25px;
+}
+
+.kit-status-verdict-cell {
+    width: 230px;
+}
+
+.kit-ac {
+    color: #0a0;
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.kit-wa {
+    color: #00a;
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+
+.kit-jgf {
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+
+.kit-re {
+    color: #00a;
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+
+.kit-rjd {
+    color: rgb(220, 0, 20);
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+
+.kit-ce {
+    color: rgb(0, 0, 0);
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+
+.kit-tle {
+    color: #00a;
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+
+.kit-mle {
+    color: rgb(140, 20, 180);
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+
+.kit-ing {
+    color: rgb(100, 100, 100);
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+
+.kit-mlk {
+    color: rgb(220, 0, 20);
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+
+.kit-user {
+    font-weight: bold;
+}
+
+.kit-problink {
+    font-weight: normal;
+}

@@ -1,0 +1,4 @@
+/home/kipsora/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/171.4694.31/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /var/www/html/KitJudge/tools/server/judger/Strategy/sandbox
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /var/www/html/KitJudge/tools/server/judger/Strategy/sandbox/cmake-build-debug

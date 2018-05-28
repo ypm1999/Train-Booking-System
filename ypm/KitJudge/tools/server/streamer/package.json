@@ -1,0 +1,8 @@
+{
+  "name": "kit-socket-push-server",
+  "version": "0.0.1",
+  "description": "The KitJudge push stream server",
+  "dependencies": {
+    "socket.io": "^1.7.2"
+  }
+}

@@ -10,17 +10,42 @@
 	<link href="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.css" rel="stylesheet">
 </head>
 <body>
-	<table id="table">
+
+
+<div id="toolbar" class="btn-group">
+
+  <button type="button" class="btn btn-default">
+      <i class="glyphicon glyphicon-plus">Add</i>
+  </button>
+  <button type="button" class="btn btn-default">
+      <i class="glyphicon glyphicon-heart"></i>
+  </button>
+  <button type="button" id="remove" class="btn btn-danger" disabled>
+      <i class="glyphicon glyphicon-trash">Delete</i>
+  </button>
+</div>
+
+<table id="table"
 
 
 
-	</table>
-
+       data-search="true"
+       data-show-refresh="true"
+       data-show-export="true"
+       data-detail-view="true"
+       data-detail-formatter="detailFormatter"
+       data-minimum-count-columns="2"
+       data-show-pagination-switch="true"
+       data-pagination="true"
+       data-id-field="id"
+       data-url="http://issues.wenzhixin.net.cn/examples/bootstrap_table/data"
+       data-response-handler="responseHandler">
+</table>
 
 		<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
 		<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table-locale-all.min.js"></script>
-		<script src="{{url_for('static', filename='js/test/.js')}}"></script>
+		<script src="{{url_for('static', filename='js/test.js')}}"></script>
 </body>
 </html>

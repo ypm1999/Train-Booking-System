@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ASSUEIIJSUasdfdsfeIIJJLL'
 LM.init_app(app)
 
-@app.route('/register', methods = ['GET', 'POST'])
+@app.route('/test', methods = ['GET', 'POST'])
 def test():
     return render_template('test.html')
 

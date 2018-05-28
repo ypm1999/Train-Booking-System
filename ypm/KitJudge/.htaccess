@@ -1,0 +1,5 @@
+RewriteEngine On
+RewriteBase /KitJudge/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php?/$1 [L]
