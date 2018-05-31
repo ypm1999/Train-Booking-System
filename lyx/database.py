@@ -3,10 +3,7 @@
 
 from subprocess import Popen, PIPE, STDOUT
 
-def db_init():
-    db = Popen(['./train'], stdin = PIPE, stdout = PIPE)
-
-db_init()
+db = Popen(['./train'], stdin = PIPE, stdout = PIPE)
 
 def db_write(cmd):
     db.stdin.write((cmd + '\n').encode())
@@ -44,12 +41,12 @@ def query_profile(user_id):
     if reply == '0':
         return {'success': False}
     tmp = reply.split(' ')
-    return {'name': tmp[0], 'email': tmp[2], 'phone': tmp[3], 'admin': (tmp[4] == '1'), 'success': True}
+    return {'name': tmp[0], 'email': tmp[1], 'phone': tmp[2], 'admin': int(tmp[3]), 'success': True}
 
 # if success return 1
 # else return 0
 def modify_profile(user_id, name, password, email, phone):
-    db_write(' '.join(['modify_profile', name, password, email, phone]))
+    db_write(' '.join(['modify_profile', user_id, name, password, email, phone]))
     reply = db_readline()
     if reply == '1':
         return {'success': True}
@@ -67,20 +64,26 @@ def modify_privilege(id1, id2, privilege):
     else:
         return {'success': False}
 
+# TODO unknown bug
+# cannot find train
 # return a list contains trains
 # from *loc1* to *loc2* at *date* with *catalog*
 # without transfer
 # return -1 if query is illegal
 def query_ticket(loc1, loc2, date, catalog):
+    # print(' '.join(['query_ticket', loc1, loc2, date, catalog]))
     db_write(' '.join(['query_ticket', loc1, loc2, date, catalog]))
     reply_lines = int(db_readline())
     if reply_lines == -1:
         return {'success': False}
+    print(reply_lines)
     trains = []
     for i in range(reply_lines):
-        trains.append(db_readline().split(' '))
+        reply = db_readline()
+        trains.append(reply.split(' '))
     return {'trains': trains, 'success': True}
 
+# TODO test functions below
 
 # return (a list of) two trains can carry you
 # from *loc1* to *loc2* at *date* with *catalog*
@@ -94,7 +97,6 @@ def query_transfer(loc1, loc2, date, catelog):
     trains = [reply.split(' ')]
     trains.append(db_readline().split(' '))
     return {'trains': trains, 'success': True}
-
 
 # user *id* buy *num* ticket(s) of *ticket_kind* in *train_id* from *loc1* to *loc2* at *date*
 # return 1 if success
@@ -132,22 +134,16 @@ def refund_ticket(user_id, num, train_id, loc1, loc2, date, ticket_kind):
     else:
         return {'success': False}
 
-# too complicated...
-# e.g. if you input
+# add a train but do not sale
+# e.g.
 # >>> add_train abc123456 G123456 G 2 1 商务座
 # >>> 北京 xx:xx 08:00 00:00 ￥0.0
 # >>> 夏威夷 08:01 xx:xx 00:00 ￥1.5
-# then
-# train_id = 'abc123456'
-# name = 'G123456'
-# catalog = 'G'
-# station_num = 2
-# ticket_list = ['商务座']
-# station_list = [['北京', time X 3, 0.0], ['夏威夷', time X 3, 1.5]]
+
 # return 1 if success
 # return 0 if fail
 def add_train(train_id, name, catalog, station_list, ticket_kind_list):
-    db_write(' '.join(['add_train', train_id, name, catalog, len(station_list), len(ticket_kind_listk)] + [ticket_kind_list]))
+    db_write(' '.join(['add_train', train_id, name, catalog, str(len(station_list)), str(len(ticket_kind_list))] + ticket_kind_list))
     for x in station_list:
         db_write(' '.join(x))
     reply = db_readline()
@@ -189,13 +185,16 @@ def query_train(train_id):
     reply = db_readline()
     if reply == '0':
         return {'success': False}
-    train_id, name, catalog, station_num, ticket_kind_num = reply.split()
+    print(reply)
+    train_id = reply.split()[0]
+    name = reply.split()[1]
+    catalog = reply.split()[2]
+    station_num = int(reply.split()[3])
+    ticket_kind_num = int(reply.split()[4])
+    ticket_kind_list = reply.split()[5:]
     station_list = []
     for i in range(station_num):
         station_list.append(db_readline().split())
-    ticket_kind_list = []
-    for i in range(ticket_kind_num):
-        ticket_kind_list.append(db_readline().split())
 
     return {'train_id': train_id,
             'name': name,
@@ -215,3 +214,20 @@ def delete_train(train_id):
         return {'success': True}
     else:
         return {'success': False}
+
+if __name__ == '__main__':
+    print(register("lyx", "123", "qaq", "qqq"))
+    print(register("lyc", "123", "qaq", "qqq"))
+    print(register("lyc", "123", "qaq", "qqq"))
+    print(add_train('xiaohuoche', 'littletrain', 'CDEF', [['菜鸡站', '7:34', '08:00', '00:01', '￥0.0', '￥0.0'], ['脑残站', '08:02', '12:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
+    print(add_train('dahuoche', 'bigtrain', 'CDEF', [['A', '7:34', '08:00', '00:00', '￥0.0', '￥0.0'], ['B', '08:01', '12:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
+    print(sale_train('xiaohuoche'))
+    print(sale_train('littletrain'))
+    print(sale_train('dahuoche'))
+    print(query_train('xiaohuoche'))
+    print(query_train('dahuoche'))
+    print(query_ticket('菜鸡站', '脑残站', '2018-06-01', 'C'))
+    print(buy_ticket('2018', '1', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'C'))
+    print(query_ticket('A', 'B', '2018-06-05', 'CD'))
+    #print(query_transfer())
+
