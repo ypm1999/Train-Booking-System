@@ -13,7 +13,6 @@ LM.session_protection = 'strong'
 class User(UserMixin):
     id = ''
     name = ''
-    password = ''
     email = ''
     phone = ''
     admin = bool(False)
@@ -21,9 +20,8 @@ class User(UserMixin):
         temp = query_profile(ID);
         if temp == None:
             return None
-        self.id = temp['id']
+        self.id = ID
         self.name = temp['name']
-        self.password = temp['password']
         self.email = temp['email']
         self.phone = temp['phone']
         self.admin = temp['admin']
@@ -49,5 +47,4 @@ class User(UserMixin):
 
 @LM.user_loader
 def load_user(ID):
-    user = User();
-    return user.getuser(ID)
+    return User().getuser(ID)

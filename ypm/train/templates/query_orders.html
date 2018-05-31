@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block css_input %}
+href="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/query_train.css') }}" rel="stylesheet">
+<script src="{{ url_for('static', filename='js/query_train.js') }}"></script>
+<script src="{{ url_for('static', filename='js/moment-with-locales.min.js') }}"></script>
+<script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+{% endblock %}
+
+
+{% block content %}
+
+  <form  class = "form-inline " action = "{{url_for('query_train')}}" method = "POST">
+    <div class = "row">
+      <div class = "col-sm-1"></div>
+      <div class = "col-sm-3">
+        <h2 class = "pull-left"><span class="label label-primary">出发地</span></h2>
+        <div class='input-group input-group-lg'>
+          <input type="text" class = "form-control " name = "loc1"/>
+        </div>
+      </div>
+      <div class = "col-sm-3">
+        <h2 class = "pull-left"><span class="label label-primary">目的地</span></h2>
+        <div class='input-group input-group-lg'>
+          <input type="text" class = "form-control " name = "loc2"/>
+        </div>
+      </div>
+      <div class = "col-sm-3">
+        <h2 class = "pull-left"><span class="label label-primary">时间</span></h2>
+        <div class='input-group date input-group-lg' id='datetimepicker'>
+          <input type='text' class="form-control" name = "date"/>
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+        </div>
+      </div>
+      <div class = "col-sm-2">
+        <div class = "pull-down">
+          <button class="btn btn-block btn-success form-control" type="submit">查询</button>
+        </div>
+      </div>
+    </div><br />
+    <div class = "row">
+      <div class = "mytext">
+        <div class = "col-sm-2"></div>
+        列车种类：&nbsp&nbsp
+        <div class="checkbox-inline">
+          <input type="checkbox" name = "C" checked="checked" />C&nbsp&nbsp
+        </div>
+        <div class="checkbox-inline">
+          <input type="checkbox" name = "D" checked="checked" />D&nbsp&nbsp
+        </div>
+        <div class="checkbox-inline">
+          <input type="checkbox" name = "G" checked="checked" />G&nbsp&nbsp
+        </div>
+        <div class="checkbox-inline">
+          <input type="checkbox" name = "K" checked="checked" />K&nbsp&nbsp
+        </div>
+        <div class="checkbox-inline">
+          <input type="checkbox" name = "O" checked="checked" />O&nbsp&nbsp
+        </div>
+        <div class="checkbox-inline">
+          <input type="checkbox" name = "T" checked="checked" />T&nbsp&nbsp
+        </div>
+        <div class="checkbox-inline">
+          <input type="checkbox" name = "Z" checked="checked" />Z
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock %}

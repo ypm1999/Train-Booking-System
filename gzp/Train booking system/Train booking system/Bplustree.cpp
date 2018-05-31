@@ -1,4 +1,4 @@
-#include "Bplustree.h"
+
 using namespace sjtu;
 
 template <class Key, class T>
@@ -99,7 +99,7 @@ Bplustree<Key, T>::dataNode
 	}
 	t->key[i] = _k;
 	t->data[i] = _data;
-	//t->data[i].write();	
+	//t->data[i].write();
 	++(t->keyNum);
 
 	if (t->keyNum <= Bplustree<Key, T>::maxKeyNum) return NULL;

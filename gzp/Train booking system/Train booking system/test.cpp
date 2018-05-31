@@ -1,7 +1,8 @@
-#include "Bplustree.h"
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <map>
+#include "Bplustree.h"
 using namespace sjtu;
 
 long long aa = 13131, bb = 5353, MOD = (long long)(1e9 + 7), now = 1;
@@ -44,40 +45,37 @@ public:
 		if (this == &other) return *this;
 		*x = *(other.x);
 		return *this;
-	} 
+	}
+	bool operator != (const Data &other){
+		return x == other.x;
+	}
 	int num()const {
 		return *x;
 	}
 };
 
+
 Bplustree<Key, Data> Bpt("Bpt");
-int num = 1000;
+map<Key, Data> mp;
+int num = 10;
 void test_insert() {
 	puts("Test: insert");
-	std::cout << "empty:" << Bpt.empty() << std::endl;
-	std::cout << "size" << Bpt.size() << endl;
-	int num = 1000;
+	std::cout << "empty: " << Bpt.empty() << std::endl;
+	std::cout << "size " << Bpt.size() << endl;
+	Key tmp[20];
+
 	for (int i = 1; i <= num; i++) {
-		Key key(rand() % 1000);
+		Key key(i * 10 + rand() % 10);
 		Data data(rand());
-		//cout << key.num() << ' ' << data.num() << ' '  << Bpt.size() << endl;
-		try {
-			Bpt.insert(key, data);
-		}
-		catch (...) { /*cout << "insert error" << endl;*/ }
-		
+		Bpt.insert(key, data);
+		mp[key] = data;
+		tmp[i] = key;
+		cout << Bpt.search(key).num() << " " << mp[key].num() << endl;
 	}
 	puts("");
-	for (int i = 1; i <= num; i++) {
-		int tmp = rand() % 1000;
-		Key key(tmp);
-		//cout << i << ' ' << tmp << endl;
-		try {
-			std::cout << (Bpt.search(key)).num() << ' ' << endl;
-		}
-		catch (...) { /*cout << "index" << endl;*/ }
-	}
-	puts("");
+	for(int i = 1; i <= num; i++)
+		if(mp[tmp[i]] != Bpt.search(tmp[i]))
+			puts("insert error");
 }
 
 void test_erase() {
@@ -110,7 +108,6 @@ void test_iterator() {
 int main()
 {
 	test_insert();
-	test_erase();
-	system("pause");
+
 	return 0;
 }

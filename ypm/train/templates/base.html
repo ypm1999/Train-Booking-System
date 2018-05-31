@@ -9,29 +9,29 @@
 
 		<title>index</title>
 		<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<link href="{{url_for('static', filename='css/base.css')}}" rel="stylesheet">
+
+
 		{% block css_input%}
 		{% endblock %}
-		<link href="{{url_for('static', filename='css/base.css')}}" rel="stylesheet">
+
 	</head>
 	<body>
 		<header>
       <nav class="navbar navbar-static-top navbar-inverse mynavbar">
         <div class="container">
           <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href=" {{ url_for('home') }}">Project name</a>
+            <a class="navbar-brand" href=" {{ url_for('home') }}">火车订票系统</a>
           </div>
 
           <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-              <li class="active"><a href=" {{ url_for('home')}} ">Home</a></li>
-              <li><a href=" {{ url_for('manage')}} ">Manager Page</a></li>
-              <li><a href=" {{ url_for('manage')}} ">Contact</a></li>
+              <li class="active"><a href=" {{ url_for('home')}} ">火车票查询</a></li>
+							{% if current_user.is_admin %}
+              	<li><a href=" {{ url_for('manage')}} ">管理</a></li>
+							{% endif %}
+              <li><a href=" {{ url_for('manage')}} ">订单查询</a></li>
+
             </ul>
 
 						<div class = "godown">
@@ -55,10 +55,13 @@
 											<a>Email：&nbsp{{ current_user.email }}</a>
 										</li>
 										<li role="presentation">
-											<a href="/user/info">个人信息</a>
+											<a href="/user/info">我的个人信息</a>
 										</li>
 
 										<li role="presentation" class="divider"></li>
+										<li role="presentation">
+											<a href="/order/quary">我的订单</a>
+										</li>
 									</ul>
 								</div>
 							{% endif %}
@@ -68,15 +71,26 @@
 	      </div><!-- /.container -->
 	    </nav><!-- /.navbar -->
 		</header>
+		<div class = "container">
+			<div class = "massage">
+		    {% with messages = get_flashed_messages(with_categories=true) %}
+		    {% for category, message in messages %}
+		      <div class="alert alert-{{ category }}">
+		        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		        {{ message }}
+		      </div>
+		    {% endfor %}
+		    {% endwith %}
+		  </div>
 
-		{% block content %}
-		{% endblock %}
-
+			{% block content %}
+			{% endblock %}
+		</div>
 	</body>
-
-
-
-<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+	{%block js_input %}
+	{% endblock %}
 
 </html>

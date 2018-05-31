@@ -18,20 +18,28 @@ LM.init_app(app)
 def test():
     return render_template('test.html')
 
+@app.route('/', methods = ['GET', 'POST'])
+def home():
+    flash(message='Index', category='warning')
+    return render_template('index.html')
+
+
 @app.route('/register', methods = ['GET', 'POST'])
 def user_register():
     user = UserForm(request.form)
     if request.method == 'POST':
-        if register(user.name.data, user.password.data, user.email.data, user.phone.data):
+        id = register(user.name.data, user.password.data, user.email.data, user.phone.data);
+        if id:
+            user = User().getuser(id)
+            login_user(user, True)
+            flash(message="Register successful! Your id is %s" % id, category='success')
+            if user.is_admin():
+                flash(message="You registered as manager.", category='info')
             return redirect('/')
         else:
             return render_template('register.html', note = '注册失败', form = user)
-    return render_template('register.html', note = '注册', form = user)
+    return render_template('register.html', note = '注册为新用户', form = user)
 
-
-@app.route('/', methods = ['GET', 'POST'])
-def home():
-    return render_template('index.html')
 
 @app.route('/login', methods = ['POST', 'GET'])
 def user_login():
@@ -42,6 +50,7 @@ def user_login():
             user = User().getuser(userid)
             login_user(user, True)
             next = request.args.get('next')
+            flash(message = "Login successfully!", category = "success")
             print current_user
             return redirect( next or url_for('home') )
     return render_template("login.html")
@@ -50,6 +59,7 @@ def user_login():
 @login_required
 def logout():
     logout_user();
+    flash(message="You logout successfully.", category='success')
     return redirect(url_for('home'))
 
 
@@ -57,18 +67,18 @@ def logout():
 @login_required
 def user_info(id = None):
     user = User().getuser(current_user.id)
-    sucess = False
+    success = False
     if id:
         user.getuser(id)
     else:
         if request.method == 'POST':
             form = request.form;
             if(modify_profile(user.id, form["name"], form["password"], form["email"], form["phone"])):
-                falsh(message="Change user profile successful!", category='successful')
-                sucess = True
+                flash(message="Change user profile successful!", category='success')
+                success = True
             else:
-                falsh(message="Unfortunately, change user profile file.", category='error')
-    return render_template("profile.html", user = user, succ = sucess)
+                flash(message="Unfortunately, change user profile failed.", category='warning')
+    return render_template("profile.html", user = user, succ = success)
 
 
 @app.route('/user/ticteks', methods = ['POST', 'GET'])
@@ -80,7 +90,7 @@ def user_orders():
 @login_required
 def manage():
     if not current_user.is_admin():
-        flash(message='You are not manager !', category='error')
+        flash(message='You are not manager !', category='warning')
         return redirect(url_for('home'))
     else:
         return render_template("manage.html")
@@ -90,7 +100,7 @@ def manage():
 @login_required
 def manage_users():
     if not current_user.is_admin():
-        flash(message='You are not manager !', category='error')
+        flash(message='You are not manager !', category='warning')
         return redirect(url_for('home'))
     else:
         if request.method == 'POST':
@@ -112,7 +122,7 @@ def manage_trains():
 @login_required
 def add_train():
     if not current_user.is_admin():
-        flash('You are not manager !')
+        flash(message='You are not manager !', category='warning')
         return redirect(url_for('home'))
     else:
         pass
@@ -123,7 +133,7 @@ def add_train():
 @login_required
 def del_train():
     if not current_user.is_admin():
-        flash('You are not manager !')
+        flash(message='You are not manager !', category='warning')
         return redirect(url_for('home'))
     else:
         pass
@@ -133,7 +143,7 @@ def del_train():
 @login_required
 def sale_train():
     if not current_user.is_admin():
-        flash('You are not manager !')
+        flash(message='You are not manager !', category='warning')
         return redirect(url_for('home'))
     else:
         pass
@@ -141,8 +151,21 @@ def sale_train():
 
 
 @app.route('/train/query', methods = ['GET', 'POST'])
-def query():
-    pass
+def query_trains():
+    if request.method == 'POST':
+        form = request.form;
+        kind = ['C','D','G','K','O','T','Z']
+        print form['loc1']
+        print form['loc2']
+        print form['date']
+        kd = ''
+        for i in kind:
+            if form[i] == 'on':
+                kd += i
+        print kd
+        return render_template("query.html", train = train)
+    else:
+        return redirect(url_for('home'))
 
 @app.route('/tictek/order', methods = ['GET', 'POST'])
 @login_required

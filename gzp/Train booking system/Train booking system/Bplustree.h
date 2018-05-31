@@ -2,13 +2,13 @@
 #define _Bplus
 
 #include <iostream>
-#include <cstring>
 //#include "String.h"
 #include "exceptions.h"
 #include <cmath>
 #include <cstdio>
 #include <fstream>
 #include <cstring>
+#include <unistd.h>
 using namespace std;
 //Bplustree
 
@@ -158,7 +158,7 @@ namespace sjtu {
 			}
 			t->key[i] = _k;
 			t->data[i] = _data;
-			//t->data[i].write();	
+			//t->data[i].write();
 			t->keyNum++;
 			_offset += dataNodeSize;
 			Size++;
@@ -311,7 +311,7 @@ namespace sjtu {
 			int min;
 			if (t == root) min = 2;
 			else min = miniKeyNum;
-			
+
 			int i;
 			for (i = 0; i <= t->keyNum; i++) {
 				if (t->child[i] == n) break;
@@ -353,7 +353,7 @@ namespace sjtu {
 				if (next != NULL) {
 					File.seekp(t->offset[i + 1]);
 					File.write(reinterpret_cast<char *>(next), Bplustree<Key, T>::dataNodeSize);
-				}	
+				}
 			}
 			else if (i != 0) {
 				dataNode *pre = (dataNode *)t->child[i - 1];
@@ -391,7 +391,7 @@ namespace sjtu {
 				if (n != NULL) {
 					File.seekp(t->offset[i]);
 					File.write(reinterpret_cast<char *>(n), Bplustree<Key, T>::dataNodeSize);
-				}	
+				}
 			}
 
 			if (t->keyNum >= min) return NULL;
@@ -557,18 +557,21 @@ namespace sjtu {
 		};
 		//constructor
 		Bplustree(const string &_file) {
-			path = "C:\\Users\\gzp\\Desktop\\data structure\\train order system\\Train booking system\\dataBase\\" + _file;
-			ofstream newFile(path + ".txt");
-			File.open(path + ".txt");
 			root = NULL;
 			leftHead = NULL;
+			string file = string(getcwd(NULL, 0)) + "/" + _file + ".txt";
+			File.open(file.c_str(), ios::binary|ios::ate|ios::out|ios::in);
+			if(!File.is_open()){
+				File.open(file.c_str(), ios::app|ios::out);
+				File.close();
+				File.open(file.c_str(), ios::binary|ios::ate|ios::out|ios::in);
+			}
 		}
 
 		//destructor
 		~Bplustree() {
 			root = NULL;
 			leftHead = NULL;
-
 			File.close();
 		}
 
@@ -588,7 +591,7 @@ namespace sjtu {
 		//insert node
 		void insert(const Key &_k, const T &_data) {
 			File.seekg(0);
-			File.read(reinterpret_cast<char *>(root), Bplustree<Key, T>::idxNodeSize);
+			File.read((char*)(root), Bplustree<Key, T>::idxNodeSize);
 			if (root == NULL) {
 				root = new Bplustree<Key, T>::idxNode;
 				root->isLeaf = true;
@@ -599,9 +602,12 @@ namespace sjtu {
 				p->key[0] = _k;
 				p->data[0] = _data;
 				root->offset[0] = Bplustree<Key, T>::idxNodeSize;
-				File.seekp(0);
-				File.write(reinterpret_cast<char *>(root), Bplustree<Key, T>::idxNodeSize);
-				File.write(reinterpret_cast<char *>(p), Bplustree<Key, T>::dataNodeSize);
+				File.seekp(0, ios::beg);
+				cout << _k.num() <<" "<< _data.num() << endl;
+				puts("root is NULL");
+				cout << Bplustree<Key, T>::idxNodeSize << endl;
+				File.write((char*)(root), Bplustree<Key, T>::idxNodeSize);
+				File.write((char*)(p), Bplustree<Key, T>::dataNodeSize);
 				_offset += idxNodeSize;
 				_offset += dataNodeSize;
 				Size++;
@@ -651,6 +657,22 @@ namespace sjtu {
 
 		iterator begin() {
 			return iterator(this, leftHead);
+		}
+		void test(const Key &_k, const T &_data) {
+			File.seekp(_offset);
+			root = new Bplustree<Key, T>::idxNode;
+			root->isLeaf = true;
+			root->child[0] = new Bplustree<Key, T>::dataNode;
+			Bplustree<Key, T>::dataNode *p = (Bplustree<Key, T>::dataNode *)root->child[0];
+			leftHead = p;
+			p->keyNum = 1;
+			p->key[0] = _k;
+			p->data[0] = _data;
+			root->offset[0] = Bplustree<Key, T>::idxNodeSize;
+			File.seekp(0, ios::beg);
+			cout << Bplustree<Key, T>::idxNodeSize << " " << Bplustree<Key, T>::dataNodeSize << endl;
+			File.write((char*)(root), Bplustree<Key, T>::idxNodeSize);
+			File.write((char*)(p), Bplustree<Key, T>::dataNodeSize);
 		}
 	};
 

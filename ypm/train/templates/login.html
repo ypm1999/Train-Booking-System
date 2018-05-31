@@ -7,6 +7,17 @@
 {% block content %}
 
   <body class="text-center">
+    <div class = "massage">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          <a href="#" class="close" data-dismiss="alert">&times;</a>
+          {{ message }}
+        </div>
+      {% endfor %}
+      {% endwith %}
+    </div>
+
     <form class="form-signin", method = "POST" action = "/login">
       <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
 
