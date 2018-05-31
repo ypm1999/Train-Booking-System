@@ -18,9 +18,8 @@ def register(name, password, email, phone):
     db_write(' '.join(['register', name, password, email, phone]))
     reply = db_readline()
     if reply == '-1':
-        return {'user_id': -1, 'success': False}
-    user_id = int(reply)
-    return {'user_id': user_id, 'success': True}
+        return None
+    return reply
 
 # if success return 1
 # else return 0
@@ -28,9 +27,9 @@ def try_login(user_id, password):
     db_write(' '.join(['login', user_id, password]))
     reply = db_readline()
     if reply == '1':
-        return {'success': True}
+        return True
     else:
-        return {'success': False}
+        return None
 
 # return user profiles:
 #   *name*, *email*, *phone*, *privilege*
@@ -39,9 +38,9 @@ def query_profile(user_id):
     db_write(' '.join(['query_profile', user_id]))
     reply = db_readline()
     if reply == '0':
-        return {'success': False}
+        return None
     tmp = reply.split(' ')
-    return {'name': tmp[0], 'email': tmp[1], 'phone': tmp[2], 'admin': int(tmp[3]) == 2, 'success': True}
+    return {'name': tmp[0], 'email': tmp[1], 'phone': tmp[2], 'admin': int(tmp[3]) == 2}
 
 # if success return 1
 # else return 0
@@ -49,9 +48,9 @@ def modify_profile(user_id, name, password, email, phone):
     db_write(' '.join(['modify_profile', user_id, name, password, email, phone]))
     reply = db_readline()
     if reply == '1':
-        return {'success': True}
+        return True
     else:
-        return {'success': False}
+        return None
 
 # user *id1* want to change user *id2*'s privilege to *privilege*
 # if success return 1
@@ -60,27 +59,23 @@ def modify_privilege(id1, id2, privilege):
     db_write(' '.join(['modify_privilege', id1, id2, privilege]))
     reply = db_readline()
     if reply == '1':
-        return {'success': True}
+        return True
     else:
-        return {'success': False}
+        return None
 
-# TODO unknown bug
-# cannot find train
 # return a list contains trains
 # from *loc1* to *loc2* at *date* with *catalog*
 # without transfer
 # return -1 if query is illegal
 def query_ticket(loc1, loc2, date, catalog):
-    # print(' '.join(['query_ticket', loc1, loc2, date, catalog]))
     db_write(' '.join(['query_ticket', loc1, loc2, date, catalog]))
     reply_lines = int(db_readline())
     if reply_lines == -1:
         return {'success': False}
-    print(reply_lines)
     trains = []
     for i in range(reply_lines):
         reply = db_readline()
-        trains.append(reply.split(' '))
+        trains.append(reply.split(' ')) # TODO
     return {'trains': trains, 'success': True}
 
 # TODO test functions below
@@ -139,6 +134,8 @@ def refund_ticket(user_id, num, train_id, loc1, loc2, date, ticket_kind):
 # >>> add_train abc123456 G123456 G 2 1 商务座
 # >>> 北京 xx:xx 08:00 00:00 ￥0.0
 # >>> 夏威夷 08:01 xx:xx 00:00 ￥1.5
+
+# *catalog* should be a single char
 
 # return 1 if success
 # return 0 if fail
@@ -219,15 +216,13 @@ if __name__ == '__main__':
     print(register("lyx", "123", "qaq", "qqq"))
     print(register("lyc", "123", "qaq", "qqq"))
     print(register("lyc", "123", "qaq", "qqq"))
-    print(add_train('xiaohuoche', 'littletrain', 'CDEF', [['菜鸡站', '7:34', '08:00', '00:01', '￥0.0', '￥0.0'], ['脑残站', '08:02', '12:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
-    print(add_train('dahuoche', 'bigtrain', 'CDEF', [['A', '7:34', '08:00', '00:00', '￥0.0', '￥0.0'], ['B', '08:01', '12:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
+    print(add_train('xiaohuoche', 'littletrain', 'C', [['菜鸡站', '07:34', '08:00', '00:01', '￥0.0', '￥0.0'], ['脑残站', '08:02', '12:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
+    print(add_train('dahuoche', 'bigtrain', 'C', [['A', '07:34', '08:00', '00:00', '￥0.0', '￥0.0'], ['B', '08:01', '12:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
+    print(add_train('train', 'train', 'C', [['B', '07:00', '08:00', '00:10', '￥0.0'], ['C', '08:10', '12:00', '00:10', '￥3.0']], ['VIP']))
     print(sale_train('xiaohuoche'))
-    print(sale_train('littletrain'))
     print(sale_train('dahuoche'))
-    print(query_train('xiaohuoche'))
-    print(query_train('dahuoche'))
+    print(sale_train('train'))
     print(query_ticket('菜鸡站', '脑残站', '2018-06-01', 'C'))
-    print(buy_ticket('2018', '1', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'C'))
-    print(query_ticket('A', 'B', '2018-06-05', 'CD'))
-    #print(query_transfer())
+    print(query_ticket('A', 'C', '2018-06-05', 'CDT'))
+    print(query_transfer('A', 'C', '2018-06-05', 'C'))
 
