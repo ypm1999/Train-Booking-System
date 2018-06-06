@@ -13,7 +13,7 @@ private:
 	int len;
 	
 public:
-	string(): len(0) { data[0] = 0; }
+	string(): len(0) { memset(data, 0, MAXL); }
 	string(const string &s): len(0) {
 		for (int i = 0; i < s.len; i++) {
 			data[len++] = s.data[i];
