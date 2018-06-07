@@ -112,10 +112,6 @@ public:
 	
 	char *c_str() const { return data; }
 	
-	void print() const {
-		for (int i = 0; data[i] && i < MAXL; i++)
-			printf("%c", data[i]);
-	}
 };
 
 #endif // _STRING_HPP_
