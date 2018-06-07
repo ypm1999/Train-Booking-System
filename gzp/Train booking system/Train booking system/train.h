@@ -1,4 +1,4 @@
-#ifndef _TRAIN
+if#ifndef _TRAIN
 #define _TRAIN
 
 #include <iostream>
@@ -21,7 +21,7 @@ struct TrainKey {
 
 	bool operator<(const TrainKey &other) {
 		if (TrainId < other.TrainId) return 1;
-		else return 0;
+		else if (other.TrainId < TrainId) return 0;
 		if (nth < other.nth) return 1;
 		else return 0;
 	}
