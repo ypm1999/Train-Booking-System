@@ -20,12 +20,8 @@ struct TrainKey {
 	}
 
 	bool operator<(const TrainKey &other) {
-		for (int i = 0; i < 20; i++) {
-			if (TrainId[i] < other.TrainId[i])
-				return 1;
-			else if (TrainId[i] > other.TrainId[i])
-				return 0;
-		}
+		if (TrainId < other.TrainId) return 1;
+		else return 0;
 		if (nth < other.nth) return 1;
 		else return 0;
 	}
@@ -167,21 +163,21 @@ void query_train(const mystring<20> &Tid) {
 	int np = (*itTB).priceNum();
 	int nst = (*itTB).stationNum();
 
-	Tid.print(); puts(" ");
-	(*itTB).trainName().print(); puts(" ");
+	puts(Tid.c_str()); puts(" ");
+	puts((*itTB).trainName().c_str()); puts(" ");
 	printf("%d %d ", nst, np);
 	for (int i = 0; i < np; i++) {
-		(*itTB).catalog()[i].print();
+		puts((*itTB).catalog()[i].c_str());
 		puts(" ");
 	}
 	printf("\n");
 	for (int i = 0; i < nst; i++, itTB++) {
-		(*itTB).stationName().print(); puts(" ");
-		(*itTB).time().first.print(); puts(" ");
-		(*itTB).time().second.print(); puts(" ");
-		(*itTB).stop().print(); puts(" ");
+		puts((*itTB).stationName()..c_str()); puts(" ");
+		puts((*itTB).time().first.c_str()); puts(" ");
+		puts((*itTB).time().second.c_str()); puts(" ");
+		puts((*itTB).stop().c_str()); puts(" ");
 		for (int i = 0; i < np; i++) {
-			printf("гд%f", (*itTB).price()[i]);
+			printf("я┐е%f", (*itTB).price()[i]);
 			puts(" ");
 		}
 		printf("\n");
