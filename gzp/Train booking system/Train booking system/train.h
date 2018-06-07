@@ -128,8 +128,9 @@ public:
 	}
 };
 
+sjtu::Bplustree<TrainKey, TrainNode> TrainBpt("TrainBpt");
+
 void add_train(const mystring<20> &Tid, TrainNode *trNd, const int &nst) {
-	sjtu::Bplustree<TrainKey, TrainNode> TrainBpt("TrainBpt");
 	if (!TrainBpt.find(TrainKey(Tid, 0))) {
 		printf("0\n");
 		return;
@@ -142,7 +143,6 @@ void add_train(const mystring<20> &Tid, TrainNode *trNd, const int &nst) {
 }
 
 void sale_train(const mystring<20> &Tid) {
-	sjtu::Bplustree<TrainKey, TrainNode> TrainBpt("TrainBpt");
 	auto itTB = TrainBpt.search(TrainKey(Tid, 0));
 	if ((*itTB).ispub()) {
 		printf("0\n");
@@ -158,7 +158,6 @@ void sale_train(const mystring<20> &Tid) {
 }
 
 void query_train(const mystring<20> &Tid) {
-	sjtu::Bplustree<TrainKey, TrainNode> TrainBpt("TrainBpt");
 	auto itTB = TrainBpt.search(TrainKey(Tid, 0));
 	int np = (*itTB).priceNum();
 	int nst = (*itTB).stationNum();
@@ -185,7 +184,6 @@ void query_train(const mystring<20> &Tid) {
 }
 
 void delete_train(const mystring<20> &Tid) {
-	sjtu::Bplustree<TrainKey, TrainNode> TrainBpt("TrainBpt");
 	auto itTB = TrainBpt.search(TrainKey(Tid, 0));
 	if ((*itTB).ispub()) {
 		printf("0\n");
@@ -200,7 +198,6 @@ void delete_train(const mystring<20> &Tid) {
 
 
 void modify_train(const mystring<20> &Tid, TrainNode *trNd, const int &nst) {
-	sjtu::Bplustree<TrainKey, TrainNode> TrainBpt("TrainBpt");
 	if (!TrainBpt.find(TrainKey(Tid, 0))) {
 		printf("0\n");
 		return;
