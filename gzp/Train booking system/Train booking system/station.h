@@ -124,30 +124,27 @@ public:
 
 };
 
+sjtu::Bplustree<StationKey, StationNode> StationBpt("StationBpt");
+
 void add_station(const StationNode &stNd) {
-	sjtu::Bplustree<StationKey, StationNode> StationBpt("StationBpt");
 	StationBpt.insert(stNd.key(), stNd);
 }
 
 StationNode query_station(const StationKey &k) {
-	sjtu::Bplustree<StationKey, StationNode> StationBpt("StationBpt");
 	return (*StationBpt.search(k));
 }
 
 void sale_station(const StationKey &k) {
-	sjtu::Bplustree<StationKey, StationNode> StationBpt("StationBpt");
 	auto itSB = StationBpt.search(k);
 	(*itSB).pub_TrainNode();
 	itSB.save();
 }
 
 void del_station(const StationKey &k) {
-	sjtu::Bplustree<StationKey, StationNode> StationBpt("StationBpt");
 	StationBpt.erase(k);
 }
 
 void modify_station(const StationKey &k, const StationNode &Stn) {
-	sjtu::Bplustree<StationKey, StationNode> StationBpt("StationBpt");
 	StationBpt.insert(k, Stn);
 }
 
