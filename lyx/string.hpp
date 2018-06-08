@@ -9,50 +9,62 @@ template<int MAXL>
 class string
 {
 private:
-	char data[MAXL];
+	char data[MAXL + 1];
 	int len;
 	
 public:
-	string(): len(0) { memset(data, 0, MAXL); }
-	string(const string &s): len(0) {
-		for (int i = 0; i < s.len; i++) {
-			data[len++] = s.data[i];
-		}
+	string(): len(0) { memset(data, 0, sizeof(data)); }
+	string(const string &s) {
+		strcpy(data, s.data);
+		len = s.len;
 	}
-	string(const char *s): len(0) {
-		for (int i = 0; s[i]; i++)
-			data[len++] = s[i];
+	string(const char *s) {
+		strcpy(data, s);
+		len = strlen(s);
+	}
+	template<int L>
+	string(const string<L> &s) {
+		if (MAXL < L) {
+			throw std::invalid_argument("QAQ");
+		}
+		strcpy(data, s);
+		len = strlen(s);
 	}
 	~string() {}
 
 	string& operator=(const string &s) {
-		len = 0;
-		for (int i = 0; i < s.len; i++) {
-			data[len++] = s.data[i];
-		}
+		len = s.len;
+		strcpy(data, s.data);
 		return *this;
 	}
 	string& operator=(const char *s) {
-		len = 0;
-		for (int i = 0; s[i]; i++) {
-			data[len++] = s[i];
-		}
+		strcpy(data, s);
+		len = strlen(s);
 		return *this;
+	}
+	template<int L>
+	string& operator=(const string<L> &s) {
+		if (MAXL < L) {
+			throw std::invalid_argument("QAQ");
+		}
+		strcpy(data, s);
+		len = strlen(s);
 	}
 	string& operator+=(const string &rhs) {
 		if (len + rhs.len > MAXL) {
 			throw std::invalid_argument("string operator +");
 		}
-		for (int i = 0; i < rhs.len; i++)
-			data[len++] = rhs.data[i];
+		strcpy(data + len, rhs.data);
+		len += rhs.len;
 		return *this;
 	}
 	string& operator+=(const char *rhs) {
-		if (len + strlen(rhs) > MAXL) {
+		int l = strlen(rhs);
+		if (len + l > MAXL) {
 			throw std::invalid_argument("string operator +");
 		}
-		for (int i = 0; rhs[i]; i++)
-			data[len++] = rhs[i];
+		strcpy(data + len, rhs);
+		len += l;
 		return *this;
 	}
 	friend string operator+(const char *lhs, const string &rhs) {
@@ -71,13 +83,16 @@ public:
 	}
 	bool operator==(const string &rhs) const {
 		if (len != rhs.len) return false;
-		for (int i = 0; i < len; i++)
-			if (data[i] != rhs.data[i])
-				return false;
-		return true;
+		return strcmp(data, rhs.data) == 0;
 	}
 	bool operator==(const char *rhs) const {
 		return *this == string(rhs);
+	}
+	bool operator<(const string &rhs) const {
+		return strcmp(data, rhs.data) < 0;
+	}
+	bool operator<(const char *rhs) const {
+		return strcmp(data, rhs) < 0;
 	}
 	char& operator[](const int &n) {
 		return data[n];
@@ -102,16 +117,17 @@ public:
 	int length() const {
 		return len;
 	}
-	string substr(int start, int len) {
+	string substr(int start, int len) const {
 		string res;
-		for (int i = 0; i < len; i++) {
-			res.data[res.len++] = data[start + i];
-		}
+		res.len = len;
+		strncpy(res.data, data + start, len);
 		return res;
 	}
-	
-	char *c_str() const { return data; }
-	
+	const char *c_str() const { return data; }
+	void get() {
+		scanf("%s", data);
+		len = strlen(data);
+	}
 };
 
 #endif // _STRING_HPP_
