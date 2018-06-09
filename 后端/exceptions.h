@@ -4,42 +4,48 @@
 #include <iostream>
 #include <cstring>
 //#include "String.h"
-using namespace std;
 
 class Exception {
 protected:
-	const string variant = "";
-	string detail = "";
+	const std::string variant = "";
+	std::string detail = "";
 public:
 	Exception() {}
-	Exception(const Exception &ec) : variant(ec.variant), detail(ec.detail){}
-	virtual string what() {
+	Exception(const Exception &ec) : variant(ec.variant), detail(ec.detail) {}
+	Exception(const std::string& variant, const std::string& detail = "") : variant(variant), detail(detail) {}
+	virtual std::string what() {
 		return variant + " " + detail;
 	}
 };
 
 class index_out_of_bound : public Exception {
-	/* __________________________ */
+public:
+	index_out_of_bound(const std::string& detail = "") :Exception("Index out of bound", detail) {}
 };
 
 class runtime_error : public Exception {
-	/* __________________________ */
+public:
+	runtime_error(const std::string& detail = "") :Exception("Runtime error", detail) {}
 };
 
 class invalid_iterator : public Exception {
-	/* __________________________ */
+public:
+	invalid_iterator(const std::string& detail = "") :Exception("Invalid iterator", detail) {}
 };
 
 class container_is_empty : public Exception {
-	/* __________________________ */
+public:
+	container_is_empty(const std::string& detail = "") :Exception("Container is empty", detail) {}
 };
 
 class open_file_error : public Exception {
-	/* __________________________ */
+public:
+	open_file_error(const std::string& detail = "") :Exception("open file error", detail) {}
 };
 
 class insert_error : public Exception {
-	/* ___________________________*/
+public:
+	insert_error(const std::string& detail = "") :Exception("insert error", detail) {}
 };
 
 #endif
