@@ -7,7 +7,6 @@ from flask_login import (LoginManager, current_user, login_required,
 
 LM = LoginManager()
 LM.login_view = 'user_login'
-LM.login_message = 'please login!'
 LM.session_protection = 'strong'
 
 class User(UserMixin):
@@ -47,4 +46,6 @@ class User(UserMixin):
 
 @LM.user_loader
 def load_user(ID):
-    return User().getuser(ID)
+    user = User()
+    user.getuser(ID)
+    return user

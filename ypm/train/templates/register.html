@@ -19,10 +19,10 @@
 
 	<div class="text-center">
 		<form class="form-signin" method="POST" action="/register">
-            {{ form.hidden_tag()}}
+      {{ form.hidden_tag() }}
 			<h1 class="h3 mb-3 font-weight-normal">Please register</h1>
 			<br />
-			<p class = "text-warning"> {{note}} </p>
+			<p class = "text-warning"> {{ note }} </p>
 			{{ form.csrf_token }}
 			{{ form.name(class = 'form-control', placeholder="User name", required = "required") }}
 			{{ form.password(class = 'form-control', placeholder="Password", required = "required") }}

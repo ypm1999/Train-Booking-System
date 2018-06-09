@@ -9,7 +9,7 @@
 
 		<title>index</title>
 		<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-		<link href="{{url_for('static', filename='css/base.css')}}" rel="stylesheet">
+		<link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
 
 
 		{% block css_input%}
@@ -21,16 +21,16 @@
       <nav class="navbar navbar-static-top navbar-inverse mynavbar">
         <div class="container">
           <div class="navbar-header">
-            <a class="navbar-brand" href=" {{ url_for('home') }}">火车订票系统</a>
+            <a class="navbar-brand" href="{{ url_for('home') }}">火车订票系统</a>
           </div>
 
           <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-              <li class="active"><a href=" {{ url_for('home')}} ">火车票查询</a></li>
+              <li class="active"><a href=" {{ url_for('home') }} ">火车票查询</a></li>
 							{% if current_user.is_admin %}
-              	<li><a href=" {{ url_for('manage')}} ">管理</a></li>
+              	<li><a href=" {{ url_for('manage') }} ">管理</a></li>
 							{% endif %}
-              <li><a href=" {{ url_for('manage')}} ">订单查询</a></li>
+              <li><a href=" {{ url_for('manage') }} ">订单查询</a></li>
 
             </ul>
 
@@ -89,7 +89,7 @@
 	</body>
 	<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.js"></script>
 	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	
+
 	{%block js_input %}
 	{% endblock %}
 

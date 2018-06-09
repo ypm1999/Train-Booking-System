@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block css_input %}
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
+  <link href="{{ url_for('static', filename='css/manage_trains.css') }}" rel="stylesheet">
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+      <div class="page-header">
+        <h1>列车管理</h1>
+      </div>
+      <div class="mycontainer">
+        <div class="row">
+          <div class="col-sm-9">
+            <form action="" method="POST" class="form-inline">
+              <div class="col-sm-10">
+                <div class="input-group input-group-lg myinput">
+                  <input type="text" id="trainID" class="form-control"  placeholder="Train ID"/>
+                </div>
+              </div>
+                <button type="button" class="btn btn-success btn-lg" onclick="searchTrain()"> 查询 </button>
+            </form>
+          </div>
+          <div class="col-sm-2">
+            <button type="button" class="btn btn-success btn-lg" onclick="addtrain()"> 添加车次 </button>
+          </div>
+        </div>
+      </div>
+
+
+
+          <div class="modal-content" id="addTrain">
+            <div class="modal-header">
+              <h2 class="modal-title">添加车次</h2>
+            </div>
+
+              <form id = "addTrainForm" action = "{{ url_for('add_train') }}" method = "POST">
+                <div class="modal-body">
+                  <br />
+                  <div class = "row">
+                    <div class = "mytext">
+                      <div class = "col-sm-2">&nbsp列车种类：&nbsp</div>
+                      <div class = "col-sm-9">
+                        <div class="checkbox-inline">
+                          <input type="checkbox" name = "商务座" />商务座&nbsp
+                        </div>
+                        <div class="checkbox-inline">
+                          <input type="checkbox" name = "特等座" />特等座&nbsp
+                        </div>
+                        <div class="checkbox-inline">
+                          <input type="checkbox" name = "一等座" />一等座&nbsp
+                        </div>
+                        <div class="checkbox-inline">
+                          <input type="checkbox" name = "二等座" />二等座&nbsp
+                        </div>
+                        <div class="checkbox-inline">
+                          <input type="checkbox" name = "高级软卧" />高级软卧&nbsp
+                        </div>
+                        <div class="checkbox-inline">
+                          <input type="checkbox" name = "软卧" />软卧&nbsp
+                        </div>
+                        <div class="checkbox-inline">
+                          <input type="checkbox" name = "硬卧" checked/>硬卧&nbsp
+                        </div>
+                        <div class="checkbox-inline">
+                          <input type="checkbox" name = "动卧" />动卧&nbsp
+                        </div>
+                        <div class="checkbox-inline">
+                          <input type="checkbox" name = "软座" />软座&nbsp
+                        </div>
+                        <div class="checkbox-inline">
+                          <input type="checkbox" name = "硬座" />硬座&nbsp
+                        </div>
+                        <div class="checkbox-inline">
+                          <input type="checkbox" name = "无座" />无座&nbsp
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                  <div class = "row">
+                    <div class = "mytext">
+                      <div class="col-sm-3">
+                        <h2><div class = "label label-primary">编号</div></h2>
+                        <div class="input-group input-group-lg myinput">
+                          <input type = "text" name = "train_id" class = "form-control" value = "5" required/>
+                        </div>
+                      </div>
+                      <div class="col-sm-3">
+                        <h2><div class = "label label-primary">车次名</div></h2>
+                        <div class="input-group input-group-lg myinput">
+                          <input type = "text" name = "name" class = "form-control" value = "5" required/>
+                        </div>
+                      </div>
+                      <div class="col-sm-3">
+                        <h2><div class = "label label-primary">车站数目</div></h2>
+                        <div class="input-group input-group-lg myinput">
+                          <input type = "text" name = "stationNum" class = "form-control" value = "5" required/>
+                        </div>
+                      </div>
+                      <div class="col-sm-3">
+                        <h2><div class = "label"><br /></div></h2>
+                        <button type = "button" class = "btn btn-success btn-lg" onclick = "showList()"> 添加车站 </button>
+                      </div>
+                    </div>
+                  </div>
+                  <input type = "text" name = "seatNumber" required hidden/>
+                  <input type = "text" name = "stationnumber" required hidden/>
+                  <div class = "pull-down">
+                    <table id="addstaion"  class="table-responsive table table-hover table-striped">
+                      <thead>
+                        <tr id="seatsHead">
+                        </tr>
+                        <tbody id = "inputStations">
+                        </tbody>
+                      </thead>
+                    </table>
+                  </div>
+
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">添加</button>
+                  </div>
+                </form>
+              </div>
+          </div>
+
+
+      <br /><br /><br />
+      <table id="train"  class="table-responsive table table-hover table-striped" hidden>
+        <thead>
+          <tr>
+            <th>
+              <div class="th-inner">车次编号</div>
+              <div class="fht-cell"></div>
+            </th>
+            <th>
+              <div class="th-inner ">车次名</div>
+              <div class="fht-cell"></div>
+            </th>
+            <th>
+              <div class="th-inner ">是否已发售</div>
+              <div class="fht-cell"></div>
+            </th>
+          </tr>
+          <tbody>
+            <tr id = "train_row"></tr>
+         </tbody>
+          </thead>
+      </table>
+      <table id = "station"></table>
+      <form id = "sale" class = "text-center"　action = "/manage/train/sale" method = "POST"></form>
+    </div>
+
+
+{% endblock %}
+
+{% block js_input %}
+  <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+  <script src="{{ url_for('static', filename='js/manage_trains.js') }}"></script>
+{% endblock %}

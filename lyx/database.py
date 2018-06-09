@@ -71,14 +71,14 @@ def _add(trains, reply):
     reply = reply.split(' ')
     key = ['train_id', 'loc1', 'date1', 'time1', 'loc2', 'date2', 'time2']
     value = reply[:7]
-    
+
     sz = len(reply)
     for i in range(7, sz, 3):
     	if (reply[i] == '商务座'):
     		reply[i] = '特等座'
     	key.append(reply[i])
     	value.append((reply[i + 1], reply[i + 2]))
-    
+
     train = dict(zip(key, value))
 
     trains.append(train)
@@ -241,4 +241,3 @@ if __name__ == '__main__':
     # print(refund_ticket('2018', '1', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'VIP'))
     # print(query_order('2018', '2018-06-01', 'C'))
     print(query_transfer('A', 'C', '2018-06-05', 'CD'))
-

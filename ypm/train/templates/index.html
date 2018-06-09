@@ -9,7 +9,7 @@
 
 
 <div class = "main">
-    <form  class = "form-inline " action = "{{url_for('query_trains')}}" method = "POST">
+    <form  class = "form-inline " action = "{{ url_for('query_tickets') }}" method = "POST">
       <div class = "row">
         <div class = "col-sm-1"></div>
         <div class = "col-sm-3">
@@ -39,6 +39,7 @@
           </div>
         </div>
       </div><br />
+
       <div class = "row">
         <div class = "mytext">
           <div class = "col-sm-2"></div>
@@ -53,7 +54,7 @@
             <input type="checkbox" name = "G" checked="checked" />G&nbsp&nbsp
           </div>
           <div class="checkbox-inline">
-            <input type="checkbox" name = "K" checked="checked" />K&nbsp&nbsp
+            <input type="checkbox" name = "K" checked />K&nbsp&nbsp
           </div>
           <div class="checkbox-inline">
             <input type="checkbox" name = "O" checked="checked" />O&nbsp&nbsp

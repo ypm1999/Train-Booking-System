@@ -11,6 +11,8 @@ from flask_login import (LoginManager, current_user, login_required, login_user,
 from user import LM, User
 
 app = Flask(__name__)
+app.jinja_env.variable_start_string = '{{ '
+app.jinja_env.variable_end_string = ' }}'
 app.config['SECRET_KEY'] = 'ASSUEIIJSUasdfdsfeIIJJLL'
 LM.init_app(app)
 
@@ -20,22 +22,23 @@ def test():
 
 @app.route('/', methods = ['GET', 'POST'])
 def home():
-    flash(message='Index', category='warning')
+    print current_user
     return render_template('index.html')
 
-
+#用户管理，注册，登录，登出，profile，修改profile, 订单
 @app.route('/register', methods = ['GET', 'POST'])
 def user_register():
     user = UserForm(request.form)
     if request.method == 'POST':
         id = register(user.name.data, user.password.data, user.email.data, user.phone.data);
         if id:
-            user = User().getuser(id)
+            user = User()
+            user.getuser(id)
             login_user(user, True)
-            flash(message="Register successful! Your id is %s" % id, category='success')
+            flash(message="Register successful! Your ID is %s" % id, category='success')
             if user.is_admin():
                 flash(message="You registered as manager.", category='info')
-            return redirect('/')
+            return redirect(url_for('home'))
         else:
             return render_template('register.html', note = '注册失败', form = user)
     return render_template('register.html', note = '注册为新用户', form = user)
@@ -81,11 +84,29 @@ def user_info(id = None):
     return render_template("profile.html", user = user, succ = success)
 
 
-@app.route('/user/ticteks', methods = ['POST', 'GET'])
+@app.route('/user/modify', methods = ['POST', 'GET'])
 @login_required
-def user_orders():
-    pass
+def modify_user():
+    user_id = request.form['id']
+    name = request.form['name']
+    password = request.form['password']
+    email = request.form['email']
+    phone = request.form['phone']
+    modify_profile(user_id, name, password, email, phone)
+    return user_info(user_id);
 
+@app.route('/user/tickets', methods = ['POST', 'GET'])#and manage_orders
+@login_required
+def user_orders(id = None):
+    if id == None:
+        id = current_user.id
+    if request.method == 'POST':
+        pass
+    else:
+        return render_template('user_tickets.html')
+
+
+#管理员界面，管理用户，管理订单，管理车次。
 @app.route('/manage', methods = ['GET', 'POST'])
 @login_required
 def manage():
@@ -109,14 +130,42 @@ def manage_users():
             return redirect( url_for('user_info') )
 
 
-@app.route('/manage/train', methods = ['GET', 'POST'])
+@app.route('/manage/orders', methods = ['GET', 'POST'])
 @login_required
-def manage_trains():
+def manage_orders():
     if not current_user.is_admin():
         flash('You are not manager !')
         return redirect(url_for('home'))
     else:
-        pass
+        if request.method == 'POST':
+            return user_orders(request.form["userid"])
+        else:
+            return redirect( url_for('user_orders') )
+
+#车次管理，增加，删除，修改，发售
+@app.route('/Data/searchTrain', methods = ['GET', 'POST'])
+def query_train_data():
+    train_id = request.args['train_id']
+    print train_id
+    if train_id == '':
+        return json.dumps({'train_id':'', 'name':'', 'station':[]})
+    print "train_id: %s" % train_id
+    station1 = {'name':'上海1', 'arrive': '10:30', 'leave':'10:40', '硬座': '￥1200'}
+    station2 = {'name':'上海2', 'arrive': '10:31', 'leave':'10:40', '硬座': '￥1201'}
+    station3 = {'name':'上海3', 'arrive': '10:32', 'leave':'10:40', '硬座': '￥1202'}
+    train1 = {'train_id':train_id, 'name': 'C919', "saled" : '否', 'station':[station1, station2, station3]}
+    print json.dumps([train1, train1])
+    return json.dumps(train1)
+
+@app.route('/manage/train', methods = ['GET', 'POST'])
+#@login_required
+def manage_trains():
+#    if not current_user.is_admin():
+#        flash('You are not manager !')
+#        return redirect(url_for('home'))
+#    else:
+    return render_template('manage_trains.html');
+
 
 @app.route('/manage/add_train', methods = ['GET', 'POST'])
 @login_required
@@ -149,28 +198,46 @@ def sale_train():
         pass
 
 
+#查票，购票，退票
+@app.route('/Data/trains/transform', methods = ['GET', 'POST'])
+def query_tieket_transform_data():
+    train1 = {'id':'G12306', 'startTime': '06:30', 'arriveTime': '10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
+    train2 = {'id':'G11007', 'startTime': '06:30', 'arriveTime': '10:50', '软卧': str(100) + '张<br />' + '￥1200'}
+    loc1 = request.args['loc1']
+#    loc2 = request.args['loc2']
+#    date = request.args['date']
+#    catelog = request.args['catelog']
+    print loc1
+#    TODO query_transform(loc1, loc2, date, catelog)
+    return json.dumps([train1, train2])
 
-@app.route('/train/query', methods = ['GET', 'POST'])
-def query_trains():
-    if request.method == 'POST':
-        form = request.form;
-        kind = ['C','D','G','K','O','T','Z']
-        print form['loc1']
-        print form['loc2']
-        print form['date']
-        kd = ''
-        for i in kind:
-            if form[i] == 'on':
-                kd += i
-        print kd
-        return render_template("query.html", train = train)
-    else:
-        return redirect(url_for('home'))
+@app.route('/Data/trains', methods = ['GET', 'POST'])
+def query_tieket_data():
+    train1 = {'id':'G12306', 'startTime': '06:30', 'arriveTime': '10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
+    train2 = {'id':'G11007', 'startTime': '06:30', 'arriveTime': '10:50', '软卧': str(100) + '张<br />' + '￥1200'}
+    loc1 = request.args['loc1']
+    loc2 = request.args['loc2']
+    date = request.args['date']
+    catelog = request.args['catelog']
+    print (loc1, loc2, date, catelog)
+    print json.dumps([train1, train2])
+    #TODO query_ticket(loc1, loc2, date, catelog)
+    return json.dumps([train1, train2])
+
+@app.route('/tickets', methods = ['GET', 'POST'])
+def query_tickets():
+    return render_template("query_trains.html", form = request.form)
 
 @app.route('/tictek/order', methods = ['GET', 'POST'])
 @login_required
 def tictek_order():
-    pass
+    form = request.form;
+    if buy_ticket(current_user.id, form['number'], form['train_id'], form['loc1'], form['loc2'], form['date'], form['seat']):
+        flash(message='购票成功！', category = 'success');
+        redirect( url_for('home') );
+    else:
+        flash(message='购票失败！', category = 'danger');
+        return render_template("query_trains.html", form = form)
 
 @app.route('/tictek/refund', methods = ['GET', 'POST'])
 @login_required

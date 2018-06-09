@@ -67,6 +67,22 @@ def modify_privilege(id1, id2, privilege):
 # from *loc1* to *loc2* at *date* with *catalog*
 # without transfer
 # return -1 if query is illegal
+def _add(trains, reply):
+    reply = reply.split(' ')
+    key = ['train_id', 'loc1', 'date1', 'time1', 'loc2', 'date2', 'time2']
+    value = reply[:7]
+    
+    sz = len(reply)
+    for i in range(7, sz, 3):
+    	if (reply[i] == '商务座'):
+    		reply[i] = '特等座'
+    	key.append(reply[i])
+    	value.append((reply[i + 1], reply[i + 2]))
+    
+    train = dict(zip(key, value))
+
+    trains.append(train)
+
 def query_ticket(loc1, loc2, date, catalog):
     db_write(' '.join(['query_ticket', loc1, loc2, date, catalog]))
     reply_lines = int(db_readline())
@@ -74,8 +90,7 @@ def query_ticket(loc1, loc2, date, catalog):
         return None
     trains = []
     for i in range(reply_lines):
-        reply = db_readline()
-        trains.append(reply.split(' ')) # TODO
+        _add(trains, db_readline())
     return trains
 
 # return (a list of) two trains can carry you
@@ -87,8 +102,9 @@ def query_transfer(loc1, loc2, date, catelog):
     reply = db_readline()
     if reply == '-1':
         return None
-    trains = [reply.split(' ')]
-    trains.append(db_readline().split(' '))
+    trains = []
+    _add(trains, reply)
+    _add(trains, db_readline())
     return trains
 
 # user *id* buy *num* ticket(s) of *ticket_kind* in *train_id* from *loc1* to *loc2* at *date*
@@ -179,7 +195,7 @@ def query_train(train_id):
     db_write(' '.join(['query_train', train_id]))
     reply = db_readline()
     if reply == '0':
-        return {'success': False}
+        return None
     print(reply)
     train_id = reply.split()[0]
     name = reply.split()[1]
@@ -195,8 +211,7 @@ def query_train(train_id):
             'name': name,
             'catalog': catalog,
             'station_list': station_list,
-            'ticket_kind_list': ticket_kind_list,
-            'success': True}
+            'ticket_kind_list': ticket_kind_list}
 
 # delete *train_id*
 # return 1 if success
@@ -219,11 +234,11 @@ if __name__ == '__main__':
     print(add_train('train', 'train', 'C', [['A', '07:00', '08:00', '00:10', '￥0.0'], ['B', '08:10', '12:00', '00:10', '￥3.0']], ['VIP']))
     print(sale_train('xiaohuoche'))
     print(sale_train('dahuoche'))
-    print(delete_train('train'))
     print(sale_train('train'))
     print(query_ticket('菜鸡站', '脑残站', '2018-06-01', 'CD'))
-    print(buy_ticket('2018', '2', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'VIP'))
-    print(query_order('2018', '2018-06-01', 'C'))
-    print(refund_ticket('2018', '1', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'VIP'))
-    print(query_order('2018', '2018-06-01', 'C'))
+    # print(buy_ticket('2018', '2', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'VIP'))
+    # print(query_order('2018', '2018-06-01', 'C'))
+    # print(refund_ticket('2018', '1', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'VIP'))
+    # print(query_order('2018', '2018-06-01', 'C'))
+    print(query_transfer('A', 'C', '2018-06-05', 'CD'))
 
