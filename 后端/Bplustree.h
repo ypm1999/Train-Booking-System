@@ -16,25 +16,27 @@ namespace sjtu {
 	template <class Key, class T>
 	class Bplustree {
 		friend class Iterator;
-	public:
 		class Iterator;
 	private:
-
-		static const int maxKeyNum = 100;
+		static const int maxKeyNum = 4;
 		static const int miniKeyNum = maxKeyNum / 2;
+		static const int maxn = maxKeyNum + 2;
+
 		mystring<20> path;
 
 		//node
 		struct idxNode {
-			int offset[maxKeyNum + 2];
+			int offset[maxn];
 			bool isLeaf;
 			int keyNum;
-			Key key[maxKeyNum + 1];
+			bool isRead;
+			Key key[maxn];
 			Key miniKey;
 
 			idxNode() {
 				isLeaf = false;
 				keyNum = -1;
+				isRead = false;
 			}
 
 		};
@@ -43,8 +45,8 @@ namespace sjtu {
 			int Offset;
 			int nextoffset;
 			int keyNum;
-			Key key[maxKeyNum + 1];
-			T data[maxKeyNum + 1];
+			Key key[maxn];
+			T data[maxn];
 			dataNode() {
 				nextoffset = -1;
 				keyNum = 0;
@@ -54,36 +56,63 @@ namespace sjtu {
 		const int idxNodeSize = sizeof(idxNode);
 		const int dataNodeSize = sizeof(dataNode);
 
-		Iterator idxSearch(const Key &_k, idxNode *t) {
+		Iterator *idxSearch(const Key &_k, const idxNode &t) {
 			int i;
-			for (i = 0; i < t->keyNum; i++) {
-				if (_k < t->key[i])	break;
+			for (i = 0; i < t.keyNum; i++) {
+				if (_k < t.key[i])	break;
 			}
-			File.seekg(t->offset[i], ios::beg);
-			if (t->isLeaf) {
-				if (t != root) delete t;
-				dataNode *p = new dataNode;
-				File.read((char *)(p), dataNodeSize);
+			File.seekg(t.offset[i], ios::beg);
+			if (t.isLeaf) {
+				dataNode p;
+				File.read((char *)(&p), dataNodeSize);
 				return dataSearch(_k, p);
 			}
 			else {
-				if (t != root) delete t;
-				idxNode *p = new idxNode;
-				File.read((char *)(p), idxNodeSize);
+				idxNode p;
+				File.read((char *)(&p), idxNodeSize);
 				return idxSearch(_k, p);
 			}
 		}
 
-		Iterator dataSearch(const Key &_k, dataNode *t) {
-			for (int i = 0; i < t->keyNum; i++) {
-				if (t->key[i] == _k) {
-					Iterator tmp(this, *t, i);
-					delete t;
+		Iterator *dataSearch(const Key &_k, const dataNode &t) {
+			Iterator *tmp;
+			for (int i = 0; i < t.keyNum; i++) {
+				if (t.key[i] == _k) {
+					tmp = new Iterator(this, t, i);
 					return tmp;
 				}
 			}
-			delete t;
-			return Iterator(this, dataNode(), -1);
+			tmp = new Iterator(this, t, -1);
+			return tmp;
+		}
+
+		Iterator *antiLower_bound(const Key &_k, const idxNode &t) {
+			int i;
+			for (i = t.keyNum - 1; i >= 0  && !(_k > t.key[i]); i--);
+			
+			File.seekg(t.offset[i + 1], ios::beg);
+			if (t.isLeaf) {
+				dataNode p;
+				File.read((char *)(&p), dataNodeSize);
+				return antiLower_boundData(_k, p);
+			}
+			else {
+				idxNode p;
+				File.read((char *)(&p), idxNodeSize);
+				return antiLower_bound(_k, p);
+			}
+		}
+
+		Iterator *antiLower_boundData(const Key &_k, const dataNode &t) {
+			Iterator *tmp;
+			for (int i = t.keyNum - 1; i >= 0 ; i--) {
+				if (!(t.key[i] > _k)) {
+					tmp = new Iterator(this, t, i);
+					return tmp;
+				}
+			}
+			tmp = new Iterator(this, t, 0);
+			return tmp;
 		}
 
 		idxNode *insert(const Key &_k, const T &_data, idxNode *t) {
@@ -102,7 +131,6 @@ namespace sjtu {
 				else t->key[i - 1] = p->key[0];
 				File.seekp(t->offset[i], ios::beg);
 				File.write((char *)(p), dataNodeSize);
-				File.flush();
 				delete p;
 			}
 			else {
@@ -114,7 +142,7 @@ namespace sjtu {
 				else t->key[i - 1] = p->miniKey;
 				File.seekp(t->offset[i], ios::beg);
 				File.write((char *)(p), idxNodeSize);
-				File.flush();
+				
 				delete p;
 			}
 
@@ -144,7 +172,7 @@ namespace sjtu {
 			t->keyNum++;
 			Size++;
 
-			if (t->keyNum < maxKeyNum) return NULL;
+			if (t->keyNum <= maxKeyNum) return NULL;
 			else {
 				//split
 				int newKeyNum = maxKeyNum / 2;
@@ -177,7 +205,7 @@ namespace sjtu {
 			File.write((char *)(newNode), idxNodeSize);
 			File.flush();
 			_offset += idxNodeSize;
-			if (t->keyNum < maxKeyNum) {
+			if (t->keyNum <= maxKeyNum) {
 				delete newNode;
 				return NULL;
 			}
@@ -343,7 +371,7 @@ namespace sjtu {
 					}
 					n->keyNum += next->keyNum;
 					n->nextoffset = next->nextoffset;
-
+					
 					t->keyNum--;
 					//					putData(t->offset[i]);
 					//					putData(t->offset[i + 1]);
@@ -390,7 +418,7 @@ namespace sjtu {
 					}
 					pre->keyNum += n->keyNum;
 					pre->nextoffset = n->nextoffset;
-
+					
 					t->keyNum--;
 					for (int j = i - 1; j < t->keyNum; j++) {
 						t->key[j] = t->key[j + 1];
@@ -452,7 +480,7 @@ namespace sjtu {
 					}
 					n->offset[n->keyNum + j + 1] = next->offset[j];
 					n->keyNum += next->keyNum + 1;
-
+					
 					t->keyNum--;
 					for (int j = i; j < t->keyNum; j++) {
 						t->key[j] = t->key[j + 1];
@@ -501,7 +529,7 @@ namespace sjtu {
 					}
 					pre->offset[pre->keyNum + j + 1] = n->offset[j];
 					pre->keyNum += n->keyNum + 1;
-
+					
 					t->keyNum--;
 					for (int j = i - 1; j < t->keyNum; j++) {
 						t->key[j] = t->key[j + 1];
@@ -526,6 +554,7 @@ namespace sjtu {
 		fstream File;
 
 	public:
+
 		class Iterator {
 			friend class Bplustree;
 		private:
@@ -534,17 +563,8 @@ namespace sjtu {
 			int pos;
 
 		public:
-			Iterator() :tree_ptr(nullptr), node(nullptr), pos(-1) {};
-			Iterator(Bplustree *_t, const dataNode &_n, int _pos) {
-				tree_ptr = _t;
-				node = _n;
-				pos = _pos;
-			}
-			Iterator(const Iterator &other) {
-				tree_ptr = other.tree_ptr;
-				node = other.node;
-				pos = other.pos;
-			}
+			Iterator(Bplustree *_t = nullptr, const dataNode &_n = dataNode(), int _pos = -1) :tree_ptr(_t), node(_n), pos(_pos) {}
+			Iterator(const Iterator &other) :tree_ptr(other.tree_ptr), node(other.node), pos(other.pos) {}
 
 			Iterator operator++(int) {
 				if (pos == -1)
@@ -587,6 +607,12 @@ namespace sjtu {
 				return node.data[pos];
 			}
 
+			T *operator->() {
+				if (pos == -1)
+					throw invalid_iterator();
+				return node.data + pos;
+			}
+
 			void save() {
 				if (pos == -1)
 					throw invalid_iterator();
@@ -619,7 +645,7 @@ namespace sjtu {
 		//constructor
 		Bplustree(const char *file) {
 			path = file;
-
+			
 			File.open(path.c_str(), ios::binary | ios::ate | ios::out | ios::in);
 			leftHead = new dataNode;
 			root = new idxNode;
@@ -651,18 +677,29 @@ namespace sjtu {
 		~Bplustree() {
 			delete root;
 			delete leftHead;
-			Size = 0;
-			_offset = 0;
 			File.close();
+		}
+
+		Iterator lower_bound(const Key &_k) {
+			auto t = antiLower_bound(_k, *root);
+			auto tmp = *t;
+			delete t;
+			if (tmp.key() < _k)
+				tmp++;
+			return tmp;
 		}
 
 		//find data
 		Iterator search(const Key &_k) {
-			return idxSearch(_k, root);
+			auto t = idxSearch(_k, *root);
+			auto tmp = *t;
+			delete t;
+			
+			return tmp;
 		}
 
 		bool find(const Key &_k) {
-			return idxSearch(_k, root).valid();
+			return search(_k).valid();
 		}
 
 		//insert node
@@ -698,11 +735,11 @@ namespace sjtu {
 				File.seekp(_offset, ios::beg);
 				File.write((char *)(t), idxNodeSize);
 				File.write((char *)(q), idxNodeSize);
-				File.flush();
 				_offset += 2 * idxNodeSize;
 				delete t;
 				delete q;
 			}
+			File.flush();
 		}
 
 		//erase node
