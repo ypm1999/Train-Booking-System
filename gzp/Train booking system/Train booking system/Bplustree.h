@@ -2,13 +2,12 @@
 #define _Bplus
 
 #include <iostream>
-//#include "String.h"
+#include <cstring>
 #include "exceptions.h"
 #include <cmath>
 #include <cstdio>
 #include <fstream>
-#include <cstring>
-#include <unistd.h>
+#include "mystring.h"
 using namespace std;
 //Bplustree
 
@@ -16,136 +15,123 @@ namespace sjtu {
 
 	template <class Key, class T>
 	class Bplustree {
+		friend class Iterator;
+		class Iterator;
 	private:
-		static const int miniDegree = 2;
-		static const int maxDegree = 40;
-		static const int miniKeyNum = 20;
-		static const int maxKeyNum = 39;
+		static const int miniKeyNum = 40;
+		static const int maxKeyNum = 90;
 		static const int maxn = 110;
 
-		string path;
+		mystring<20> path;
 
 		//node
 		struct idxNode {
-			size_t offset[maxn];
+			int offset[maxn];
 			bool isLeaf;
 			int keyNum;
 			bool isRead;
-			void *child[maxn];
 			Key key[maxn];
+			Key miniKey;
 
 			idxNode() {
 				isLeaf = false;
-				keyNum = 0;
+				keyNum = -1;
 				isRead = false;
 			}
 
 		};
 
 		struct dataNode {
-			size_t nextoffset;
+			int Offset;
+			int nextoffset;
 			int keyNum;
 			Key key[maxn];
 			T data[maxn];
-			dataNode *Next;
 			dataNode() {
+				nextoffset = -1;
 				keyNum = 0;
-				Next = NULL;
 			}
 		};
 
-		static const int idxNodeSize = sizeof(idxNode);
-		static const int dataNodeSize = sizeof(dataNode);
+		const int idxNodeSize = sizeof(idxNode);
+		const int dataNodeSize = sizeof(dataNode);
 
-		//void makeEmpty(idxNode *t);
-
-		T idxSearch(const Key &_k, idxNode *t) {
+		Iterator idxSearch(const Key &_k, idxNode *t) {
 			int i;
 			for (i = 0; i < t->keyNum; i++) {
-				if (t->key[i] > _k)	break;
+				if (_k < t->key[i])	break;
 			}
-			File.seekg(t->offset[i]);
+			File.seekg(t->offset[i], ios::beg);
 			if (t->isLeaf) {
-				File.read(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::dataNodeSize);
-				return dataSearch(_k, (Bplustree<Key, T>::dataNode *)t->child[i]);
+				if (t != root) delete t;
+				dataNode *p = new dataNode;
+				File.read(reinterpret_cast<char *>(p), dataNodeSize);
+				return dataSearch(_k, p);
 			}
 			else {
-				File.read(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::idxNodeSize);
-				return idxSearch(_k, (Bplustree<Key, T>::idxNode *)t->child[i]);
+				if (t != root) delete t;
+				idxNode *p = new idxNode;
+				File.read(reinterpret_cast<char *>(p), idxNodeSize);
+				return idxSearch(_k, p);
 			}
 		}
 
-		T dataSearch(const Key &_k, dataNode *t) {
-			bool found = 0;
+		Iterator dataSearch(const Key &_k, dataNode *t) {
 			for (int i = 0; i < t->keyNum; i++) {
 				if (t->key[i] == _k) {
-					found = 1;
-					return t->data[i];
+					Iterator tmp(this, *t, i);
+					delete t;
+					return tmp;
 				}
 			}
-			if (!found) throw index_out_of_bound();
-		}
-
-		bool idxFind(const Key &_k, idxNode *t) {
-			int i;
-			for (i = 0; i < t->keyNum; i++) {
-				if (t->key[i] > _k)	break;
-			}
-			File.seekg(t->offset[i]);
-			if (t->isLeaf) {
-				File.read(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::dataNodeSize);
-				return dataFind(_k, (Bplustree<Key, T>::dataNode *)t->child[i]);
-			}
-			else {
-				File.read(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::idxNodeSize);
-				return idxFind(_k, (Bplustree<Key, T>::idxNode *)t->child[i]);
-			}
-		}
-
-		bool dataFind(const Key &_k, dataNode *t) {
-			bool found = 0;
-			for (int i = 0; i < t->keyNum; i++) {
-				if (t->key[i] == _k) {
-					found = 1;
-					return true;
-				}
-			}
-			if (!found) return false;
+			delete t;
+			return Iterator(this, dataNode(), -1);
 		}
 
 		idxNode *insert(const Key &_k, const T &_data, idxNode *t) {
 			void *newNode;
 
-			int i;
+			int i = 0;
 			for (i = 0; i < t->keyNum; i++)
 				if (_k < t->key[i]) break;
 
-			if (t->isLeaf == 0) {
-				File.seekg(t->offset[i]);
-				File.read(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::idxNodeSize);
-				newNode = insert(_k, _data, (Bplustree<Key, T>::idxNode *)t->child[i]);
-				File.seekp(t->offset[i]);
-				File.write(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::idxNodeSize);
+			if (t->isLeaf) {
+				File.seekg(t->offset[i], ios::beg);
+				dataNode *p = new dataNode;
+				File.read(reinterpret_cast<char *>(p), dataNodeSize);
+				newNode = insertData(_k, _data, p);
+				if (i == 0) t->miniKey = p->key[0];
+				else t->key[i - 1] = p->key[0];
+
+				File.seekp(t->offset[i], ios::beg);
+				File.write(reinterpret_cast<char *>(p), dataNodeSize);
+				File.flush();
+				delete p;
 			}
 			else {
-				File.seekg(t->offset[i]);
-				File.read(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::dataNodeSize);
-				newNode = insertData(_k, _data, (Bplustree<Key, T>::dataNode *)t->child[i]);
-				File.seekp(t->offset[i]);
-				File.write(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::dataNodeSize);
+				File.seekg(t->offset[i], ios::beg);
+				idxNode *p = new idxNode;
+				File.read(reinterpret_cast<char *>(p), idxNodeSize);
+				newNode = insert(_k, _data, p);
+				if (i == 0) t->miniKey = p->miniKey;
+				else t->key[i - 1] = p->miniKey;
+				File.seekp(t->offset[i], ios::beg);
+				File.write(reinterpret_cast<char *>(p), idxNodeSize);
+				File.flush();
+				delete p;
 			}
 
 			if (newNode == NULL) return NULL;
 			else {
-				if (t->isLeaf == 0)	return addIdxBlk((Bplustree<Key, T>::idxNode *)newNode, t);
-				else return addDataBlk((Bplustree<Key, T>::dataNode *)newNode, t);
+				if (!t->isLeaf)	return addIdxBlk((idxNode *)newNode, t);
+				else return addDataBlk((dataNode *)newNode, t);
 			}
 		}
 
 		dataNode *insertData(const Key &_k, const T &_data, dataNode *t) {
 			/*for (int i = 0; i <= t->keyNum; i++)
 			t->data[i].read();*/
-			int i;
+			int i = 0;
 			for (i = 0; i < t->keyNum; i++) {
 				if (t->key[i] == _k) {
 					t->data[i] = _data;
@@ -158,67 +144,61 @@ namespace sjtu {
 			}
 			t->key[i] = _k;
 			t->data[i] = _data;
-			//t->data[i].write();
 			t->keyNum++;
-			_offset += dataNodeSize;
 			Size++;
 
-			if (t->keyNum <= Bplustree<Key, T>::maxKeyNum) return NULL;
+			if (t->keyNum <= maxKeyNum) return NULL;
 			else {
 				//split
-				size_t newKeyNum = Bplustree<Key, T>::maxKeyNum / 2;
-				Bplustree<Key, T>::dataNode *newNode = new Bplustree<Key, T>::dataNode;
+				int newKeyNum = maxKeyNum / 2;
+				dataNode *newNode = new dataNode;
 				newNode->keyNum = t->keyNum - newKeyNum;
-				for (int i = 0; i < newNode->keyNum; i++) {
-					newNode->key[i] = t->key[i + newKeyNum];
-					newNode->data[i] = t->data[i + newKeyNum];
+				for (int j = 0; j < newNode->keyNum; j++) {
+					newNode->key[j] = t->key[j + newKeyNum];
+					newNode->data[j] = t->data[j + newKeyNum];
 				}
 				t->keyNum = newKeyNum;
-				_offset += idxNodeSize;
-				newNode->Next = t->Next;
 				newNode->nextoffset = t->nextoffset;
-				t->Next = newNode;
 				t->nextoffset = _offset;
+				newNode->Offset = _offset;
 				return newNode;
 			}
 		}
 
 		idxNode *addIdxBlk(idxNode *newNode, idxNode *t) {
-			Bplustree<Key, T>::idxNode *p = newNode;
-
-			while (p->isLeaf == 0) p = (Bplustree<Key, T>::idxNode *)p->child[0];
-			Bplustree<Key, T>::dataNode *d = (Bplustree<Key, T>::dataNode *)p->child[0];
-
-			Key min = d->key[0];
+			Key min = newNode->miniKey;
 
 			int i;
 			for (i = t->keyNum; i > 0 && min < t->key[i - 1]; i--) {
 				t->key[i] = t->key[i - 1];
-				t->child[i + 1] = t->child[i];
 				t->offset[i + 1] = t->offset[i];
 			}
-			t->child[i + 1] = newNode;
 			t->key[i] = min;
 			t->offset[i + 1] = _offset;
-			File.seekp(_offset);
-			File.write(reinterpret_cast<char *>(newNode), Bplustree<Key, T>::idxNodeSize);
 			t->keyNum++;
-			if (t->keyNum <= Bplustree<Key, T>::maxKeyNum) return NULL;
+			File.seekp(_offset, ios::beg);
+			File.write(reinterpret_cast<char *>(newNode), idxNodeSize);
+			File.flush();
+			_offset += idxNodeSize;
+			if (t->keyNum <= maxKeyNum) {
+				delete newNode;
+				return NULL;
+			}
 			else {
 				//split
 				int newKeyNum = Bplustree<Key, T>::maxKeyNum / 2;
-				Bplustree<Key, T>::idxNode *newIdx = new Bplustree<Key, T>::idxNode;
+				idxNode *newIdx = new idxNode;
 				newIdx->isLeaf = 0;
 				newIdx->keyNum = t->keyNum - 1 - newKeyNum;
-				for (int i = 0; i < newIdx->keyNum; i++) {
-					newIdx->key[i] = t->key[i + newKeyNum + 1];
-					newIdx->child[i] = t->child[i + newKeyNum + 1];
-					newIdx->offset[i] = t->offset[i + newKeyNum + 1];
+				newIdx->miniKey = t->key[newKeyNum];
+				for (int j = 0; j < newIdx->keyNum; j++) {
+					newIdx->key[j] = t->key[j + newKeyNum + 1];
+					newIdx->offset[j] = t->offset[j + newKeyNum + 1];
 				}
-				newIdx->child[newIdx->keyNum] = t->child[t->keyNum];
 				newIdx->offset[newIdx->keyNum] = t->offset[t->keyNum];
 				t->keyNum = newKeyNum;
-				_offset += idxNodeSize;
+
+				delete newNode;
 				return newIdx;
 			}
 		}
@@ -227,31 +207,34 @@ namespace sjtu {
 			int i;
 			for (i = t->keyNum; i > 0 && newNode->key[0] < t->key[i - 1]; i--) {
 				t->key[i] = t->key[i - 1];
-				t->child[i + 1] = t->child[i];
 				t->offset[i + 1] = t->offset[i];
 			}
 			t->key[i] = newNode->key[0];
-			t->child[i + 1] = newNode;
 			t->offset[i + 1] = _offset;
-			File.seekp(_offset);
-			File.write(reinterpret_cast<char *>(newNode), Bplustree<Key, T>::dataNodeSize);
 			t->keyNum++;
-			if (t->keyNum <= Bplustree<Key, T>::maxKeyNum) return NULL;
+
+			File.seekp(_offset, ios::beg);
+			File.write(reinterpret_cast<char *>(newNode), dataNodeSize);
+			File.flush();
+			_offset += dataNodeSize;
+			if (t->keyNum <= Bplustree<Key, T>::maxKeyNum) {
+				delete newNode;
+				return NULL;
+			}
 			else {
 				//split
-				size_t newKeyNum = Bplustree<Key, T>::maxKeyNum / 2;
-				Bplustree<Key, T>::idxNode *newIdx = new Bplustree<Key, T>::idxNode;
+				int newKeyNum = Bplustree<Key, T>::maxKeyNum / 2;
+				idxNode *newIdx = new idxNode;
 				newIdx->keyNum = t->keyNum - newKeyNum - 1;
+				newIdx->miniKey = t->key[newKeyNum];
 				newIdx->isLeaf = 1;
-				for (int i = 0; i < newIdx->keyNum; i++) {
-					newIdx->key[i] = t->key[i + newKeyNum + 1];
-					newIdx->child[i] = t->child[i + newKeyNum + 1];
-					newIdx->offset[i] = t->offset[i + newKeyNum + 1];
+				for (int j = 0; j < newIdx->keyNum; j++) {
+					newIdx->key[j] = t->key[j + newKeyNum + 1];
+					newIdx->offset[j] = t->offset[j + newKeyNum + 1];
 				}
-				newIdx->child[newIdx->keyNum] = t->child[t->keyNum];
 				newIdx->offset[newIdx->keyNum] = t->offset[t->keyNum];
 				t->keyNum = newKeyNum;
-				_offset += idxNodeSize;
+				delete newNode;
 				return newIdx;
 			}
 		}
@@ -263,25 +246,40 @@ namespace sjtu {
 			for (i = 0; i < t->keyNum; i++)
 				if (_k < t->key[i]) break;
 
-			if (t->isLeaf == 0) {
-				File.seekg(t->offset[i]);
-				File.read(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::idxNodeSize);
-				newNode = erase(_k, (Bplustree<Key, T>::idxNode *)t->child[i]);
-				File.seekp(t->offset[i]);
-				File.write(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::idxNodeSize);
+			if (!t->isLeaf) {
+				//putidx(t->offset[i]);
+				File.seekg(t->offset[i], ios::beg);
+				idxNode *p = new idxNode;
+				File.read(reinterpret_cast<char *>(p), idxNodeSize);
+				newNode = erase(_k, p);
+				if (i == 0) t->miniKey = p->miniKey;
+				else t->key[i - 1] = p->miniKey;
+				File.seekp(t->offset[i], ios::beg);
+				File.write(reinterpret_cast<char *>(p), idxNodeSize);
+				File.flush();
+				if (newNode == NULL) delete p;
 			}
 			else {
-				File.seekg(t->offset[i]);
-				File.read(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::dataNodeSize);
-				newNode = eraseData(_k, (Bplustree<Key, T>::dataNode *)t->child[i]);
-				File.seekp(t->offset[i]);
-				File.write(reinterpret_cast<char *>(t->child[i]), Bplustree<Key, T>::dataNodeSize);
+				//putData(t->offset[i]);
+				File.seekg(t->offset[i], ios::beg);
+
+				dataNode *p = new dataNode;
+				File.read(reinterpret_cast<char *>(p), dataNodeSize);
+
+				newNode = eraseData(_k, p);
+				if (i == 0) t->miniKey = p->key[0];
+				else t->key[i - 1] = p->key[0];
+				File.seekp(t->offset[i], ios::beg);
+				File.write(reinterpret_cast<char *>(p), dataNodeSize);
+				File.flush();
+				if (newNode == NULL) delete p;
 			}
 
 			if (newNode == NULL) return NULL;
 			else {
-				if (t->isLeaf == 0)	return addIdx((Bplustree<Key, T>::idxNode *)newNode, t);
-				else return addData((Bplustree<Key, T>::dataNode *)newNode, t);
+
+				if (t->isLeaf == 0)	return addIdx((idxNode *)newNode, t);
+				else return addData((dataNode *)newNode, t);
 			}
 		}
 
@@ -294,71 +292,83 @@ namespace sjtu {
 					break;
 				}
 			}
-			if (!found) throw index_out_of_bound();
+			if (!found) return NULL;
 
-			for (; i < t->keyNum; i++) {
+			for (; i < t->keyNum - 1; i++) {
 				t->key[i] = t->key[i + 1];
 				t->data[i] = t->data[i + 1];
 			}
 			t->keyNum--;
 			Size--;
 
-			if (t->keyNum >= miniKeyNum) return NULL;
+			if (t->keyNum >= miniKeyNum)
+				return NULL;
 			else return t;
 		}
 
 		idxNode *addData(dataNode *n, idxNode *t) {
 			int min;
-			if (t == root) min = 2;
+			if (t == root) min = 1;
 			else min = miniKeyNum;
 
 			int i;
-			for (i = 0; i <= t->keyNum; i++) {
-				if (t->child[i] == n) break;
-			}
+			for (i = t->keyNum; i > 0 && n->key[0] < t->key[i - 1]; i--);
 
 			if (i != t->keyNum) {
-				dataNode *next = (dataNode *)t->child[i + 1];
+				dataNode *next = new dataNode;
+				File.seekg(t->offset[i + 1], ios::beg);
+				File.read(reinterpret_cast<char *>(next), dataNodeSize);
 				if (next->keyNum > miniKeyNum) {
 					//borrow
+					//cerr << "borrow1 in addData" << endl;
 					n->key[n->keyNum] = next->key[0];
 					n->data[n->keyNum] = next->data[0];
-					t->key[i] = next->key[1];
 					n->keyNum++;
 					next->keyNum--;
 					for (int j = 0; j < next->keyNum; j++) {
 						next->key[j] = next->key[j + 1];
 						next->data[j] = next->data[j + 1];
 					}
+					t->key[i] = next->key[0];
+					t->key[i - 1] = n->key[0];
+					File.seekp(t->offset[i], ios::beg);
+					File.write(reinterpret_cast<char *>(n), dataNodeSize);
+					File.seekp(t->offset[i + 1], ios::beg);
+					File.write(reinterpret_cast<char *>(next), dataNodeSize);
+					File.flush();
 				}
 				else {
 					//merge
-					n->keyNum += next->keyNum;
+					//cerr << "merge1 in addData" << endl;
 					for (int j = 0; j < next->keyNum; j++) {
 						n->key[n->keyNum + j] = next->key[j];
 						n->data[n->keyNum + j] = next->data[j];
 					}
-					n->Next = next->Next;
+					n->keyNum += next->keyNum;
 					n->nextoffset = next->nextoffset;
-					delete next;
+					
 					t->keyNum--;
+					//					putData(t->offset[i]);
+					//					putData(t->offset[i + 1]);
 					for (int j = i; j < t->keyNum; j++) {
 						t->key[j] = t->key[j + 1];
-						t->child[j + 1] = t->child[j + 2];
 						t->offset[j + 1] = t->offset[j + 2];
 					}
+					t->key[i - 1] = n->key[0];
+					File.seekp(t->offset[i], ios::beg);
+					File.write(reinterpret_cast<char *>(n), dataNodeSize);
+					//					putData(t->offset[i]);
+					File.flush();
 				}
-				File.seekp(t->offset[i]);
-				File.write(reinterpret_cast<char *>(n), Bplustree<Key, T>::dataNodeSize);
-				if (next != NULL) {
-					File.seekp(t->offset[i + 1]);
-					File.write(reinterpret_cast<char *>(next), Bplustree<Key, T>::dataNodeSize);
-				}
+				delete next;
 			}
 			else if (i != 0) {
-				dataNode *pre = (dataNode *)t->child[i - 1];
+				dataNode *pre = new dataNode;
+				File.seekg(t->offset[i - 1], ios::beg);
+				File.read(reinterpret_cast<char *>(pre), dataNodeSize);
 				if (pre->keyNum > miniKeyNum) {
 					//borrow
+					//cerr << "borrow2 in addData" << endl;
 					for (int j = n->keyNum; j > 0; j--) {
 						n->key[j] = n->key[j - 1];
 						n->data[j] = n->data[j - 1];
@@ -368,313 +378,440 @@ namespace sjtu {
 					n->key[0] = pre->key[pre->keyNum];
 					n->data[0] = pre->data[pre->keyNum];
 					t->key[i - 1] = n->key[0];
+					File.seekp(t->offset[i - 1], ios::beg);
+					File.write(reinterpret_cast<char *>(pre), dataNodeSize);
+					File.seekp(t->offset[i], ios::beg);
+					File.write(reinterpret_cast<char *>(n), dataNodeSize);
+					File.flush();
 				}
 				else {
+					//cerr << "merge2 in addData" << endl;
 					//merge
-					pre->keyNum += n->keyNum;
 					for (int j = 0; j < n->keyNum; j++) {
 						pre->key[pre->keyNum + j] = n->key[j];
 						pre->data[pre->keyNum + j] = n->data[j];
 					}
-					pre->Next = n->Next;
+					pre->keyNum += n->keyNum;
 					pre->nextoffset = n->nextoffset;
-					delete n;
+					
 					t->keyNum--;
 					for (int j = i - 1; j < t->keyNum; j++) {
 						t->key[j] = t->key[j + 1];
-						t->child[j + 1] = t->child[j + 2];
 						t->offset[j + 1] = t->offset[j + 2];
 					}
+					File.seekp(t->offset[i - 1], ios::beg);
+					File.write(reinterpret_cast<char *>(pre), dataNodeSize);
+					File.flush();
 				}
-				File.seekp(t->offset[i - 1]);
-				File.write(reinterpret_cast<char *>(pre), Bplustree<Key, T>::dataNodeSize);
-				if (n != NULL) {
-					File.seekp(t->offset[i]);
-					File.write(reinterpret_cast<char *>(n), Bplustree<Key, T>::dataNodeSize);
-				}
+				delete pre;
 			}
-
-			if (t->keyNum >= min) return NULL;
+			delete n;
+			if (t->keyNum >= min)
+				return NULL;
 			else return t;
 		}
 
 		idxNode *addIdx(idxNode *n, idxNode *t) {
 			int min;
-			if (t == root) min = 2;
+			if (t == root) min = 1;
 			else min = miniKeyNum;
 
 			int i;
-			for (i = 0; i <= t->keyNum; i++) {
-				if (t->child[i] == n) break;
-			}
+			for (i = t->keyNum; i > 0 && n->key[0] < t->key[i - 1]; i--);
 
 			if (i != t->keyNum) {
-				idxNode *next = (idxNode *)t->child[i + 1];
-				idxNode *d = next;
-				while (d->isLeaf == 0) d = (idxNode *)d->child[0];
-				dataNode *e = (dataNode *)d->child[0];
+				idxNode *next = new idxNode;
+				File.seekg(t->offset[i + 1], ios::beg);
+				File.read(reinterpret_cast<char *>(next), idxNodeSize);
 				if (next->keyNum > miniKeyNum) {
 					//borrow
-					n->key[n->keyNum] = e->key[0];
-					n->child[n->keyNum + 1] = next->child[0];
+					//cerr << "borrow1 in addIdx" << endl;
+					n->key[n->keyNum] = next->miniKey;
+					next->miniKey = next->key[0];
 					n->offset[n->keyNum + 1] = next->offset[0];
 					n->keyNum++;
 					next->keyNum--;
 					int j;
 					for (j = 0; j < next->keyNum; j++) {
 						next->key[j] = next->key[j + 1];
-						next->child[j] = next->child[j + 1];
 						next->offset[j] = next->offset[j + 1];
 					}
-					next->child[j] = next->child[j + 1];
 					next->offset[j] = next->offset[j + 1];
+					t->key[i] = next->miniKey;
+					File.seekg(t->offset[i], ios::beg);
+					File.write(reinterpret_cast<char *>(n), idxNodeSize);
+					File.seekp(t->offset[i + 1], ios::beg);
+					File.write(reinterpret_cast<char *>(next), idxNodeSize);
+					File.flush();
 				}
 				else {
 					//merge
-					n->key[n->keyNum] = e->key[0];
+					//cerr << "merge1 in addIdx" << endl;
+					n->key[n->keyNum] = next->miniKey;
 					int j;
 					for (j = 0; j <= next->keyNum; j++) {
 						n->key[n->keyNum + j + 1] = next->key[j];
-						n->child[n->keyNum + j + 1] = next->child[j];
 						n->offset[n->keyNum + j + 1] = next->offset[j];
 					}
-					n->child[n->keyNum + j + 1] = next->child[j];
 					n->offset[n->keyNum + j + 1] = next->offset[j];
 					n->keyNum += next->keyNum + 1;
-					delete next;
+					
 					t->keyNum--;
 					for (int j = i; j < t->keyNum; j++) {
 						t->key[j] = t->key[j + 1];
-						t->child[j + 1] = t->child[j + 2];
 						t->offset[j + 1] = t->offset[j + 2];
 					}
+					t->key[i - 1] = n->miniKey;
+					File.seekp(t->offset[i], ios::beg);
+					File.write(reinterpret_cast<char *>(n), idxNodeSize);
+					File.flush();
 				}
-				File.seekp(t->offset[i]);
-				File.write(reinterpret_cast<char *>(n), Bplustree<Key, T>::dataNodeSize);
-				if (n != NULL) {
-					File.seekp(t->offset[i + 1]);
-					File.write(reinterpret_cast<char *>(next), Bplustree<Key, T>::dataNodeSize);
-				}
+				delete next;
 			}
 			else if (i != 0) {
-				idxNode *pre = (idxNode *)t->child[i - 1];
-				idxNode *d = n;
-				while (d->isLeaf == 0) d = (idxNode *)d->child[0];
-				dataNode *e = (dataNode *)d->child[0];
+				idxNode *pre = new idxNode;
+				File.seekg(t->offset[i - 1], ios::beg);
+				File.read(reinterpret_cast<char *>(pre), idxNodeSize);
 				if (pre->keyNum > miniKeyNum) {
 					//borrow
-					n->child[n->keyNum + 1] = n->child[n->keyNum];
+					//cerr << "borrow2 in addIdx" << endl;
 					n->offset[n->keyNum + 1] = n->offset[n->keyNum];
 					int j;
 					for (j = n->keyNum; j > 0; j--) {
 						n->key[j] = n->key[j - 1];
-						n->child[j] = n->child[j - 1];
 						n->offset[j] = n->offset[j - 1];
 					}
-					n->key[0] = e->key[0];
-					n->child[0] = pre->child[pre->keyNum];
+					n->key[0] = n->miniKey;
 					n->offset[0] = pre->offset[pre->keyNum];
 					n->keyNum++;
 					pre->keyNum--;
+					n->miniKey = pre->key[pre->keyNum];
+					t->key[i - 1] = n->miniKey;
+					File.seekg(t->offset[i - 1], ios::beg);
+					File.write(reinterpret_cast<char *>(pre), idxNodeSize);
+					File.seekp(t->offset[i], ios::beg);
+					File.write(reinterpret_cast<char *>(n), idxNodeSize);
+					File.flush();
 				}
 				else {
 					//merge
-					pre->key[pre->keyNum] = e->key[0];
+					//cerr << "merge2 in addIdx" << endl;
+					pre->key[pre->keyNum] = n->miniKey;
 					int j;
 					for (j = 0; j <= n->keyNum; j++) {
 						pre->key[pre->keyNum + j + 1] = n->key[j];
-						pre->child[pre->keyNum + j + 1] = n->child[j];
 						pre->offset[pre->keyNum + j + 1] = n->offset[j];
 					}
-					pre->child[pre->keyNum + j + 1] = n->child[j];
 					pre->offset[pre->keyNum + j + 1] = n->offset[j];
 					pre->keyNum += n->keyNum + 1;
-					delete n;
+					
 					t->keyNum--;
 					for (int j = i - 1; j < t->keyNum; j++) {
 						t->key[j] = t->key[j + 1];
-						t->child[j + 1] = t->child[j + 2];
 						t->offset[j + 1] = t->offset[j + 2];
 					}
+					File.seekp(t->offset[i - 1], ios::beg);
+					File.write(reinterpret_cast<char *>(pre), idxNodeSize);
+					File.flush();
 				}
-				File.seekp(t->offset[i - 1]);
-				File.write(reinterpret_cast<char *>(pre), Bplustree<Key, T>::dataNodeSize);
-				if (n != NULL) {
-					File.seekp(t->offset[i]);
-					File.write(reinterpret_cast<char *>(n), Bplustree<Key, T>::dataNodeSize);
-				}
+				delete pre;
 			}
-
-			if (t->keyNum >= min) return NULL;
+			delete n;
+			if (t->keyNum >= min)
+				return NULL;
 			else return t;
 		}
 
 		idxNode *root = NULL;
 		dataNode *leftHead = NULL;
-		size_t _offset;
-		size_t Size = 0;
+		int _offset = 0;
+		int Size = 0;
 		fstream File;
 
 	public:
 
-		class iterator {
+		class Iterator {
 			friend class Bplustree;
 		private:
-			Bplustree * tree_ptr = NULL;
-			dataNode *node_ptr = NULL;
+			Bplustree *tree_ptr;
+			dataNode node;
+			int pos;
 
 		public:
-			iterator() = default;
-			iterator(Bplustree *_t, dataNode *_n) {
+			Iterator() :tree_prt(nullptr), node_ptr(nullptr), pos(-1) {};
+			Iterator(Bplustree *_t, const dataNode &_n, int _pos) {
 				tree_ptr = _t;
-				node_ptr = _n;
+				node = _n;
+				pos = _pos;
 			}
-			iterator(const iterator &other) {
+			Iterator(const Iterator &other) {
 				tree_ptr = other.tree_ptr;
-				node_ptr = other.node_ptr;
+				node = other.node;
+				pos = other.pos;
 			}
 
-			iterator operator++(int) {
-				iterator *tmp = this;
-				node_ptr = node_ptr->Next;
-				if (node_ptr == NULL) throw index_out_of_bound();
+			Iterator operator++(int) {
+				if (pos == -1)
+					throw invalid_iterator();
+				Iterator *tmp = this;
+				pos++;
+				if (pos >= node.keyNum) {
+					if (node.nextoffset == -1) {
+						pos = -1;
+					}
+					else {
+						tree_ptr->File.seekg(node.nextoffset, ios::beg);
+						tree_ptr->File.read(reinterpret_cast<char *>(&node), tree_ptr->dataNodeSize);
+						pos = 0;
+					}
+				}
 				return *tmp;
 			}
 
-			iterator &operator++() {
-				node_ptr = node_ptr->Next;
-				if (node_ptr == NULL) throw index_out_of_bound();
+			Iterator &operator++() {
+				if (pos == -1)
+					throw invalid_iterator();
+				pos++;
+				if (pos >= node.keyNum) {
+					if (node.nextoffset == -1) {
+						pos = -1;
+					}
+					else {
+						tree_ptr->File.seekg(node.nextoffset, ios::beg);
+						tree_ptr->File.read(reinterpret_cast<char *>(&node), tree_ptr->dataNodeSize);
+						pos = 0;
+					}
+				}
 				return *this;
 			}
 
-			Key itkey() {
-				return node_ptr->key[0];
+			T & operator*() {
+				if (pos == -1)
+					throw invalid_iterator();
+				return node.data[pos];
 			}
 
-			size_t itkeyNum() {
-				return node_ptr->keyNum;
+			void save() {
+				if (pos == -1)
+					throw invalid_iterator();
+				tree_ptr->File.seekp(node.Offset, ios::beg);
+				tree_ptr->File.write(reinterpret_cast<char *>(&node), tree_ptr->dataNodeSize);
+				tree_ptr->File.flush();
+			}
+
+
+			bool valid() {
+				return pos >= 0;
+			}
+			Key key() {
+				if (pos == -1)
+					throw invalid_iterator();
+				return node.key[pos];
+			}
+
+			T data() {
+				if (pos == -1)
+					throw invalid_iterator();
+				return node.data[pos];
 			}
 		};
-		//constructor
-		Bplustree(const string &_file) {
+
+		Bplustree() {
 			root = NULL;
 			leftHead = NULL;
-			string file = string(getcwd(NULL, 0)) + "/" + _file + ".txt";
-			File.open(file.c_str(), ios::binary|ios::ate|ios::out|ios::in);
-			if(!File.is_open()){
-				File.open(file.c_str(), ios::app|ios::out);
+		}
+		//constructor
+		Bplustree(const char *file) {
+			path = file;
+			cout << path.c_str() <<endl;
+			File.open(path.c_str(), ios::binary | ios::ate | ios::out | ios::in);
+			leftHead = new dataNode;
+			root = new idxNode;
+			if (File.is_open()) {
+				File.seekg(0, ios::beg);
+				File.read(reinterpret_cast<char *>(&_offset), sizeof(int));
+				File.read(reinterpret_cast<char *>(&Size), sizeof(int));
+				File.read(reinterpret_cast<char *>(leftHead), dataNodeSize);
+				File.read(reinterpret_cast<char *>(root), idxNodeSize);
+			}
+			else {
+				root = new idxNode;
+				leftHead = new dataNode;
+				_offset = 2 * sizeof(int) + dataNodeSize + idxNodeSize;
+				Size = 0;
+				File.open(path.c_str(), ios::out);
 				File.close();
-				File.open(file.c_str(), ios::binary|ios::ate|ios::out|ios::in);
+				File.open(path.c_str(), ios::binary | ios::ate | ios::out | ios::in);
+				File.seekp(0, ios::beg);
+				File.write(reinterpret_cast<char *>(&_offset), sizeof(int));
+				File.write(reinterpret_cast<char *>(&Size), sizeof(int));
+				File.write(reinterpret_cast<char *>(leftHead), dataNodeSize);
+				File.write(reinterpret_cast<char *>(root), idxNodeSize);
+				File.flush();
 			}
 		}
 
 		//destructor
 		~Bplustree() {
-			root = NULL;
-			leftHead = NULL;
+			delete root;
+			delete leftHead;
+			Size = 0;
+			_offset = 0;
 			File.close();
 		}
 
 		//find data
-		T search(const Key &_k) {
-			File.seekg(0);
-			File.read(reinterpret_cast<char *>(root), idxNodeSize);
+		Iterator search(const Key &_k) {
 			return idxSearch(_k, root);
 		}
 
 		bool find(const Key &_k) {
-			File.seekg(0);
-			File.read(reinterpret_cast<char *>(root), idxNodeSize);
-			return idxFind(_k, root);
+			return idxSearch(_k, root).valid();
 		}
 
 		//insert node
 		void insert(const Key &_k, const T &_data) {
-			File.seekg(0);
-			File.read((char*)(root), Bplustree<Key, T>::idxNodeSize);
-			if (root == NULL) {
-				root = new Bplustree<Key, T>::idxNode;
+			if (root->keyNum == -1) {
 				root->isLeaf = true;
-				root->child[0] = new Bplustree<Key, T>::dataNode;
-				Bplustree<Key, T>::dataNode *p = (Bplustree<Key, T>::dataNode *)root->child[0];
-				leftHead = p;
-				p->keyNum = 1;
-				p->key[0] = _k;
-				p->data[0] = _data;
-				root->offset[0] = Bplustree<Key, T>::idxNodeSize;
-				File.seekp(0, ios::beg);
-				cout << _k.num() <<" "<< _data.num() << endl;
-				puts("root is NULL");
-				cout << Bplustree<Key, T>::idxNodeSize << endl;
-				File.write((char*)(root), Bplustree<Key, T>::idxNodeSize);
-				File.write((char*)(p), Bplustree<Key, T>::dataNodeSize);
-				_offset += idxNodeSize;
-				_offset += dataNodeSize;
+				root->keyNum++;
+				root->miniKey = _k;
+				leftHead->keyNum = 1;
+				leftHead->key[0] = _k;
+				leftHead->data[0] = _data;
+				leftHead->Offset = 2 * sizeof(int);
+				root->offset[0] = 2 * sizeof(int);
+				File.seekp(2 * sizeof(int), ios::beg);
+				File.write(reinterpret_cast<char *>(leftHead), dataNodeSize);
+				File.write(reinterpret_cast<char *>(root), idxNodeSize);
+				File.flush();
 				Size++;
 				return;
 			}
-			Bplustree<Key, T>::idxNode *p = insert(_k, _data, root);
-			if (p != NULL) {
-				Bplustree<Key, T>::idxNode *t = root;
-				root = new Bplustree<Key, T>::idxNode;
-				root->keyNum++;
-				root->child[0] = t;
-				root->child[1] = p;
-				while (p->isLeaf == 0)
-					p = (Bplustree<Key, T>::idxNode *)p->child[0];
-				Bplustree<Key, T>::dataNode *d = (Bplustree<Key, T>::dataNode *)p->child[0];
-				root->key[0] = d->key[0];
+			idxNode *q = insert(_k, _data, root);
+			if (q != NULL) {
+				idxNode *t = root;
+				root = new idxNode;
+				root->keyNum += 2;
+				root->miniKey = t->miniKey;
+				root->key[0] = q->miniKey;
+				root->key[0] = q->miniKey;
 				root->offset[0] = _offset;
-				root->offset[1] = _offset + Bplustree<Key, T>::idxNodeSize;
-				File.seekp(_offset);
-				File.write(reinterpret_cast<char *>(t), Bplustree<Key, T>::idxNodeSize);
-				File.write(reinterpret_cast<char *>(p), Bplustree<Key, T>::idxNodeSize);
+				root->offset[1] = _offset + idxNodeSize;
+				File.seekp(2 * sizeof(int) + dataNodeSize, ios::beg);
+				File.write(reinterpret_cast<char *>(root), idxNodeSize);
+				File.seekp(_offset, ios::beg);
+				File.write(reinterpret_cast<char *>(t), idxNodeSize);
+				File.write(reinterpret_cast<char *>(q), idxNodeSize);
+				File.flush();
+				_offset += 2 * idxNodeSize;
+				delete t;
+				delete q;
 			}
-			File.seekp(0);
-			File.write(reinterpret_cast<char *>(root), Bplustree<Key, T>::idxNodeSize);
 		}
 
 		//erase node
 		void erase(const Key &_k) {
-			File.seekg(0);
-			File.read(reinterpret_cast<char *>(root), Bplustree<Key, T>::idxNodeSize);
-			if (root != NULL) {
+			if (root->keyNum != -1) {
 				idxNode *r = erase(_k, root);
-				if (r == root) root = (idxNode *)r->child[0];
-				delete r;
+				if (r != NULL) {
+					if (r->keyNum != 0) {
+						File.seekg(root->offset[0], ios::beg);
+						File.read(reinterpret_cast<char *>(root), idxNodeSize);
+					}
+					File.seekp(2 * sizeof(int) + dataNodeSize, ios::beg);
+					File.write(reinterpret_cast<char *>(root), idxNodeSize);
+					File.flush();
+				}
 			}
-			File.seekp(0);
-			File.write(reinterpret_cast<char *>(root), Bplustree<Key, T>::idxNodeSize);
 		}
+
 
 		bool empty() {
-			return root == NULL;
+			return root->keyNum == -1;
 		}
 
-		size_t size() {
+		int size() {
 			return Size;
 		}
-
-		iterator begin() {
-			return iterator(this, leftHead);
+		//假begin，不能用
+		Iterator begin() {
+			return Iterator(this, *leftHead, 0);
 		}
-		void test(const Key &_k, const T &_data) {
-			File.seekp(_offset);
-			root = new Bplustree<Key, T>::idxNode;
-			root->isLeaf = true;
-			root->child[0] = new Bplustree<Key, T>::dataNode;
-			Bplustree<Key, T>::dataNode *p = (Bplustree<Key, T>::dataNode *)root->child[0];
-			leftHead = p;
-			p->keyNum = 1;
-			p->key[0] = _k;
-			p->data[0] = _data;
-			root->offset[0] = Bplustree<Key, T>::idxNodeSize;
+
+		void clear() {
+			delete root;
+			delete leftHead;
+			root = new idxNode;
+			leftHead = new dataNode;
+			_offset = 2 * sizeof(int) + dataNodeSize + idxNodeSize;
+			Size = 0;
+			File.open(path.c_str(), ios::out);
+			File.close();
+			File.open(path.c_str(), ios::binary | ios::ate | ios::out | ios::in);
 			File.seekp(0, ios::beg);
-			cout << Bplustree<Key, T>::idxNodeSize << " " << Bplustree<Key, T>::dataNodeSize << endl;
-			File.write((char*)(root), Bplustree<Key, T>::idxNodeSize);
-			File.write((char*)(p), Bplustree<Key, T>::dataNodeSize);
+			File.write(reinterpret_cast<char *>(&_offset), sizeof(int));
+			File.write(reinterpret_cast<char *>(&Size), sizeof(int));
+			File.write(reinterpret_cast<char *>(leftHead), dataNodeSize);
+			File.write(reinterpret_cast<char *>(root), idxNodeSize);
+			File.flush();
+		}
+
+		void Print() {
+			puts("-------------------------Print Tree----------------------------------");
+			Printidx(*root);
+			puts("--------------------------End Tree-----------------------------------");
+		}
+
+		void Printidx(const idxNode &t) {
+			putchar('{');
+			printidx(t);
+			if (!t.isLeaf) {
+				for (int i = 0; i <= t.keyNum; i++) {
+					idxNode p;
+					File.seekg(t.offset[i]);
+					File.read(reinterpret_cast<char *>(&p), idxNodeSize);
+					Printidx(p);
+				}
+			}
+			else {
+				for (int i = 0; i <= t.keyNum; i++) {
+					dataNode p;
+					File.seekg(t.offset[i]);
+					File.read(reinterpret_cast<char *>(&p), dataNodeSize);
+					printdata(p);
+				}
+			}
+			puts("}\n");
+		}
+		void putData(int offset) {
+			dataNode t;
+			File.seekg(offset);
+			File.read(reinterpret_cast<char *>(&t), dataNodeSize);
+			putchar("[");
+			printdata(t);
+			puts("]");
+		}
+		void putidx(int offset) {
+			idxNode t;
+			File.seekg(offset);
+			File.read(reinterpret_cast<char *>(&t), idxNodeSize);
+			putchar('{');
+			cout << endl;
+			printidx(t);
+			puts("}");
+		}
+		void printidx(const idxNode &t) {
+			printf("idxNode(%d, %d):", t.keyNum, t.miniKey.num());
+			for (int i = 0; i < t.keyNum; i++)
+				cout << t.key[i].num() << ' ';
+			cout << endl;
+		}
+		void printdata(const dataNode &t) {
+			printf("dataNode(%d, %d):", t.keyNum, t.key[0].num());
+			for (int i = 0; i < t.keyNum; i++)
+				printf("(%d, %d) ", t.key[i].num(), t.data[i].val());
+			cout << endl;
 		}
 	};
-
 }
 #endif
