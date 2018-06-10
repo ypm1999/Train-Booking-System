@@ -158,13 +158,13 @@ def query_train_data():
     return json.dumps(train1)
 
 @app.route('/manage/train', methods = ['GET', 'POST'])
-#@login_required
+@login_required
 def manage_trains():
-#    if not current_user.is_admin():
-#        flash('You are not manager !')
-#        return redirect(url_for('home'))
-#    else:
-    return render_template('manage_trains.html');
+    if not current_user.is_admin():
+        flash('You are not manager !')
+        return redirect(url_for('home'))
+    else:
+        return render_template('manage_trains.html');
 
 
 @app.route('/manage/add_train', methods = ['GET', 'POST'])
@@ -174,8 +174,31 @@ def add_train():
         flash(message='You are not manager !', category='warning')
         return redirect(url_for('home'))
     else:
-        pass
+        id = request.form['train_id'];
+        name = request.form['name'];
+        catelog = request.form['catelog'];
+        m = int(request.form['seatNumber']);
+        n = int(request.form['stationnumber']);
 
+        seats = []
+        for i in range(m):
+            seats.append(request.form['head' + str(i)]);
+            print 'head' + str(i)
+
+        stations = []
+        for i in range(n):
+            tmp = ''
+            tmp += request.form['station' + str(i) + '_name'] + ' ';
+            tmp += request.form['station' + str(i) + '_arrive'] + ' ';
+            tmp += request.form['station' + str(i) + '_leave'] + ' ';
+            tmp += request.form['station' + str(i) + '_stop'] + ' ';
+            for j in range(m):
+                tmp += '￥' + request.form['station' + str(i) + '_' + str(j)] + ' ';
+            stations.append(tmp);
+        #TODO add_train(id, name, catelog, seats, stations)
+        print (id, name, n, m, catelog)
+        print seats
+        return redirect(url_for('manage_trains'));
 
 
 @app.route('/manage/del_train', methods = ['GET', 'POST'])
@@ -186,7 +209,6 @@ def del_train():
         return redirect(url_for('home'))
     else:
         pass
-
 
 @app.route('/manage/sale_train', methods = ['GET', 'POST'])
 @login_required

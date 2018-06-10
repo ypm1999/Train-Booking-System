@@ -3,12 +3,14 @@
 function searchTrain() {
   var oTable = new TableInit();
   oTable.Init();
+  $('#addstation').hide();
   $('#train').show();
 }
+
+
 var seats = ['商务座','特等座','一等座','二等座','高级软卧','软卧','动卧','硬卧','软座','硬座','无座'];
 
 function showList(){
-
   var t = $('#addTrainForm').serializeArray();
   var temp = new Array();
   for(var i in t){
@@ -18,6 +20,10 @@ function showList(){
   var n = Number(temp['stationNum']);
   if(temp['train_id'] == ''){
     alert("请输入车次编号！");
+    return;
+  }
+  if(!(temp['catelog'].length == 1 && 'CDGKOTZ'.indexOf(temp['catelog']) > 0)){
+    alert("请输入正确的车次种类！");
     return;
   }
   if(temp['name'] == ''){
@@ -54,58 +60,72 @@ function showList(){
             ' <div class="fht-cell"></div>',
             '</th>'
   ].join('\n'));
-  var num = 0;
+  head.push(['<th>',
+            ' <div class="th-inner">停留时间</div>',
+            ' <div class="fht-cell"></div>',
+            '</th>'
+  ].join('\n'));
   for(var i in seat){
-    num++;
-    head.push(gethead('head' + num, seat[i]));
-    console.log(gethead('head' + num, seat[i]));
+    head.push(gethead('head' + i, seat[i]));
+    console.log(gethead('head' + i, seat[i]));
   }
   var station = new Array();
-  for(var i = 1; i <= n; i++){
+  for(var i = 0; i < n; i++){
     var s1 = 'required', s2 = 'required';
-    if(i == 1)
-      s1 = "forbidden";
-    if(i == n)
-      s2 = "forbidden";
+    if(i == 0)
+      s1 = "readonly";
+    if(i == n - 1)
+      s2 = "readonly";
     station.push(getstation('station' + i, seat.length, s1, s2));
     console.log(getstation('station' + i, seat.length, s1, s2));
   }
-  console.log(seat.length);
-  console.log(n);
-  console.log(head.join('\n'));
-  console.log(station.join('\n'));
   $('#addstation').show();
   $('#seatNumber').val(seat.length);
   $('#stationnumber').val(n);
   $('#seatsHead').html(head.join('\n'));
   $('#inputStations').html(station.join('\n'));
+  $('#submitadd').attr('disabled',false);
 
 }
 
-function gethead(id, head){
+function gethead(name, head){
   return [
     '<th>',
-    '  <div class="th-inner" id = "' + id + '">' + head + '</div>',
+    '  <input type = "hidden" name = "' + name + '" value = "' + head + '"　/>',
+    '  <div class="th-inner">' + head + '</div>',
     '  <div class="fht-cell"></div>',
     '</th>'
   ].join('\n');
 }
 
-function getstation(id, seatNum, arrive, leave){
+function getstation(name, seatNum, arrive, leave){
   var tmp = new Array();
-  id+='_';
+  name += '_';
   tmp.push('<tr>');
-  tmp.push('<th>' + getinput(id + 'name', 'required') + '</th>');
-  tmp.push('<th>' + getinput(id + 'arrive', arrive) + '</th>');
-  tmp.push('<th>' + getinput(id + 'leave', leave) + '</th>');
-  for(var i = 1; i <= seatNum; i++)
-    tmp.push('<th>' + getinput(id + i, 'required') + '</th>');
+  tmp.push('<th>' + getinput(name + 'name', 'required') + '</th>');
+  tmp.push('<th>' + getinput(name + 'arrive', arrive) + '</th>');
+  tmp.push('<th>' + getinput(name + 'leave', leave) + '</th>');
+  tmp.push('<th>' + getinput(name + 'stop', 'required') + '</th>');
+  for(var i = 0; i < seatNum; i++)
+    tmp.push('<th>' + getinputwithspan(name + i, 'required') + '</th>');
   tmp.push('</tr>');
   return tmp.join('\n');
 }
 
-function getinput(id, addtion){
-  return '<input type="text" class="form-control" id="' + id + '" ' + addtion + ' />';
+function getinput(name, addtion){
+  if(addtion == 'readonly')
+    addtion += ' value = "XX:XX" ';
+  return '<input type="text" class="form-control" name="' + name + '" ' + addtion + ' />';
+}
+
+
+function getinputwithspan(name, addtion){
+  return [
+    '<div class = "input-group">',
+    ' <input type="text" class="form-control" name="' + name + '" ' + addtion + ' />',
+    ' <span class="input-group-addon">￥</span>',
+    '</div>'
+  ].join('\n');
 }
 
 var TableInit = function() {

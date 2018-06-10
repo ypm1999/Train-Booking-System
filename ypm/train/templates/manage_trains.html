@@ -25,14 +25,14 @@
             </form>
           </div>
           <div class="col-sm-2">
-            <button type="button" class="btn btn-success btn-lg" onclick="addtrain()"> 添加车次 </button>
+            <button type="button" class="btn btn-success btn-lg" onclick="$('#addTrain').show();"> 添加车次 </button>
           </div>
         </div>
       </div>
 
 
 
-          <div class="modal-content" id="addTrain">
+          <div class="modal-content" id="addTrain" hidden>
             <div class="modal-header">
               <h2 class="modal-title">添加车次</h2>
             </div>
@@ -42,7 +42,7 @@
                   <br />
                   <div class = "row">
                     <div class = "mytext">
-                      <div class = "col-sm-2">&nbsp列车种类：&nbsp</div>
+                      <div class = "col-sm-2">&nbsp列车座席：&nbsp</div>
                       <div class = "col-sm-9">
                         <div class="checkbox-inline">
                           <input type="checkbox" name = "商务座" />商务座&nbsp
@@ -88,29 +88,41 @@
                       <div class="col-sm-3">
                         <h2><div class = "label label-primary">编号</div></h2>
                         <div class="input-group input-group-lg myinput">
-                          <input type = "text" name = "train_id" class = "form-control" value = "5" required/>
+                          <input type = "text" name = "train_id" class = "form-control" required/>
                         </div>
                       </div>
                       <div class="col-sm-3">
                         <h2><div class = "label label-primary">车次名</div></h2>
                         <div class="input-group input-group-lg myinput">
-                          <input type = "text" name = "name" class = "form-control" value = "5" required/>
+                          <input type = "text" name = "name" class = "form-control" required/>
                         </div>
                       </div>
-                      <div class="col-sm-3">
+                      <div class="col-sm-2">
                         <h2><div class = "label label-primary">车站数目</div></h2>
                         <div class="input-group input-group-lg myinput">
-                          <input type = "text" name = "stationNum" class = "form-control" value = "5" required/>
+                          <input type = "text" name = "stationNum" onkeyup="value=value.replace(/[^\d]/g,'')" class = "form-control" required/>
                         </div>
                       </div>
-                      <div class="col-sm-3">
+                      <div class="col-sm-2">
+                        <h2><div class = "label label-primary">类型</div></h2>
+                        <div class="input-group input-group-lg myinput">
+                          <input type = "text" name = "catelog" class = "form-control" value = "G" required/>
+                        </div>
+                      </div>
+                      <div class="col-sm-2">
                         <h2><div class = "label"><br /></div></h2>
                         <button type = "button" class = "btn btn-success btn-lg" onclick = "showList()"> 添加车站 </button>
                       </div>
                     </div>
                   </div>
-                  <input type = "text" name = "seatNumber" required hidden/>
-                  <input type = "text" name = "stationnumber" required hidden/>
+
+
+                  <input type = "text" name = "seatNumber"  id = "seatNumber" hidden/>
+                  <input type = "text" name = "stationnumber" id = "stationnumber" hidden/>
+
+                  <div id = "stationType">
+                  </div>
+
                   <div class = "pull-down">
                     <table id="addstaion"  class="table-responsive table table-hover table-striped">
                       <thead>
@@ -123,7 +135,7 @@
                   </div>
 
                   <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">添加</button>
+                    <button id = "submitadd" type="submit" class="btn btn-primary btn-lg" disabled>添加</button>
                   </div>
                 </form>
               </div>
