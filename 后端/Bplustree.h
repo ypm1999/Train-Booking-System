@@ -16,9 +16,10 @@ namespace sjtu {
 	template <class Key, class T>
 	class Bplustree {
 		friend class Iterator;
+	public:
 		class Iterator;
 	private:
-		static const int maxKeyNum = 4;
+		static const int maxKeyNum = 80;
 		static const int miniKeyNum = maxKeyNum / 2;
 		static const int maxn = maxKeyNum + 2;
 
@@ -129,8 +130,10 @@ namespace sjtu {
 				newNode = insertData(_k, _data, p);
 				if (i == 0) t->miniKey = p->key[0];
 				else t->key[i - 1] = p->key[0];
+
 				File.seekp(t->offset[i], ios::beg);
 				File.write((char *)(p), dataNodeSize);
+				
 				delete p;
 			}
 			else {
@@ -567,8 +570,6 @@ namespace sjtu {
 			Iterator(const Iterator &other) :tree_ptr(other.tree_ptr), node(other.node), pos(other.pos) {}
 
 			Iterator operator++(int) {
-				if (pos == -1)
-					throw invalid_iterator();
 				Iterator *tmp = this;
 				pos++;
 				if (pos >= node.keyNum) {
@@ -585,8 +586,6 @@ namespace sjtu {
 			}
 
 			Iterator &operator++() {
-				if (pos == -1)
-					throw invalid_iterator();
 				pos++;
 				if (pos >= node.keyNum) {
 					if (node.nextoffset == -1) {
@@ -602,20 +601,14 @@ namespace sjtu {
 			}
 
 			T & operator*() {
-				if (pos == -1)
-					throw invalid_iterator();
 				return node.data[pos];
 			}
 
 			T *operator->() {
-				if (pos == -1)
-					throw invalid_iterator();
 				return node.data + pos;
 			}
 
 			void save() {
-				if (pos == -1)
-					throw invalid_iterator();
 				tree_ptr->File.seekp(node.Offset, ios::beg);
 				tree_ptr->File.write((char *)(&node), tree_ptr->dataNodeSize);
 				tree_ptr->File.flush();
@@ -626,14 +619,10 @@ namespace sjtu {
 				return pos >= 0;
 			}
 			Key key() {
-				if (pos == -1)
-					throw invalid_iterator();
 				return node.key[pos];
 			}
 
 			T data() {
-				if (pos == -1)
-					throw invalid_iterator();
 				return node.data[pos];
 			}
 		};
@@ -691,6 +680,7 @@ namespace sjtu {
 
 		//find data
 		Iterator search(const Key &_k) {
+			if (empty()) return Iterator(this, dataNode(), -1);
 			auto t = idxSearch(_k, *root);
 			auto tmp = *t;
 			delete t;
