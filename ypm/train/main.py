@@ -221,10 +221,10 @@ def sale_train():
 
 
 #查票，购票，退票
-@app.route('/Data/trains/transform', methods = ['GET', 'POST'])
-def query_tieket_transform_data():
-    train1 = {'id':'G12306', 'startTime': '06:30', 'arriveTime': '10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
-    train2 = {'id':'G11007', 'startTime': '06:30', 'arriveTime': '10:50', '软卧': str(100) + '张<br />' + '￥1200'}
+@app.route('/Data/trains/transfer', methods = ['GET', 'POST'])
+def query_tieket_transfer_data():
+    train1 = {'id':'G12306', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
+    train2 = {'id':'G11007', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '软卧': str(100) + '张<br />' + '￥1200'}
     loc1 = request.args['loc1']
 #    loc2 = request.args['loc2']
 #    date = request.args['date']
@@ -235,8 +235,8 @@ def query_tieket_transform_data():
 
 @app.route('/Data/trains', methods = ['GET', 'POST'])
 def query_tieket_data():
-    train1 = {'id':'G12306', 'startTime': '06:30', 'arriveTime': '10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
-    train2 = {'id':'G11007', 'startTime': '06:30', 'arriveTime': '10:50', '软卧': str(100) + '张<br />' + '￥1200'}
+    train1 = {'id':'G12306', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
+    train2 = {'id':'G11007', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '软卧': str(100) + '张<br />' + '￥1200'}
     loc1 = request.args['loc1']
     loc2 = request.args['loc2']
     date = request.args['date']
