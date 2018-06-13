@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block css_input %}
+  <link href="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/query_orders.css') }}" rel="stylesheet">
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+      <div class="page-header">
+        <h1>订单查询</h1>
+      </div>
+      <div class="mycontainer">
+        <div class="row">
+          <div class="col-sm-11">
+            <form action="" method="POST" class="form-inline">
+              <div class="col-sm-5">
+                <div class="input-group input-group-lg myinput">
+                  <input type="text" id="user_id" class="form-control"  placeholder="Train ID" value = {{ user_id }} {{ readonly }}/>
+                </div>
+              </div>
+              <div class="col-sm-5">
+                <div class="input-group input-group-lg myinput" id='datetimepicker'>
+                  <input type="text" id="date" class="form-control"  placeholder="日期"/>
+                  <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                </div>
+              </div>
+                <button type="button" class="btn btn-success btn-lg" onclick="search()"> 查询 </button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <table id = "station"></table>
+
+      <div class="modal fade" id="order" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog" style = "width:80%">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      <h2 class="modal-title" id="myModalLabel">退票</h2>
+                  </div>
+                  <div class = "box">
+                    <form id = "orderForm" class = "" action = "{{ url_for('try_refund_tictek') }}" method = "POST">
+                      <div class="modal-body">
+                        <input type = "hidden" name = "user_id" class = "form-control" readonly/>
+                        <input type = "hidden" name = "train_id" class = "form-control" readonly/>
+                        <input type = "hidden" name = "loc1" class = "form-control" readonly/>
+                        <input type = "hidden" name = "loc2" class = "form-control" readonly/>
+                        <input type = "hidden" name = "date" class = "form-control" readonly/>
+                        <input type = "hidden" name = "ticket_kind" class = "form-control" readonly/>
+                        <input type = "hidden" name = "max" class = "form-control" readonly/>
+                        <div class = "row">
+                          <div class = "col-sm-1"></div>
+                          <div class = "col-sm-10">
+                            <h3 class = "pull-left" id = "refund_massage"></h3>
+
+                          </div>
+                        </div>
+                        <br />
+
+                        <br />
+                        <div class = "row" style = "padding-bottom: 100px">
+                          <div class = "col-sm-2"></div>
+                          <div class = "col-sm-4">
+                            <h2><label class = "label label-default">退票数量</label></h2>
+                            <input type = "text" name = "num" class = "form-control" placeholder="退票数量不能超过已订票数" required/>
+                          </div>
+                        </div>
+
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary"　onclick = 'refund()'>订票</button>
+                    </div>
+                  </form>
+                  </div>
+              </div><!-- /.modal-content -->
+          </div><!-- /.modal -->
+      </div>
+    </div>
+
+
+{% endblock %}
+
+{% block js_input %}
+  <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+  <script src="{{ url_for('static', filename='js/moment-with-locales.min.js') }}"></script>
+  <script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+  <script src="{{ url_for('static', filename='js/query_orders.js') }}"></script>
+{% endblock %}

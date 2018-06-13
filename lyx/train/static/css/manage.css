@@ -1,0 +1,71 @@
+/* Helpers */
+.mycontainer {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-top: 5rem;
+
+}
+
+.circle {
+    background: rgb(214, 214, 214);
+    width: 95px;
+    height: 95px;
+    border-radius: 90px;
+    line-height: 95px;
+    margin: 0 auto 20px;
+}
+
+img {
+    max-width: 100%;
+}
+
+    img.pull-right {
+        margin-left: 10px;
+    }
+
+    img.pull-left {
+        margin-right: 10px;
+    }
+
+#map {
+    width: 100%;
+    height: 280px;
+}
+
+.mybutton {
+  padding:15% 15% 0 15%;
+}
+
+.featured-box {
+    padding: 5% 5px 5% 5px;
+    font-size: 20px;
+    border: solid 15px #ddd;
+    background: rgb(240, 240, 240);
+    margin: 20px 1% 20px 1%;
+}
+
+    .featured-box .text {
+        padding-left: 80px;
+
+    }
+
+    .featured-box h3 {
+        margin: 0 0 5px 0;
+    }
+
+    .featured-box p{
+      text-indent:2em;    /*每个P段落，首行空出两个空格，即缩进两个字符*/
+    }
+
+    .featured-box i {
+        position: absolute;
+        display: inline-block;
+        color: #0b9ff3;
+        border: solid 2px #0b9ff3;
+        background: #fff;
+        border-radius: 50px;
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        line-height: 60px;
+    }

@@ -1,0 +1,33 @@
+.mytext{
+  font-size:17pt;
+  color : rgb(18, 18, 18)
+}
+
+.list{
+  background:rgb(238, 238, 238)
+}
+
+.table th, .table td {
+text-align: center;
+vertical-align: middle!important;
+border: 2px solid rgba(90, 143, 233, 0.5)!important;
+}
+
+.mybtn{
+  padding : 0 20px 0 20px;
+}
+
+.myinput{
+  width:100% !important;
+}
+
+.mycontainer{
+  padding: 20px 8% 15px;
+}
+
+.pull-down{
+  padding-top:1rem;
+}
+.headtext{
+  font-size:16pt;
+}
