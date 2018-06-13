@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh_CN">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="ssdkbird">
+		<link rel="icon" href="">
+
+		<title>index</title>
+		<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
+
+
+		{% block css_input%}
+		{% endblock %}
+
+	</head>
+	<body>
+		<header>
+      <nav class="navbar navbar-static-top navbar-inverse mynavbar">
+        <div class="container">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="{{ url_for('home') }}">火车订票系统</a>
+          </div>
+
+          <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href=" {{ url_for('home') }} ">火车票查询</a></li>
+							{% if current_user.is_admin %}
+              	<li><a href=" {{ url_for('manage') }} ">管理</a></li>
+							{% endif %}
+              <li><a href=" {{ url_for('manage') }} ">订单查询</a></li>
+
+            </ul>
+
+						<div class = "godown">
+							{% if not current_user.is_authenicated %}
+								<a class="btn btn-success pull-right" href="/register">注册</a>
+								<form class = "form-inline pull-right" method = "POST" action = "/login">
+									<input type="text" name="userid" class="form-control" placeholder="User ID" required>
+									<input type="password" name="password" class="form-control" placeholder="Password" required>
+									<button class="btn btn-primary form-control" type="submit">登录</button>
+								</form>
+							{% else %}
+								<a class="btn btn-danger pull-right" href="/logout">登出</a>
+
+								<div class="dropdown pull-right">
+									<button type="button" class="btn btn-block dropdown-toggle" data-toggle="dropdown">
+										当前用户：{{ current_user.name }}
+										<span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+										<li role="presentation">
+											<a>Email：&nbsp{{ current_user.email }}</a>
+										</li>
+										<li role="presentation">
+											<a href="/user/info">我的个人信息</a>
+										</li>
+
+										<li role="presentation" class="divider"></li>
+										<li role="presentation">
+											<a href="/order/quary">我的订单</a>
+										</li>
+									</ul>
+								</div>
+							{% endif %}
+						</div>
+
+	        </div><!-- /.nav-collapse -->
+	      </div><!-- /.container -->
+	    </nav><!-- /.navbar -->
+		</header>
+		<div class = "container">
+			<div class = "massage">
+		    {% with messages = get_flashed_messages(with_categories=true) %}
+		    {% for category, message in messages %}
+		      <div class="alert alert-{{ category }}">
+		        <a href="#" class="close" data-dismiss="alert">&times;</a>
+		        {{ message }}
+		      </div>
+		    {% endfor %}
+		    {% endwith %}
+		  </div>
+
+			{% block content %}
+			{% endblock %}
+		</div>
+	</body>
+	<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	{%block js_input %}
+	{% endblock %}
+
+</html>

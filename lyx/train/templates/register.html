@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block css_input %}
+		<link href="{{ url_for('static', filename='css/register.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+	<div class = "massage">
+	  {% with messages = get_flashed_messages(with_categories=true) %}
+	  {% for category, message in messages %}
+	    <div class="alert alert-{{ category }}">
+	      <a href="#" class="close" data-dismiss="alert">&times;</a>
+	      {{ message }}
+	    </div>
+	  {% endfor %}
+	  {% endwith %}
+	</div>
+
+
+	<div class="text-center">
+		<form class="form-signin" method="POST" action="/register">
+      {{ form.hidden_tag() }}
+			<h1 class="h3 mb-3 font-weight-normal">Please register</h1>
+			<br />
+			<p class = "text-warning"> {{ note }} </p>
+			{{ form.csrf_token }}
+			{{ form.name(class = 'form-control', placeholder="User name", required = "required") }}
+			{{ form.password(class = 'form-control', placeholder="Password", required = "required") }}
+			{{ form.email(class = 'form-control', placeholder="Email", required = "required") }}
+			{{ form.phone(class = 'form-control', placeholder="Phone number", required = "required") }}
+			<!--
+			<input type="text" name="username" class="form-control" placeholder="Account name" required autofocus>
+			<input type="password" name="password" class="form-control" placeholder="Password" required>
+			<input type="text" name="email" class="form-control" placeholder="Email" required>
+			<input type="text" name="phone" class="form-control" placeholder="Phone number" required>
+			--->
+			<br />
+			<button class="btn btn-lg btn-primary btn-block" type="submit">注册</button>
+			<p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+		</form>
+	</div>
+</html>
+{% endblock %}
