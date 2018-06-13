@@ -1,2 +1,4 @@
 *Bpt
 *.swp
+*.pyc
+*.db
