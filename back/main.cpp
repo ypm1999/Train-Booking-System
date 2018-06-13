@@ -63,7 +63,6 @@ int main()
 {
 	mystring<20> current_command;
 	while (current_command.get()) {
-	//	std::cerr << current_command << std::endl;
 		int i = 0;
 		for (; i < command_num; i++) {
 			if (current_command == command[i]) {
