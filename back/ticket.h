@@ -433,7 +433,7 @@ bool refund_ticket() {
 	return 1;
 }
 
-bool query_order() {
+/*bool query_order() {
 	int id, d;
 	char date[10], c[5];
 	scanf("%d%s%s", &id, date, c);
@@ -486,6 +486,81 @@ bool query_order() {
 		}
 	}
 	return 1;
+}*/
+
+bool query_order(){
+	int id, d, cnt = 0;
+	char date[10], cata[5];
+	scanf("%d%s%s", &id, date, cata);
+	d = (date[8] - '0') * 10 + date[9] - '0';
+
+	auto itU = UserBpt.search(id);
+	if (!itU.valid()){
+		puts("-1");
+		return 0;
+	}
+
+	char trId[5][21], l1[5][41], l2[5][41];
+	short ard[5], std[5], art[5], stt[5];
+	char tk[5][5][41];
+ 	short n[5][5], num[5];
+	double p[5][5];
+	std::cout << strlen(cata) << std::endl;
+	for (int i = 0; i < strlen(cata); i++){
+		auto itO = OrderBpt.lower_bound(OrderKey(id, cata[i], d));
+		if (!itO.valid())
+			continue;
+		if (itO.key().Id != id || itO.key().Catalog != cata[i] || itO.key().dateNum != d)
+			continue;
+
+		auto lastIt = itO;
+		auto itT1 = TrainBpt.search(TrainKey(itO.key().TrainId, itO.key().nth1));
+		auto itT2 = TrainBpt.search(TrainKey(itO.key().TrainId, itO.key().nth2));
+		while(itO.key().Id == lastIt.key().Id && itO.key().dateNum == lastIt.key().dateNum && itO.key().Catalog == lastIt.key().Catalog){
+			itT1 = TrainBpt.search(TrainKey(itO.key().TrainId, itO.key().nth1));
+			itT2 = TrainBpt.search(TrainKey(itO.key().TrainId, itO.key().nth2));
+			strcpy(trId[cnt], itO.key().TrainId);
+			strcpy(l1[cnt], itT1->StationName);
+			strcpy(l2[cnt], itT2->StationName);
+			ard[cnt] = itO.key().dateNum;
+			std[cnt] = itO.key().dateNum;
+			stt[cnt] = itT1->start_time;
+			art[cnt] = itT2->arr_time;
+			num[cnt] = itT1->PriceNum;
+
+			for (int j = 0; j < num[cnt]; j++){
+				if (itO.key().nth1 != lastIt.key().nth1 || itO.key().nth2 != lastIt.key().nth2 || strcmp(itO.key().TrainId, lastIt.key().TrainId) != 0){
+					n[cnt][j] = 0;
+					p[cnt][j] = lastIt->Price;
+				}
+				else if (strcmp(itO.key().TicketKind, itT1->Catalog[j]) == 0){
+					n[cnt][j] = itO->Num;
+					p[cnt][j] = itO->Price;
+					itO++;
+				}
+				else {
+					n[cnt][j] = 0;
+					p[cnt][j] = lastIt->Price;
+				}
+				strcpy(tk[cnt][j], itT1->Catalog[j]);
+			}
+			std::cout << cnt << std::endl;
+			cnt++;
+		}
+	}
+
+	if (cnt == 0){
+		puts("-1");
+		return 0;
+	}
+
+	for (int i = 0; i < cnt; i++){
+		printf("%s %s ", trId[i], l1[i]);
+		printDate(std[i]); printTime(stt[i]);
+		printDate(ard[i]); printTime(art[i]);
+		for (int j = 0; j < num[i]; j++)
+			printf("%s %d %f%c", tk[i][j], n[i][j], p[i][j], " \n"[j == num[i] - 1]);
+	}
 }
 
 #endif
