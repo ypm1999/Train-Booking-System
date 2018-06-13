@@ -63,24 +63,17 @@ int main()
 {
 	mystring<20> current_command;
 	while (current_command.get()) {
+	//	std::cerr << current_command << std::endl;
 		int i = 0;
 		for (; i < command_num; i++) {
 			if (current_command == command[i]) {
 				Func[i]();
 				break;
-				/*
-				try {
-					printf("Run command %s, result is %s\n", command[i].c_str(), Func[i]() ? "True" : "False");
-				}
-				catch (Exception e) {
-					std::cerr << e.what() << std::endl;
-					printf("Throw error when test command %s\n", current_command.c_str());
-				}*/
 			}
 		}
-//		if (i == command_num - 1) return 0;
 		if (i == command_num)
 			fprintf(stderr, "Not found command %s\n", current_command.c_str());
+		fflush(stdout);
 	}
 
 	return 0;

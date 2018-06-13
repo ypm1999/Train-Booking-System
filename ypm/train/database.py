@@ -3,9 +3,10 @@
 
 from subprocess import Popen, PIPE, STDOUT
 
-db = Popen(['./train'], stdin = PIPE, stdout = PIPE)
+db = Popen(['./db'], stdin = PIPE, stdout = PIPE)
 
 def db_write(cmd):
+    # print((cmd + '\n').encode())
     db.stdin.write((cmd + '\n').encode())
     db.stdin.flush()
 
@@ -225,20 +226,31 @@ def delete_train(train_id):
     else:
         return None
 
+# 删库
+def clean():
+    db_write('clean')
+    reply = db_readline()
+    if reply == '1':
+        return True
+    else:
+        return None
+
 if __name__ == '__main__':
-    print(register("lyx", "123", "qaq", "qqq"))
-    print(register("lyc", "123", "qaq", "qqq"))
-    print(register("lyc", "123", "qaq", "qqq"))
-    print(add_train('xiaohuoche', 'littletrain', 'C', [['菜鸡站', '07:34', '08:00', '00:01', '￥0.0', '￥0.0'], ['脑残站', '08:02', '12:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
-    print(add_train('dahuoche', 'bigtrain', 'D', [['B', '12:34', '13:00', '00:00', '￥0.0', '￥0.0'], ['C', '13:01', '14:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
-    print(add_train('train', 'train', 'C', [['A', '07:00', '08:00', '00:10', '￥0.0'], ['B', '08:10', '12:00', '00:10', '￥3.0']], ['VIP']))
-    print(sale_train('xiaohuoche'))
-    print(sale_train('dahuoche'))
-    print(sale_train('train'))
-    print(query_ticket('菜鸡站', '脑残站', '2018-06-01', 'CD'))
-    # print(buy_ticket('2018', '2', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'VIP'))
-    # print(query_order('2018', '2018-06-01', 'C'))
-    # print(refund_ticket('2018', '1', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'VIP'))
-    # print(query_order('2018', '2018-06-01', 'C'))
-    print(query_transfer('A', 'C', '2018-06-05', 'CD'))
+    clean()
+    if False:
+        print(register("lyx", "123", "qaq", "qqq"))
+        print(register("lyc", "123", "qaq", "qqq"))
+        print(register("lyc", "123", "qaq", "qqq"))
+        print(add_train('xiaohuoche', 'littletrain', 'C', [['菜鸡站', '07:34', '08:00', '00:01', '￥0.0', '￥0.0'], ['脑残站', '08:02', '12:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
+        print(add_train('dahuoche', 'bigtrain', 'D', [['B', '12:34', '13:00', '00:00', '￥0.0', '￥0.0'], ['C', '13:01', '14:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
+        print(add_train('train', 'train', 'C', [['A', '07:00', '08:00', '00:10', '￥0.0'], ['B', '08:10', '12:00', '00:10', '￥3.0']], ['VIP']))
+        print(sale_train('xiaohuoche'))
+        print(sale_train('dahuoche'))
+        print(sale_train('train'))
+        print(query_ticket('菜鸡站', '脑残站', '2018-06-01', 'CD'))
+        print(buy_ticket('2018', '2', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'VIP'))
+        print(query_order('2018', '2018-06-01', 'C'))
+        print(refund_ticket('2018', '1', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'VIP'))
+        print(query_order('2018', '2018-06-01', 'C'))
+        print(query_transfer('A', 'C', '2018-06-05', 'CD'))
 
