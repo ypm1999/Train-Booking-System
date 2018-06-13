@@ -31,12 +31,11 @@ def user_register():
     if request.method == 'POST':
         id = register(user.name.data, user.password.data, user.email.data, user.phone.data);
         if id:
-            user = User()
-            user.getuser(id)
-            login_user(user, True)
-            flash(message="Register successful! Your ID is %s" % id, category='success')
+            user = User().getuser(id)
+            login_user(user, False)
+            flash(message="注册成功! 你的ID是%s。" % id, category='success')
             if user.is_admin():
-                flash(message="You registered as manager.", category='info')
+                flash(message="您注册为管理猿", category='info')
             return redirect(url_for('home'))
         else:
             return render_template('register.html', note = '注册失败', form = user)
@@ -48,12 +47,12 @@ def user_login():
     if request.method == 'POST':
         userid = request.form["userid"]
         password = request.form["password"]
+        remember = (request.form["remember"] == 'on')
         if try_login(userid, password):
             user = User().getuser(userid)
-            login_user(user, True)
+            login_user(user, remember)
             next = request.args.get('next')
-            flash(message = "Login successfully!", category = "success")
-            print current_user
+            flash(message = "登录成功!", category = "success")
             return redirect( next or url_for('home') )
     return render_template("login.html")
 
@@ -61,7 +60,7 @@ def user_login():
 @login_required
 def logout():
     logout_user();
-    flash(message="You logout successfully.", category='success')
+    flash(message="登出成功！", category='success')
     return redirect(url_for('home'))
 
 
@@ -75,24 +74,11 @@ def user_info(id = None):
     else:
         if request.method == 'POST':
             form = request.form;
-            if(modify_profile(user.id, form["name"], form["password"], form["email"], form["phone"])):
-                flash(message="Change user profile successful!", category='success')
-                success = True
+            if(modify_profile(form['id'], form["name"], form["password"], form["email"], form["phone"])):
+                flash(message="修改个人信息成功！", category='success')
             else:
-                flash(message="Unfortunately, change user profile failed.", category='warning')
-    return render_template("profile.html", user = user, succ = success)
-
-
-@app.route('/user/modify', methods = ['POST', 'GET'])
-@login_required
-def modify_user():
-    user_id = request.form['id']
-    name = request.form['name']
-    password = request.form['password']
-    email = request.form['email']
-    phone = request.form['phone']
-    modify_profile(user_id, name, password, email, phone)
-    return user_info(user_id);
+                flash(message="修改个人信息失败.", category='warning')
+    return render_template("profile.html", user = user)
 
 @app.route('/Data/user/orders', methods = ['GET'])
 @login_required
@@ -107,7 +93,7 @@ def get_order_data():
     order2 = {'train_id':'G12306', 'time1':'2018-06-11<br/>06:30', 'time2':'2018-06-11<br/>06:35', 'loc1':"北京", 'loc2': "上海", 'num': 1, 'ticket_kind': "高级软卧", 'price':"5010.00"}
     return json.dumps([order1, order2])
 
-@app.route('/user/tickets', methods = ['POST', 'GET'])#and manage_orders
+@app.route('/user/orders', methods = ['POST', 'GET'])#and manage_orders
 @login_required
 def query_orders(id = None):
     tmp = '';
@@ -167,7 +153,7 @@ def query_train_data():
     print json.dumps([train1, train1])
     return json.dumps(train1)
 
-@app.route('/manage/train', methods = ['GET', 'POST'])
+@app.route('/manage/trains', methods = ['GET', 'POST'])
 @login_required
 def manage_trains():
     if not current_user.is_admin():
@@ -177,9 +163,9 @@ def manage_trains():
         return render_template('manage_trains.html');
 
 
-@app.route('/manage/add_train', methods = ['GET', 'POST'])
+@app.route('/manage/addTrain', methods = ['GET', 'POST'])
 @login_required
-def add_train():
+def try_add_train():
     if not current_user.is_admin():
         flash(message='You are not manager !', category='warning')
         return redirect(url_for('home'))
@@ -211,7 +197,7 @@ def add_train():
         return redirect(url_for('manage_trains'));
 
 
-@app.route('/manage/del_train', methods = ['GET', 'POST'])
+@app.route('/manage/delTrain', methods = ['GET', 'POST'])
 @login_required
 def try_del_train():
     if not current_user.is_admin():
@@ -225,7 +211,7 @@ def try_del_train():
         return redirect(url_for('manage_trains'));
 
 
-@app.route('/manage/sale_train', methods = ['GET', 'POST'])
+@app.route('/manage/saleTrain', methods = ['GET', 'POST'])
 @login_required
 def try_sale_train():
     if not current_user.is_admin():
@@ -262,13 +248,13 @@ def query_tieket_data():
     #TODO query_ticket(loc1, loc2, date, catelog)
     return json.dumps([train1, train2])
 
-@app.route('/tickets', methods = ['GET', 'POST'])
-def query_tickets():
+@app.route('/ticket/query', methods = ['GET', 'POST'])
+def try_query_tickets():
     return render_template("query_trains.html", form = request.form)
 
-@app.route('/tictek/book', methods = ['GET', 'POST'])
+@app.route('/tictek/buy', methods = ['GET', 'POST'])
 @login_required
-def tictek_book():
+def try_book_tictek():
     form = request.form;
     if buy_ticket(current_user.id, form['number'], form['train_id'], form['loc1'], form['loc2'], form['date'], form['seat']):
         flash(message='购票成功！', category = 'success');

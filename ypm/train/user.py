@@ -1,9 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-from functools import wraps
 from database import *
-from flask_login import (LoginManager, current_user, login_required,
-                            login_user, UserMixin)
+from flask_login import (LoginManager, current_user, login_required,login_user, UserMixin)
 
 LM = LoginManager()
 LM.login_view = 'user_login'
@@ -46,6 +44,4 @@ class User(UserMixin):
 
 @LM.user_loader
 def load_user(ID):
-    user = User()
-    user.getuser(ID)
-    return user
+    return User().getuser(ID)

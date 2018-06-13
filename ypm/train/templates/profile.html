@@ -6,66 +6,46 @@
 
 
 {% block content %}
-<div class = "massage">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% for category, message in messages %}
-    <div class="alert alert-{{ category }}">
-      <a href="#" class="close" data-dismiss="alert">&times;</a>
-      {{ message }}
-    </div>
-  {% endfor %}
-  {% endwith %}
-</div>
-
-
-<div id="wrap">
-  <div class="container">
-    <div class="page-header">
-      <h1>个人信息</h1>
-    </div>
-    {% if current_user.is_admin() %}
-      <form action = "{{url_for('manage_users')}}" method = "POST" class = "form-inline">
-        <div style="padding: 20px 8% 15px;">
-          <div class="input-group input-group-lg col-sm-5">
-            <input type = "text" class = "form-control" name = "id" placeholder="User ID" required/>
-          </div>
-            <button type="submit" class="btn btn-success btn-lg"> Search </button>
+<div class="container">
+  <div class="page-header"><h1>个人信息</h1></div>
+  {% if current_user.is_admin() %}
+    <form action = "{{ url_for('manage_users') }}" method = "POST" class = "form-inline">
+      <div style="padding: 20px 8% 15px;">
+        <div class="input-group input-group-lg col-sm-5">
+          <input type = "text" class = "form-control" name = "id" placeholder="User ID" required/>
         </div>
-      </form>
-    {% endif %}
-    <form action="{{ url_for('modify_user') }}"  method="POST" class="form-horizontal">
-      <fieldset>
-        <div style="padding: 30px 10% 15px;">
-      		<div class="input-group input-group-lg col-sm-6">
-      			<span class="input-group-addon">用户名</span>
-      			<input type="text" class="form-control" name = "name" placeholder="Username" value = {{ user.name }} required>
-      		</div><br>
-          <div class="input-group input-group-lg col-sm-6">
-      			<span class="input-group-addon">&nbsp&nbsp ID &nbsp&nbsp&nbsp</span>
-      			<span class="form-control"> {{ user.id }} </span>
-            <input type = "hidden" name = "id" value = {{ user.id }} />
-      		</div><br>
-          <div class="input-group input-group-lg col-sm-6">
-      			<span class="input-group-addon">&nbsp 密码 &nbsp</span>
-      			<input type="password" class="form-control" name = "password" placeholder="Password" value = {{ user.password }}  required>
-      		</div><br>
-          <div class="input-group input-group-lg col-sm-6">
-      			<span class="input-group-addon">&nbsp 邮箱 &nbsp</span>
-      			<input type="text" class="form-control" name = "email" placeholder="Email" value = {{ user.email }} required>
-      		</div><br>
-          <div class="input-group input-group-lg col-sm-6 ">
-            <span class="input-group-addon">手机号</span>
-        		<input type="text" class="form-control" name = "phone" placeholder="Phone" value = {{ user.phone }} required>
-      		</div><br>
-          <div class="form-actions">
-            <button type="submit" class="btn btn-success btn-lg col-sm-offset-2">修改个人信息</button>
-            <a class="btn btn-default btn-lg" href="javascript:history.go(-1);void(0);">取消</a>
-          </div>
-        </div>
-      </fieldset>
+          <button type="submit" class="btn btn-success btn-lg"> Search </button>
+      </div>
     </form>
-
-    </script>
-  </div> <!-- /container -->
-</div><!--wrap-->
+  {% endif %}
+  <form action="{{ url_for('user_info') }}"  method = "POST" class="form-horizontal">
+    <div style="padding: 30px 10% 15px;">
+  		<div class="input-group input-group-lg col-sm-6">
+  			<span class="input-group-addon">用户名</span>
+  			<input type="text" class="form-control" name = "name" placeholder="Username" value = {{ user.name }} required>
+  		</div><br>
+      <div class="input-group input-group-lg col-sm-6">
+  			<span class="input-group-addon">&nbsp&nbsp ID &nbsp&nbsp&nbsp</span>
+  			<span class="form-control"> {{ user.id }} </span>
+        <input type = "hidden" name = "id" value = {{ user.id }} readonly/>
+  		</div><br>
+      <div class="input-group input-group-lg col-sm-6">
+  			<span class="input-group-addon">&nbsp 密码 &nbsp</span>
+  			<input type="password" class="form-control" name = "password" placeholder="Password" value = {{ user.password }}  required>
+  		</div><br>
+      <div class="input-group input-group-lg col-sm-6">
+  			<span class="input-group-addon">&nbsp 邮箱 &nbsp</span>
+  			<input type="text" class="form-control" name = "email" placeholder="Email" value = {{ user.email }} required>
+  		</div><br>
+      <div class="input-group input-group-lg col-sm-6 ">
+        <span class="input-group-addon">手机号</span>
+    		<input type="text" class="form-control" name = "phone" placeholder="Phone" value = {{ user.phone }} required>
+  		</div><br>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-success btn-lg col-sm-offset-2">修改个人信息</button>
+        <a class="btn btn-default btn-lg" href="javascript:history.go(-1);void(0);">取消</a>
+      </div>
+    </div>
+  </form>
+</div> <!-- /container -->
 {% endblock %}
