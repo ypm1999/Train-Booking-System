@@ -4,6 +4,8 @@ from database import *
 from flask_login import (LoginManager, current_user, login_required,login_user, UserMixin)
 
 LM = LoginManager()
+LM.login_message = u"请先登录。"
+LM.login_message_category = "warning"
 LM.login_view = 'user_login'
 LM.session_protection = 'strong'
 

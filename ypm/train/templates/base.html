@@ -6,12 +6,9 @@
 		<meta name="description" content="">
 		<meta name="author" content="ssdkbird">
 		<link rel="icon" href="">
-
-		<title>index</title>
+		<title>火车订票系统</title>
 		<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 		<link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
-
-
 		{% block css_input%}
 		{% endblock %}
 
@@ -30,7 +27,7 @@
 							{% if current_user.is_admin %}
               	<li><a href=" {{ url_for('manage') }} ">管理</a></li>
 							{% endif %}
-              <li><a href=" {{ url_for('manage') }} ">订单查询</a></li>
+              <li><a href="https://kyfw.12306.cn/otn/index/init">12306</a></li>
 
             </ul>
 
@@ -40,6 +37,7 @@
 								<form class = "form-inline pull-right" method = "POST" action = "/login">
 									<input type="text" name="userid" class="form-control" placeholder="User ID" required>
 									<input type="password" name="password" class="form-control" placeholder="Password" required>
+									<input type="hidden" name = "remember" />
 									<button class="btn btn-primary form-control" type="submit">登录</button>
 								</form>
 							{% else %}
@@ -60,7 +58,7 @@
 
 										<li role="presentation" class="divider"></li>
 										<li role="presentation">
-											<a href="/order/quary">我的订单</a>
+											<a href="{{ url_for('query_orders') }}">我的订单</a>
 										</li>
 									</ul>
 								</div>
@@ -71,21 +69,11 @@
 	      </div><!-- /.container -->
 	    </nav><!-- /.navbar -->
 		</header>
-		<div class = "container">
-			<div class = "massage">
-		    {% with messages = get_flashed_messages(with_categories=true) %}
-		    {% for category, message in messages %}
-		      <div class="alert alert-{{ category }}">
-		        <a href="#" class="close" data-dismiss="alert">&times;</a>
-		        {{ message }}
-		      </div>
-		    {% endfor %}
-		    {% endwith %}
-		  </div>
 
-			{% block content %}
-			{% endblock %}
-		</div>
+
+		{% block content %}
+		{% endblock %}
+
 	</body>
 	<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.js"></script>
 	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

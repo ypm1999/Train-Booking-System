@@ -1,11 +1,12 @@
 var user_id = 0, date = '2018-00-00';
 
-$(function (){
-  $('#datetimepicker').datetimepicker({
-    format: 'YYYY-MM-DD',
-    locale: 'zh-CN'
-  });
-})
+$(function () {
+    $('#date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      locale: 'zh-CN'
+    });
+});
+
 
 var exist = false;
 
@@ -36,11 +37,9 @@ var TableInit = function() {
           {
               field: 'train_id',
               title: '列车编号',
-              width: 80
           }, {
               field: 'loc1',
               title: '出发地',
-              width: 80,
           }, {
               field: 'time1',
               title: '出发时间',
@@ -62,9 +61,8 @@ var TableInit = function() {
           }, {
             field: 'operate',
             title: '订票',
-            width: 70,
             events: operateEvents,
-            formatter: '<input type="submit" id = "orderTicket" value="退票" class="btn btn-primary btn-sm">'
+            formatter: '<input type="submit" id = "orderTicket" value="退票" class="btn btn-primary btn-md">'
           }
       ]
     });

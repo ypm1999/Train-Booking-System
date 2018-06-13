@@ -5,16 +5,16 @@
 {% endblock %}
 
 {% block content %}
-	<div class = "massage">
-	  {% with messages = get_flashed_messages(with_categories=true) %}
-	  {% for category, message in messages %}
-	    <div class="alert alert-{{ category }}">
-	      <a href="#" class="close" data-dismiss="alert">&times;</a>
-	      {{ message }}
-	    </div>
-	  {% endfor %}
-	  {% endwith %}
-	</div>
+<div class = "massage">
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	{% for category, message in messages %}
+		<div class="alert alert-{{ category }}">
+			<a href="#" class="close" data-dismiss="alert">&times;</a>
+			{{ message }}
+		</div>
+	{% endfor %}
+	{% endwith %}
+</div>
 
 
 	<div class="text-center">
