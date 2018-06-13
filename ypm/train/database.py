@@ -3,6 +3,10 @@
 
 from subprocess import Popen, PIPE, STDOUT
 
+debug = 1
+
+endl = '<br />'
+
 db = Popen(['./db'], stdin = PIPE, stdout = PIPE)
 
 def db_write(cmd):
@@ -73,12 +77,17 @@ def _add(trains, reply):
     key = ['train_id', 'loc1', 'date1', 'time1', 'loc2', 'date2', 'time2']
     value = reply[:7]
     
+    key.append('startTime')
+    value.append(value[2] + endl + value[3])
+    key.append('arriveTime')
+    value.append(value[5] + endl + value[6])
+
     sz = len(reply)
     for i in range(7, sz, 3):
     	if (reply[i] == '商务座'):
     		reply[i] = '特等座'
     	key.append(reply[i])
-    	value.append((reply[i + 1], reply[i + 2]))
+    	value.append(reply[i + 1] + '张' + endl + '￥' + reply[i + 2])
     
     train = dict(zip(key, value))
 
@@ -119,6 +128,23 @@ def buy_ticket(user_id, num, train_id, loc1, loc2, date, ticket_kind):
     else:
         return None
 
+def to_order(info):
+    key = ['train_id', 'loc1', 'date1', 'time1', 'loc2', 'date2', 'time2']
+    head = info[:7]
+
+    key.append('start_time')
+    head.append(head[2] + endl + head[3])
+    key.append('arrive_time')
+    head.append(head[5] + endl + head[6])
+
+    key += ['ticket_kind', 'num', 'price']
+
+    ticket_list = []
+    for i in range(7, len(info), 3):
+        if int(info[i + 1]) > 0:
+            ticket_list.append(dict(zip(key, head + [info[i], info[i + 1], info[i + 2]])))
+    return ticket_list
+
 # return a list contains tickets
 # bought by user *id* with *catalog* at *date*
 # return -1 if query is illegal
@@ -129,7 +155,7 @@ def query_order(user_id, date, catalog):
         return None
     tickets = []
     for i in range(reply_lines):
-        tickets.append(db_readline().split(' '))
+        tickets += to_order(db_readline().split(' '))
     return tickets
 
 # user *id* refund *num* ticket(s) of *ticket_kind* in *train_id* from *loc1* to *loc2* at *date*
@@ -237,7 +263,7 @@ def clean():
 
 if __name__ == '__main__':
     clean()
-    if False:
+    if debug:
         print(register("lyx", "123", "qaq", "qqq"))
         print(register("lyc", "123", "qaq", "qqq"))
         print(register("lyc", "123", "qaq", "qqq"))

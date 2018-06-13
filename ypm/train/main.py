@@ -222,7 +222,7 @@ def sale_train():
 
 #查票，购票，退票
 @app.route('/Data/trains/transfer', methods = ['GET', 'POST'])
-def query_tieket_transfer_data():
+def query_ticket_transfer_data():
     train1 = {'id':'G12306', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
     train2 = {'id':'G11007', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '软卧': str(100) + '张<br />' + '￥1200'}
     loc1 = request.args['loc1']
@@ -234,7 +234,7 @@ def query_tieket_transfer_data():
     return json.dumps([train1, train2])
 
 @app.route('/Data/trains', methods = ['GET', 'POST'])
-def query_tieket_data():
+def query_ticket_data():
     train1 = {'id':'G12306', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
     train2 = {'id':'G11007', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '软卧': str(100) + '张<br />' + '￥1200'}
     loc1 = request.args['loc1']
@@ -250,9 +250,9 @@ def query_tieket_data():
 def query_tickets():
     return render_template("query_trains.html", form = request.form)
 
-@app.route('/tictek/order', methods = ['GET', 'POST'])
+@app.route('/ticket/order', methods = ['GET', 'POST'])
 @login_required
-def tictek_order():
+def ticket_order():
     form = request.form;
     if buy_ticket(current_user.id, form['number'], form['train_id'], form['loc1'], form['loc2'], form['date'], form['seat']):
         flash(message='购票成功！', category = 'success');
