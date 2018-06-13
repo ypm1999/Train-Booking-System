@@ -22,7 +22,6 @@ def test():
 
 @app.route('/', methods = ['GET', 'POST'])
 def home():
-    print current_user
     return render_template('index.html')
 
 #用户管理，注册，登录，登出，profile，修改profile, 订单
@@ -95,15 +94,26 @@ def modify_user():
     modify_profile(user_id, name, password, email, phone)
     return user_info(user_id);
 
+@app.route('/Data/user/orders', methods = ['GET'])
+@login_required
+def get_order_data():
+    user_id = request.args['user_id']
+    date = request.args['date']
+    catalog = 'CDGKOTZ'
+    print (user_id, date, catalog)
+    #TODO query_order(user_id, date, catelog)
+    #catelog 自动设置为全集
+    order1 = {'train_id':'G12306', 'time1':'2018-06-11<br/>06:30', 'time2':'2018-06-11<br/>06:35', 'loc1':"北京", 'loc2': "上海", 'num': 1, 'ticket_kind': "高级软卧", 'price':"500.00"}
+    order2 = {'train_id':'G12306', 'time1':'2018-06-11<br/>06:30', 'time2':'2018-06-11<br/>06:35', 'loc1':"北京", 'loc2': "上海", 'num': 1, 'ticket_kind': "高级软卧", 'price':"5010.00"}
+    return json.dumps([order1, order2])
+
 @app.route('/user/tickets', methods = ['POST', 'GET'])#and manage_orders
 @login_required
-def user_orders(id = None):
-    if id == None:
-        id = current_user.id
-    if request.method == 'POST':
-        pass
-    else:
-        return render_template('user_tickets.html')
+def query_orders(id = None):
+    tmp = '';
+    if(not current_user.is_admin()):
+        tmp = "readonly";
+    return render_template('query_orders.html', user_id = current_user.id, readonly = tmp)
 
 
 #管理员界面，管理用户，管理订单，管理车次。
@@ -203,46 +213,52 @@ def add_train():
 
 @app.route('/manage/del_train', methods = ['GET', 'POST'])
 @login_required
-def del_train():
+def try_del_train():
     if not current_user.is_admin():
         flash(message='You are not manager !', category='warning')
         return redirect(url_for('home'))
     else:
-        pass
+        if(delete_train(request.form["search_id"])):
+            flash(message="删除车次成功!", category='success')
+        else:
+            flash(message="删除车次失败!", category='success')
+        return redirect(url_for('manage_trains'));
+
 
 @app.route('/manage/sale_train', methods = ['GET', 'POST'])
 @login_required
-def sale_train():
+def try_sale_train():
     if not current_user.is_admin():
         flash(message='You are not manager !', category='warning')
         return redirect(url_for('home'))
     else:
-        pass
+        if(seal_train(request.form["search_id"])):
+            flash(message="发售车次成功!", category='success')
+        else:
+            flash(message="发售车次失败!", category='success')
+        return redirect(url_for('manage_trains'));
 
 
 #查票，购票，退票
 @app.route('/Data/trains/transfer', methods = ['GET', 'POST'])
-def query_ticket_transfer_data():
-    train1 = {'id':'G12306', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
-    train2 = {'id':'G11007', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '软卧': str(100) + '张<br />' + '￥1200'}
-    loc1 = request.args['loc1']
-#    loc2 = request.args['loc2']
-#    date = request.args['date']
-#    catelog = request.args['catelog']
-    print loc1
-#    TODO query_transform(loc1, loc2, date, catelog)
-    return json.dumps([train1, train2])
-
-@app.route('/Data/trains', methods = ['GET', 'POST'])
-def query_ticket_data():
+def query_tieket_transfer_data():
     train1 = {'id':'G12306', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
     train2 = {'id':'G11007', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '软卧': str(100) + '张<br />' + '￥1200'}
     loc1 = request.args['loc1']
     loc2 = request.args['loc2']
     date = request.args['date']
     catelog = request.args['catelog']
-    print (loc1, loc2, date, catelog)
-    print json.dumps([train1, train2])
+    #TODO query_transform(loc1, loc2, date, catelog)
+    return json.dumps([train1, train2])
+
+@app.route('/Data/trains', methods = ['GET', 'POST'])
+def query_tieket_data():
+    train1 = {'id':'G12306', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
+    train2 = {'id':'G11007', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '软卧': str(100) + '张<br />' + '￥1200'}
+    loc1 = request.args['loc1']
+    loc2 = request.args['loc2']
+    date = request.args['date']
+    catelog = request.args['catelog']
     #TODO query_ticket(loc1, loc2, date, catelog)
     return json.dumps([train1, train2])
 
@@ -250,9 +266,9 @@ def query_ticket_data():
 def query_tickets():
     return render_template("query_trains.html", form = request.form)
 
-@app.route('/ticket/order', methods = ['GET', 'POST'])
+@app.route('/tictek/book', methods = ['GET', 'POST'])
 @login_required
-def ticket_order():
+def tictek_book():
     form = request.form;
     if buy_ticket(current_user.id, form['number'], form['train_id'], form['loc1'], form['loc2'], form['date'], form['seat']):
         flash(message='购票成功！', category = 'success');
@@ -261,11 +277,29 @@ def ticket_order():
         flash(message='购票失败！', category = 'danger');
         return render_template("query_trains.html", form = form)
 
-@app.route('/tictek/refund', methods = ['GET', 'POST'])
+
+@app.route('/tictek/refund', methods = ['POST'])
 @login_required
-def tictek_refund():
-    pass
+def try_refund_tictek():
+    user_id = request.form['user_id']
+    train_id = request.form['train_id']
+    loc1 = request.form['loc1']
+    loc2 = request.form['loc2']
+    date = request.form['date']
+    catalog = request.form['ticket_kind']
+    print(train_id, loc1, loc2, date, catalog)
+#    if(refund_ticket(train_id, loc1, loc2, date, catalog)):
+#        flash(message="退票成功!", category='success')
+#    else:
+    flash(message="退票失败，请重试！", category='warning')
+    return query_orders(user_id)
+
+@app.route('/manage/clean', methods = ['POST'])
+@login_required
+def try_clean():
+    if current_user.id == '2018':
+        print '11111'
+    return redirect(url_for('manage'));
 
 if __name__ == '__main__':
-    app.debug = True
-    app.run(port=5000)
+    app.run(debug = True, port=5000)

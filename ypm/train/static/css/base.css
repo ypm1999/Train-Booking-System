@@ -2,6 +2,7 @@ html,
 body {
   overflow-x: hidden;
   padding-top: 0px;
+  padding-bottom: 200px;
   background:rgba(113, 113, 113, 0.14)
 }
 footer {

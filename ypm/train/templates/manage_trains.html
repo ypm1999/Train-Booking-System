@@ -30,8 +30,6 @@
         </div>
       </div>
 
-
-
           <div class="modal-content" id="addTrain"  hidden>
             <div class="modal-header">
               <h2 class="modal-title">添加车次</h2>
@@ -63,7 +61,7 @@
                           <input type="checkbox" name = "软卧" />软卧&nbsp
                         </div>
                         <div class="checkbox-inline">
-                          <input type="checkbox" name = "硬卧" checked/>硬卧&nbsp
+                          <input type="checkbox" name = "硬卧"/>硬卧&nbsp
                         </div>
                         <div class="checkbox-inline">
                           <input type="checkbox" name = "动卧" />动卧&nbsp
@@ -104,7 +102,7 @@
                       <div class="col-sm-2">
                         <h2><div class = "label label-primary">类型</div></h2>
                         <div class="input-group input-group-lg myinput">
-                          <input type = "text" name = "catelog" class = "form-control" value = "G" required/>
+                          <input type = "text" name = "catelog" class = "form-control" required/>
                         </div>
                       </div>
                       <div class="col-sm-2">
@@ -164,30 +162,26 @@
       </table>
       <table id = "station"></table>
       <div class = "row">
-        <div class = "col-sm-3">
-          <form id = "sale" class = "text-center"　action = "/manage/train/sale" method = "POST" hidden>
-            <input id = "sale_id" type = "hidden" />
-            <button type = "submit" class = "btn btn-success btn-lg">
-              <div class = "mybtn">发售</div>
-            </button>
+          <form id = "buttons" class = "text-center"　action = "/manage/train/sale" method = "POST" hidden>
+            <input id = "search_id" type = "hidden" />
+            <div class = "col-sm-4">
+              <button type = "submit" class = "btn btn-success btn-lg" onclick = "sale()">
+                <div class = "mybtn">发售</div>
+              </button>
+            </div>
+            <div class = "col-sm-4">
+              <button type = "button" class = "btn btn-success btn-lg" onclick = "modify()" hidden>
+                <div class = "mybtn">修改</div>
+              </button>
+            </div>
+            <div class = "col-sm-4">
+              <button type = "submit" class = "btn btn-success btn-lg" onclick = "delete_train()">
+                <div class = "mybtn">删除</div>
+              </button>
+            </div>
           </form>
-        </div>
-        <div class　= "col-sm-3">
-          <div id = "modify" class = "text-center" hidden>
-            <button type = "button" class = "btn btn-success btn-lg" onclick = "modify()" hidden>
-              <div class = "mybtn">修改</div>
-            </button>
-          </div>
-        </div>
-        <div class = "col-sm-3">
-          <form id = "delete" class = "text-center"　action = "/manage/train/delete" method = "POST" hidden>
-            <input id = "delete_id" type = "hidden" />
-            <button type = "submit" class = "btn btn-success btn-lg">
-              <div class = "mybtn">删除</div>
-            </button>
-          </form>
-        </div>
       </div>
+
     </div>
 
 

@@ -199,12 +199,11 @@ var TableInit = function() {
       '<td>' + res.saled　+ '</td>',
     ].join('\n'));
     if(res.saled == '否'){
-      $('#seal_id').val(res.train_id);
-      $('#delete').val(res.train_id);
-      $('#modify').show();
-      $('#sale').show();
-      $('#delete').show();
+      $('#search_id').val(res.train_id);
+      $('#buttons').show();
     }
+    else
+      $('#buttons').hide();
     return res.station;
   }
   oTableInit.getData = function(params) {
@@ -358,10 +357,6 @@ function modify() {
     train = getDataFromTbaleElem($(tableElems[0]));
     var tableElems = $('#station');
     var station = getDataFromTbaleElem($(tableElems[0]));
-
-
-    console.log(station);
-    console.log(train);
     var n = station.length - 1;
     var seat = [],head = [], body = [];
     for(var i = 1; i <= n; i++){
@@ -397,7 +392,7 @@ function modify() {
       tmp.push('<th>' + getinput(name + 'arrive', arrive) + '</th>');
       tmp.push('<th>' + getinput(name + 'leave', leave) + '</th>');
       tmp.push('<th>' + getinput(name + 'stop', stop) + '</th>');
-      for(var j = 4; j < 14; j++)
+      for(var j = 3; j < 13; j++)
         if(station[i][j] != "-"){
           tmp.push('<th>' + getinputwithspan(name + i, 'required value = "' + station[i][j].substring(1) + '"') + '</th>');
         }
@@ -405,7 +400,7 @@ function modify() {
       body.push(tmp.join('\n'));
     }
 
-    for(var i = 4; i < 14; i++)
+    for(var i = 3; i < 13; i++)
       if(station[1][i] != "-")
         seat.push(station[0][i]);
 
@@ -442,9 +437,17 @@ function modify() {
     $('#seatsHead').html(head.join('\n'));
     $('#inputStations').html(body.join('\n'));
     $('#submitadd').attr('disabled',false);
-    $('#station').hide();
-    $('#train').hide();
     $('#addstation').show();
     $('#addTrain').show();
-//    $('#train').hide();
+    $('#station').hide();
+    $('#train').hide();
+}
+
+function sale(){
+  $('#buttons').action = '/manage/train/sale';
+  $('#buttons').submit();
+}
+function delete_train(){
+  $('#buttons').action = '/manage/train/delete';
+  $('#buttons').submit();
 }

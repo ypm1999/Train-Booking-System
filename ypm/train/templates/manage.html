@@ -51,7 +51,7 @@
 						</div>
             <div class = "text-center">
               <div class = "mybutton">
-                <a class = "btn btn-success btn-lg btn-block" href = "{{ url_for('user_orders') }}"> 订单管理</a>
+                <a class = "btn btn-success btn-lg btn-block" href = "{{ url_for('query_orders') }}"> 订单管理</a>
               </div>
 					  </div>
   				</div>
@@ -72,8 +72,12 @@
 					  </div>
   				</div>
   			</div>
-
   		</div>
     </div>
-
+  <div class = "text-center">
+    <form action = "{{ url_for('try_clean') }}" method = "POST">
+      <button type = "subbmit" class = "btn btn-danger btn-lg"> 删库跑路　</button>
+    </form>
+  </div>
+  {% endif %}
 {% endblock %}
