@@ -24,44 +24,57 @@
       </div>
     </form>
   {% endif %}
-  <form  id='form' name = 'form' action="{{ url_for('user_info') }}"  method = "POST" class="form-horizontal">
-    <div style="padding: 30px 10% 15px;">
-  		<div class="input-group input-group-lg col-sm-6">
-  			<span class="input-group-addon">用户名</span>
-  			<input type="text" class="form-control" name = "name" placeholder="Username" value = {{ user.name }} required>
-  		</div><br>
-      <div class="input-group input-group-lg col-sm-6">
-  			<span class="input-group-addon">&nbsp&nbsp ID &nbsp&nbsp&nbsp</span>
-  			<span class="form-control"> {{ user.id }} </span>
-        <input type = "hidden" name = "id" value = {{ user.id }} readonly/>
-  		</div><br>
-      <div class="input-group input-group-lg col-sm-6">
-  			<span class="input-group-addon">&nbsp 密码 &nbsp</span>
-  			<input type="password" class="form-control" name = "password" placeholder="Password" value = {{ user.password }}  required>
-  		</div><br>
-      <div class="input-group input-group-lg col-sm-6">
-  			<span class="input-group-addon">&nbsp 邮箱 &nbsp</span>
-  			<input type="text" class="form-control" name = "email" placeholder="Email" value = {{ user.email }} required>
-  		</div><br>
-      <div class="input-group input-group-lg col-sm-6 ">
-        <span class="input-group-addon">手机号</span>
-    		<input type="text" class="form-control" name = "phone" placeholder="Phone" value = {{ user.phone }} required>
-  		</div><br>
-      <div class="form-actions">
-        <button type="submit" class="btn btn-success btn-lg col-sm-offset-2">修改个人信息</button>
-        {% if current_user.is_admin() %}
-          <button type="submit" class="btn btn-success btn-lg" onclick="$('#form').attr('action','{{ url_for('to_manager') }}')" >提升为管理猿</button>
-        {% endif %}
-        {% if current_user.is_root() %}
-          <button type="submit" class="btn btn-success btn-lg" onclick="$('#form').attr('action','{{ url_for('to_root') }}')">提升为管理猿王</button>
-          <button type="submit" class="btn btn-success btn-lg" onclick="$('#form').attr('action','{{ url_for('to_user') }}')">取消管理员权限</button>
-        {% endif %}
-        <button type="reset" class="btn btn-danger btn-lg"　>取消修改</button>
+  《
+  <div class = "col-sm-offset-１ col-sm-8">
+
+    <form  id='form' name = 'form' action="{{ url_for('user_info') }}"  method = "POST" class="form-horizontal">
+      <div style="padding: 30px 10% 15px;">
+        <div class="input-group input-group-lg">
+          <span class="input-group-addon">用户名</span>
+          <input type="text" class="form-control" name = "name" placeholder="Username" value = {{ user.name }} required>
+        </div><br>
+        <div class="input-group input-group-lg">
+          <span class="input-group-addon">&nbsp&nbsp ID &nbsp&nbsp&nbsp</span>
+          <span class="form-control"> {{ user.id }} </span>
+          <input type = "hidden" name = "id" value = {{ user.id }} readonly/>
+        </div><br>
+        <div class="input-group input-group-lg">
+          <span class="input-group-addon">&nbsp 密码 &nbsp</span>
+          <input type="password" class="form-control" name = "password" placeholder="Password" value = {{ user.password }}  required>
+        </div><br>
+        <div class="input-group input-group-lg">
+          <span class="input-group-addon">&nbsp 邮箱 &nbsp</span>
+          <input type="text" class="form-control" name = "email" placeholder="Email" value = {{ user.email }} required>
+        </div><br>
+        <div class="input-group input-group-lg">
+          <span class="input-group-addon">手机号</span>
+          <input type="text" class="form-control" name = "phone" placeholder="Phone" value = {{ user.phone }} required>
+        </div><br>
+        <div class="form-actions">
+          <div class = "text-center">
+            <div class = "row">
+              <button type="submit" class="btn btn-success btn-lg" onclick = "return check()">修改个人信息</button>
+              <button type="reset" class="btn btn-danger btn-lg"　>取消修改</button>
+            </div>
+            <br />
+            <div class = "row">
+              {% if current_user.is_admin() %}
+                <button type="submit" class="btn btn-primary btn-md" onclick="$('#form').attr('action','{{ url_for('to_manager') }}')" >升为管理猿</button>
+              {% endif %}
+              {% if current_user.is_root() %}
+                <button type="submit" class="btn btn-primary btn-md" onclick="$('#form').attr('action','{{ url_for('to_root') }}')">升为管理猿王</button>
+                <button type="submit" class="btn btn-primary btn-md" onclick="$('#form').attr('action','{{ url_for('to_user') }}')">降为普通用户</button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 </div> <!-- /container -->
 
+{% endblock %}
 
-
+{% block js_input %}
+  <script src="{{ url_for('static', filename='js/register.js') }}"></script>
 {% endblock %}

@@ -3,6 +3,7 @@
 import sys
 import os
 from flask import *
+from copy import copy
 from database import *
 from flask_login import (LoginManager, current_user, login_required, login_user, logout_user, confirm_login, fresh_login_required)
 from user import LM, User
@@ -30,10 +31,10 @@ def user_register():
             user = User().getuser(id)
             login_user(user, False)
             flash(message="注册成功! 你的ID是%s，请牢记。" % id, category='success')
-            if user.is_admin():
-                flash(message="您注册为管理猿", category='info')
-            elif user.is_root():
+            if user.is_root():
                 flash(message="您注册为管理猿王", category='info')
+            elif user.is_admin():
+                flash(message="您注册为管理猿", category='info')
             return redirect(url_for('home'))
         else:
             return render_template('register.html', note = '注册失败，请检查注册信息', form = form)
@@ -114,10 +115,13 @@ def query_orders(id = None):
 def to_manager():
     id1 = current_user.id;
     id2 = request.form['id'];
-    if(set_manager(id1, id2)):
-        flash(message="将用户提升为管理猿成功！", category = "success")
+    if(id1 == id2):
+        flash(message="您不能修改自己的权限！", category = "warning")
     else:
-        flash(message="将用户提升为管理猿失败！", category = "warning")
+        if(set_manager(id1, id2)):
+            flash(message="将用户提升为管理猿成功！", category = "success")
+        else:
+            flash(message="将用户提升为管理猿失败！", category = "warning")
     return redirect(url_for('user_info'));
 
 
@@ -126,10 +130,13 @@ def to_manager():
 def to_root():
     id1 = current_user.id;
     id2 = request.form['id'];
-    if(set_root(id1, id2)):
-        flash(message="将用户提升为管理猿王成功！", category = "success")
+    if(id1 == id2):
+        flash(message="您不能修改自己的权限！", category = "warning")
     else:
-        flash(message="将用户提升为管理猿王失败！", category = "warning")
+        if(set_root(id1, id2)):
+            flash(message="将用户提升为管理猿王成功！", category = "success")
+        else:
+            flash(message="将用户提升为管理猿王失败！", category = "warning")
     return redirect(url_for('user_info'));
 
 @app.route('/user/toUser', methods = ['POST'])#and manage_orders
@@ -137,10 +144,13 @@ def to_root():
 def to_user():
     id1 = current_user.id;
     id2 = request.form['id'];
-    if(set_user(id1, id2)):
-        flash(message="将管理员降为普通用户成功！", category = "success")
+    if(id1 == id2):
+        flash(message="您不能修改自己的权限！", category = "warning")
     else:
-        flash(message="将管理员降为普通用户失败！", category = "warning")
+        if(set_user(id1, id2)):
+            flash(message="将管理员降为普通用户成功！", category = "success")
+        else:
+            flash(message="将管理员降为普通用户失败！", category = "warning")
     return redirect(url_for('user_info'));
 #管理员界面，管理用户，管理订单，管理车次。
 @app.route('/manage', methods = ['GET', 'POST'])
@@ -324,16 +334,22 @@ def try_refund_ticket():
     return query_orders(user_id)
 
 
-@app.route('/manage/clean', methods = ['POST'])
+@app.route('/manage/clean', methods = ['GET', 'POST'])
 @login_required
 def try_clean():
     if current_user.is_root():
-        user = User().getuser(current_user.id)
+        name = copy(current_user.name)
+        password = request.form["password"]
+        email = copy(current_user.email)
+        phone = copy(current_user.phone)
+        if not try_login(current_user.id, password):
+            flash(message='密码验证失败', category='warning')
+            return redirect(url_for('manage'));
         logout_user()
         try:
             clean()
-            register(user.name, user.password, user.email, user.phone)
-            user = User().getuser(2018)
+            register(name, password, email, phone)
+            user = User().getuser(u'2018')
             login_user(user, False)
             flash(message='删库成功', category='success')
         except:
@@ -342,11 +358,11 @@ def try_clean():
         flash('您不是管理猿王!', category='warning')
     return redirect(url_for('manage'));
 
-@app.route('/manage/rollback', methods = ['POST'])
+@app.route('/manage/rollback', methods = ['GET', 'POST'])
 @login_required
 def try_rollback():
     if current_user.is_root():
-        if os.system('unzip -o data.zip'):
+        if os.system('unzip -o data.zip') == 0:
             flash('已恢复到上一次备份', category='success')
         else:
             flash('恢复备份失败', category='warning')
@@ -354,11 +370,11 @@ def try_rollback():
         flash('您不是管理猿王!', category='warning')
     return redirect(url_for('manage'));
 
-@app.route('/manage/backup', methods = ['POST'])
+@app.route('/manage/backup', methods = ['GET', 'POST'])
 @login_required
 def try_backup():
     if current_user.is_root():
-        if os.system('zip data.zip TrainBpt UserBpt StationBpt OrderBpt'):
+        if os.system('zip data.zip TrainBpt UserBpt StationBpt OrderBpt') == 0:
             flash('备份成功', category='success')
         else:
             flash('备份失败', category='warning')

@@ -75,7 +75,7 @@
         <form action = "{{ url_for('try_clean') }}" method = "POST">
           <div class = "col-sm-2"></div>
           <div class = "col-sm-8">
-            <button type = "submit" class = "btn btn-danger btn-lg btn-block"  onclick="return confirm('fsy,你确定要跑路吗？')"> 删库跑路　</button>
+            <button type = "button" class = "btn btn-danger btn-lg btn-block"  onclick="$('#delete').modal()"> 删库跑路　</button>
           </div>
         </form>
       </div>
@@ -89,6 +89,40 @@
           <a class="btn btn-warning btn-lg btn-block" href="{{ url_for('try_rollback') }}">恢复上一次的备份</a>
         </div>
       </div>
+    </div>
+
+    <div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h2 class="modal-title">fsy,你确定要跑路吗？</h2>
+          </div>
+          <div class = "box">
+            <form class = "" action = "{{ url_for('try_clean') }}" method = "POST">
+              <div class="modal-body">
+
+                <div class = "row">
+                  <div class = "col-sm-1"></div>
+                  <div class = "col-sm-10">
+                    <h3 class = "pull-left">请输入密码验证</h3>
+                  </div>
+                </div>
+                <div class = "row">
+                  <div class = "col-sm-2"></div>
+                  <div class = "col-sm-7">
+                    <input type = "password" name = "password" class = "form-control" required/>
+                  </div>
+                </div>
+                <br />
+
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary btn-md">删库</button>
+              </div>
+            </form>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal -->
     </div>
   {% endif %}
 </div>
