@@ -20,6 +20,8 @@ def db_readline():
 # if success return id
 # else return -1
 def register(name, password, email, phone):
+    if name == '' or password == '' or email == '' or phone == '':
+        return None
     db_write(' '.join(['register', name, password, email, phone]))
     reply = db_readline()
     if reply == '-1':
@@ -29,6 +31,8 @@ def register(name, password, email, phone):
 # if success return 1
 # else return 0
 def try_login(user_id, password):
+    if user_id == '' or password == '':
+        return None
     db_write(' '.join(['login', user_id, password]))
     reply = db_readline()
     if reply == '1':
@@ -40,6 +44,8 @@ def try_login(user_id, password):
 #   *name*, *email*, *phone*, *privilege*
 # if cannot find return 0
 def query_profile(user_id):
+    if user_id == '':
+        return None
     db_write(' '.join(['query_profile', user_id]))
     reply = db_readline()
     if reply == '0':
@@ -50,6 +56,8 @@ def query_profile(user_id):
 # if success return 1
 # else return 0
 def modify_profile(user_id, name, password, email, phone):
+    if user_id == '' or name == '' or password == '' or email == '' or phone == '':
+        return None
     db_write(' '.join(['modify_profile', user_id, name, password, email, phone]))
     reply = db_readline()
     if reply == '1':
@@ -61,6 +69,8 @@ def modify_profile(user_id, name, password, email, phone):
 # if success return 1
 # else return 0
 def modify_privilege(id1, id2, privilege):
+    if id1 == '' or id2 == '' or privilege == '':
+        return None
     db_write(' '.join(['modify_privilege', id1, id2, privilege]))
     reply = db_readline()
     if reply == '1':
@@ -94,6 +104,9 @@ def _add(trains, reply):
     trains.append(train)
 
 def query_ticket(loc1, loc2, date, catalog):
+    if loc1 == '' or loc2 == '' or date == '' or catalog == '':
+        return None
+    print('#############################query_ticket||||||||||||||', loc1, loc2, date, catalog)
     db_write(' '.join(['query_ticket', loc1, loc2, date, catalog]))
     reply_lines = int(db_readline())
     if reply_lines == -1:
@@ -107,8 +120,11 @@ def query_ticket(loc1, loc2, date, catalog):
 # from *loc1* to *loc2* at *date* with *catalog*
 # total time (including waitng transfer) is shortest
 # return -1 if query is illegal
-def query_transfer(loc1, loc2, date, catelog):
-    db_write(' '.join(['query_transfer', loc1, loc2, date, catelog]))
+def query_transfer(loc1, loc2, date, catalog):
+    if loc1 == '' or loc2 == '' or date == '' or catalog == '':
+        return None
+    print('#############################query_transfer||||||||||||||', loc1, loc2, date, catalog)
+    db_write(' '.join(['query_transfer', loc1, loc2, date, catalog]))
     reply = db_readline()
     if reply == '-1':
         return None
@@ -121,6 +137,8 @@ def query_transfer(loc1, loc2, date, catelog):
 # return 1 if success
 # return 0 if fail
 def buy_ticket(user_id, num, train_id, loc1, loc2, date, ticket_kind):
+    if user_id == '' or num == '' or train_id == '' or loc1 == '' or loc2 == '' or date == '' or ticket_kind == '':
+        return None
     db_write(' '.join(['buy_ticket', user_id, num, train_id, loc1, loc2, date, ticket_kind]))
     reply = db_readline()
     if reply == '1':
@@ -128,9 +146,11 @@ def buy_ticket(user_id, num, train_id, loc1, loc2, date, ticket_kind):
     else:
         return None
 
-def to_order(info):
+def _to_order(info):
     key = ['train_id', 'loc1', 'date1', 'time1', 'loc2', 'date2', 'time2']
     head = info[:7]
+
+    print(info)
 
     key.append('start_time')
     head.append(head[2] + endl + head[3])
@@ -141,6 +161,7 @@ def to_order(info):
 
     ticket_list = []
     for i in range(7, len(info), 3):
+        print(info[i + 1])
         if int(info[i + 1]) > 0:
             ticket_list.append(dict(zip(key, head + [info[i], info[i + 1], info[i + 2]])))
     return ticket_list
@@ -149,13 +170,16 @@ def to_order(info):
 # bought by user *id* with *catalog* at *date*
 # return -1 if query is illegal
 def query_order(user_id, date, catalog):
+    if user_id == '' or date == '' or catalog == '':
+        return None
     db_write(' '.join(['query_order', user_id, date, catalog]))
     reply_lines = int(db_readline())
     if reply_lines == -1:
         return None
+    print(reply_lines)
     tickets = []
     for i in range(reply_lines):
-        tickets += to_order(db_readline().split(' '))
+        tickets += _to_order(db_readline().split(' '))
     return tickets
 
 # user *id* refund *num* ticket(s) of *ticket_kind* in *train_id* from *loc1* to *loc2* at *date*
@@ -163,6 +187,8 @@ def query_order(user_id, date, catalog):
 # return 0 if fail
 # mirror of buy_ticket
 def refund_ticket(user_id, num, train_id, loc1, loc2, date, ticket_kind):
+    if user_id == '' or num == '' or train_id == '' or loc1 == '' or loc2 == '' or date == '' or ticket_kind == '':
+        return None
     db_write(' '.join(['refund_ticket', user_id, num, train_id, loc1, loc2, date, ticket_kind]))
     reply = db_readline()
     if reply == '1':
@@ -181,6 +207,8 @@ def refund_ticket(user_id, num, train_id, loc1, loc2, date, ticket_kind):
 # return 1 if success
 # return 0 if fail
 def add_train(train_id, name, catalog, station_list, ticket_kind_list):
+    if train_id == '' or name == '' or catalog == '' or len(station_list) == 0 or len(ticket_kind_list) == 0:
+        return None
     db_write(' '.join(['add_train', train_id, name, catalog, str(len(station_list)), str(len(ticket_kind_list))] + ticket_kind_list))
     for x in station_list:
         db_write(' '.join(x))
@@ -195,6 +223,8 @@ def add_train(train_id, name, catalog, station_list, ticket_kind_list):
 # return 0 if fail
 # copy from add_train
 def modify_train(train_id, name, catalog, station_list, ticket_kind_list):
+    if train_id == '' or name == '' or catalog == '' or len(station_list) == 0 or len(ticket_kind_list) == 0:
+        return None
     db_write(' '.join(['modify_train', train_id, name, catalog, len(station_list), len(ticket_kind_listk)] + [ticket_kind_list]))
     for x in station_list:
         db_write(' '.join(x))
@@ -209,6 +239,8 @@ def modify_train(train_id, name, catalog, station_list, ticket_kind_list):
 # return 1 if success
 # return 0 if fail (i.e. already on sale or doesn't exist)
 def sale_train(train_id):
+    if train_id == '':
+        return None
     db_write(' '.join(['sale_train', train_id]))
     reply = db_readline()
     if reply == '1':
@@ -216,9 +248,15 @@ def sale_train(train_id):
     else:
         return None
 
+def _to_station(info, ticket):
+    key = ['name', 'arrive', 'leave', 'stop'] + ticket
+    return dict(zip(key, info))
+
 # return info like add_train
 # return 0 if fail (not exist or not on sale)
 def query_train(train_id):
+    if train_id == '':
+        return None
     db_write(' '.join(['query_train', train_id]))
     reply = db_readline()
     if reply == '0':
@@ -230,14 +268,15 @@ def query_train(train_id):
     station_num = int(reply.split()[3])
     ticket_kind_num = int(reply.split()[4])
     ticket_kind_list = reply.split()[5:]
-    station_list = []
+    station = []
     for i in range(station_num):
-        station_list.append(db_readline().split())
+        station.append(_to_station(db_readline().split(), ticket_kind_list))
 
     return {'train_id': train_id,
             'name': name,
+            'saled': '否',
             'catalog': catalog,
-            'station_list': station_list,
+            'station': station,
             'ticket_kind_list': ticket_kind_list}
 
 # delete *train_id*

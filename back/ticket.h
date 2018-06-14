@@ -505,7 +505,7 @@ bool query_order(){
 	char tk[5][5][41];
  	short n[5][5], num[5];
 	double p[5][5];
-	std::cout << strlen(cata) << std::endl;
+//	std::cout << strlen(cata) << std::endl;
 	for (int i = 0; i < strlen(cata); i++){
 		auto itO = OrderBpt.lower_bound(OrderKey(id, cata[i], d));
 		if (!itO.valid())
@@ -544,7 +544,7 @@ bool query_order(){
 				}
 				strcpy(tk[cnt][j], itT1->Catalog[j]);
 			}
-			std::cout << cnt << std::endl;
+		//	std::cout << cnt << std::endl;
 			cnt++;
 		}
 	}
@@ -554,13 +554,16 @@ bool query_order(){
 		return 0;
 	}
 
+	printf("%d\n", cnt);
 	for (int i = 0; i < cnt; i++){
 		printf("%s %s ", trId[i], l1[i]);
 		printDate(std[i]); printTime(stt[i]);
+		printf("%s ", l2[i]);
 		printDate(ard[i]); printTime(art[i]);
 		for (int j = 0; j < num[i]; j++)
 			printf("%s %d %f%c", tk[i][j], n[i][j], p[i][j], " \n"[j == num[i] - 1]);
 	}
+	return 1;
 }
 
 #endif

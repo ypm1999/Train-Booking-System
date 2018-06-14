@@ -87,11 +87,16 @@ def get_order_data():
     date = request.args['date']
     catalog = 'CDGKOTZ'
     print (user_id, date, catalog)
-    #TODO query_order(user_id, date, catelog)
-    #catelog 自动设置为全集
-    order1 = {'train_id':'G12306', 'time1':'2018-06-11<br/>06:30', 'time2':'2018-06-11<br/>06:35', 'loc1':"北京", 'loc2': "上海", 'num': 1, 'ticket_kind': "高级软卧", 'price':"500.00"}
-    order2 = {'train_id':'G12306', 'time1':'2018-06-11<br/>06:30', 'time2':'2018-06-11<br/>06:35', 'loc1':"北京", 'loc2': "上海", 'num': 1, 'ticket_kind': "高级软卧", 'price':"5010.00"}
-    return json.dumps([order1, order2])
+    orders = query_order(user_id, date, catalog)
+    print(orders)
+    if (orders == None):
+        orders = []
+    return json.dumps(orders)
+    # TODO query_order(user_id, date, catelog)
+    # catelog 自动设置为全集
+    # order1 = {'train_id':'G12306', 'time1':'2018-06-11<br/>06:30', 'time2':'2018-06-11<br/>06:35', 'loc1':"北京", 'loc2': "上海", 'num': 1, 'ticket_kind': "高级软卧", 'price':"500.00"}
+    # order2 = {'train_id':'G12306', 'time1':'2018-06-11<br/>06:30', 'time2':'2018-06-11<br/>06:35', 'loc1':"北京", 'loc2': "上海", 'num': 1, 'ticket_kind': "高级软卧", 'price':"5010.00"}
+    # return json.dumps([order1, order2])
 
 @app.route('/user/orders', methods = ['POST', 'GET'])#and manage_orders
 @login_required
@@ -99,7 +104,9 @@ def query_orders(id = None):
     tmp = '';
     if(not current_user.is_admin()):
         tmp = "readonly";
-    return render_template('query_orders.html', user_id = current_user.id, readonly = tmp)
+    if id == None:
+        id = current_user.id;
+    return render_template('query_orders.html', user_id = id, readonly = tmp)
 
 
 #管理员界面，管理用户，管理订单，管理车次。
@@ -144,14 +151,17 @@ def query_train_data():
     train_id = request.args['train_id']
     print train_id
     if train_id == '':
-        return json.dumps({'train_id':'', 'name':'', 'station':[]})
+        return json.dumps({'train_id':'', 'name':'', 'station':[], 'saled':''})
     print "train_id: %s" % train_id
-    station1 = {'name':'上海1', 'arrive': '10:30', 'leave':'10:40', '硬座': '￥1200'}
-    station2 = {'name':'上海2', 'arrive': '10:31', 'leave':'10:40', '硬座': '￥1201'}
-    station3 = {'name':'上海3', 'arrive': '10:32', 'leave':'10:40', '硬座': '￥1202'}
-    train1 = {'train_id':train_id, 'name': 'C919', "saled" : '否', 'station':[station1, station2, station3]}
-    print json.dumps([train1, train1])
-    return json.dumps(train1)
+    # station1 = {'name':'上海1', 'arrive': '10:30', 'leave':'10:40', '硬座': '￥1200'}
+    # station2 = {'name':'上海2', 'arrive': '10:31', 'leave':'10:40', '硬座': '￥1201'}
+    # station3 = {'name':'上海3', 'arrive': '10:32', 'leave':'10:40', '硬座': '￥1202'}
+    # train1 = {'train_id':train_id, 'name': 'C919', "saled" : '否', 'station':[station1, station2, station3]}
+    train = query_train(train_id)
+    print train
+    if train == None:
+        return json.dumps({'train_id':'', 'name':'', 'station':[], 'saled':''})
+    return json.dumps(train)
 
 @app.route('/manage/trains', methods = ['GET', 'POST'])
 @login_required
@@ -191,7 +201,7 @@ def try_add_train():
             for j in range(m):
                 tmp += '￥' + request.form['station' + str(i) + '_' + str(j)] + ' ';
             stations.append(tmp);
-        #TODO add_train(id, name, catelog, seats, stations)
+        add_train(id, name, catelog, seats, stations)
         print (id, name, n, m, catelog)
         print seats
         return redirect(url_for('manage_trains'));
@@ -236,8 +246,11 @@ def query_tieket_transfer_data():
     loc2 = request.args['loc2']
     date = request.args['date']
     catelog = request.args['catelog']
+    trains = query_transfer(loc1, loc2, date, catelog)
+    if trains == None:
+        trains = []
     #TODO query_transform(loc1, loc2, date, catelog)
-    return json.dumps([train1, train2])
+    return json.dumps(trains)
 
 @app.route('/Data/trains', methods = ['GET', 'POST'])
 def query_tieket_data():
@@ -248,7 +261,14 @@ def query_tieket_data():
     date = request.args['date']
     catelog = request.args['catelog']
     #TODO query_ticket(loc1, loc2, date, catelog)
-    return json.dumps([train1, train2])
+    print(loc1, loc2, date, catelog)
+    trains = query_ticket(loc1, loc2, date, catelog)
+    print('#########################################')
+    print(trains)
+    print('#########################################')
+    if trains == None:
+        trains = []
+    return json.dumps(trains)
 
 @app.route('/ticket/query', methods = ['GET', 'POST'])
 def try_query_tickets():
@@ -260,7 +280,7 @@ def try_book_tictek():
     form = request.form;
     if buy_ticket(current_user.id, form['number'], form['train_id'], form['loc1'], form['loc2'], form['date'], form['seat']):
         flash(message='购票成功！', category = 'success');
-        redirect( url_for('home') );
+        return redirect( url_for('home') );
     else:
         flash(message='购票失败！', category = 'danger');
         return render_template("query_tickets.html", form = form)
@@ -271,15 +291,16 @@ def try_book_tictek():
 def try_refund_tictek():
     user_id = request.form['user_id']
     train_id = request.form['train_id']
+    num = request.form['num']
     loc1 = request.form['loc1']
     loc2 = request.form['loc2']
     date = request.form['date']
     catalog = request.form['ticket_kind']
-    print(train_id, loc1, loc2, date, catalog)
-#    if(refund_ticket(train_id, loc1, loc2, date, catalog)):
-#        flash(message="退票成功!", category='success')
-#    else:
-    flash(message="退票失败，请重试！", category='warning')
+    print(user_id, num, train_id, loc1, loc2, date, catalog)
+    if(refund_ticket(user_id, num, train_id, loc1, loc2, date, catalog)):
+        flash(message="退票成功!", category='success')
+    else:
+        flash(message="退票失败，请重试！", category='warning')
     return query_orders(user_id)
 
 @app.route('/manage/clean', methods = ['POST'])
