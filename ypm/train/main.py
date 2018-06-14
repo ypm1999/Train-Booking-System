@@ -45,13 +45,18 @@ def user_login():
     if request.method == 'POST':
         userid = request.form["userid"]
         password = request.form["password"]
-        remember = (request.form["remember"] == 'on')
+        remember = request.form["remember"]
         if try_login(userid, password):
             user = User().getuser(userid)
-            login_user(user, remember)
+            login_user(user, remember == 'on')
             next = request.args.get('next')
+            print next
+            if(next == '/login'):
+                next = url_for('home')
             flash(message = "登录成功!", category = "success")
             return redirect( next or url_for('home') )
+        else:
+            flash(message = "登录失败!", category = "warning")
     return render_template("login.html")
 
 
@@ -104,7 +109,39 @@ def query_orders(id = None):
         id = current_user.id
     return render_template('query_orders.html', user_id = id, readonly = tmp)
 
+@app.route('/user/toManager', methods = ['POST'])#and manage_orders
+@login_required
+def to_manager():
+    id1 = current_user.id;
+    id2 = request.form['id'];
+    if(set_manage(id1, id2))
+        flash(message="将用户提升为管理猿成功！", catagory = "success")
+    else
+        flash(message="将用户提升为管理猿失败！", catagory = "warning")
+    return redirect(url_for('user_info'));
 
+
+@app.route('/user/toRoot', methods = ['POST'])#and manage_orders
+@login_required
+def to_root():
+    id1 = current_user.id;
+    id2 = request.form['id'];
+    if(set_manage(id1, id2))
+        flash(message="将用户提升为管理猿王成功！", catagory = "success")
+    else
+        flash(message="将用户提升为管理猿王失败！", catagory = "warning")
+    return redirect(url_for('user_info'));
+
+@app.route('/user/toUser', methods = ['POST'])#and manage_orders
+@login_required
+def to_user():
+    id1 = current_user.id;
+    id2 = request.form['id'];
+    if(set_manage(id1, id2))
+        flash(message="将管理员降为普通用户成功！", catagory = "success")
+    else
+        flash(message="将管理员降为普通用户失败！", catagory = "warning")
+    return redirect(url_for('user_info'));
 #管理员界面，管理用户，管理订单，管理车次。
 @app.route('/manage', methods = ['GET', 'POST'])
 @login_required
@@ -290,6 +327,21 @@ def try_refund_ticket():
 @login_required
 def try_clean():
     if current_user.is_root():
+        pass
+    return redirect(url_for('manage'));
+
+@app.route('/manage/rollback', methods = ['POST'])
+@login_required
+def try_rollback():
+    if current_user.is_root():
+        pass
+    return redirect(url_for('manage'));
+
+
+@app.route('/manage/clean', methods = ['POST'])
+@login_required
+def try_clean():
+    if current_user.is_root():
         user = User().getuser(current_user.id)
         logout_user()
         try:
@@ -301,7 +353,7 @@ def try_clean():
         except:
             flash(message='删库有风险,请重新来过', category='danger')
     else:
-        flash('您不是管理员!', category='warning')
+        flash('您不是管理猿王!', category='warning')
     return redirect(url_for('manage'));
 
 @app.route('/manage/rollback', methods = ['POST'])
@@ -311,9 +363,9 @@ def try_rollback():
         if os.system('unzip -o data.zip'):
             flash('已恢复到上一次备份', category='success')
         else:
-            flash('备份失败', category='warning')
+            flash('恢复备份失败', category='warning')
     else:
-        flash('您不是管理员!', category='warning')
+        flash('您不是管理猿王!', category='warning')
     return redirect(url_for('manage'));
 
 @app.route('/manage/backup', methods = ['POST'])
@@ -325,8 +377,9 @@ def try_backup():
         else:
             flash('备份失败', category='warning')
     else:
-        flash('您不是管理员!', category='warning')
+        flash('您不是管理猿王!', category='warning')
     return redirect(url_for('manage'));
+
 
 if __name__ == '__main__':
     app.run(debug = True, port=5000)

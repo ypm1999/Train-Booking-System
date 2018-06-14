@@ -24,7 +24,7 @@
       </div>
     </form>
   {% endif %}
-  <form action="{{ url_for('user_info') }}"  method = "POST" class="form-horizontal">
+  <form  id='form' name = 'form' action="{{ url_for('user_info') }}"  method = "POST" class="form-horizontal">
     <div style="padding: 30px 10% 15px;">
   		<div class="input-group input-group-lg col-sm-6">
   			<span class="input-group-addon">用户名</span>
@@ -49,9 +49,19 @@
   		</div><br>
       <div class="form-actions">
         <button type="submit" class="btn btn-success btn-lg col-sm-offset-2">修改个人信息</button>
-        <a class="btn btn-default btn-lg" href="javascript:history.go(-1);void(0);">取消</a>
+        {% if current_user.is_admin() %}
+          <button type="submit" class="btn btn-success btn-lg" onclick="$('#form').attr('action','{{ url_for('to_manager') }}')" >提升为管理猿</button>
+        {% endif %}
+        {% if current_user.is_root() %}
+          <button type="submit" class="btn btn-success btn-lg" onclick="$('#form').attr('action','{{ url_for('to_root') }}')">提升为管理猿王</button>
+          <button type="submit" class="btn btn-success btn-lg" onclick="$('#form').attr('action','{{ url_for('to_user') }}')">取消管理员权限</button>
+        {% endif %}
+        <button type="reset" class="btn btn-danger btn-lg"　>取消修改</button>
       </div>
     </div>
   </form>
 </div> <!-- /container -->
+
+
+
 {% endblock %}

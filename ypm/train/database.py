@@ -51,7 +51,7 @@ def query_profile(user_id):
     if reply == '0':
         return None
     tmp = reply.split(' ')
-    return {'name': tmp[0], 'email': tmp[1], 'phone': tmp[2], 'admin': tmp[3]}
+    return {'name': tmp[0], 'email': tmp[1], 'phone': tmp[2], 'admin': int(tmp[3])}
 
 # if success return 1
 # else return 0
@@ -86,7 +86,7 @@ def _add(trains, reply):
     reply = reply.split(' ')
     key = ['train_id', 'loc1', 'date1', 'time1', 'loc2', 'date2', 'time2']
     value = reply[:7]
-    
+
     key.append('startTime')
     value.append(value[2] + endl + value[3])
     key.append('arriveTime')
@@ -98,7 +98,7 @@ def _add(trains, reply):
     		reply[i] = '特等座'
     	key.append(reply[i])
     	value.append(reply[i + 1] + '张' + endl + '￥' + reply[i + 2])
-    
+
     train = dict(zip(key, value))
 
     trains.append(train)
@@ -254,14 +254,15 @@ def _to_station(info, ticket):
 
 # return info like add_train
 # return 0 if fail (not exist or not on sale)
+
 def query_train(train_id):
     if train_id == '':
         return None
     db_write(' '.join(['query_train', train_id]))
-    reply = db_readline()
-    if reply == '0':
+    saled = db_readline()
+    if saled == '0':
         return None
-    print(reply)
+    reply = db_readline()
     train_id = reply.split()[0]
     name = reply.split()[1]
     catalog = reply.split()[2]
@@ -272,9 +273,13 @@ def query_train(train_id):
     for i in range(station_num):
         station.append(_to_station(db_readline().split(), ticket_kind_list))
 
+    if saled == '1':
+        saled = '是'
+    else:
+        saled = '否'
     return {'train_id': train_id,
             'name': name,
-            'saled': '否',
+            'saled': saled,
             'catalog': catalog,
             'station': station,
             'ticket_kind_list': ticket_kind_list}
@@ -300,21 +305,29 @@ def clean():
     else:
         return None
 
+def set_manager(user_id1, user_id2):
+    db_write(' '.join(['modify_privilege', user_id1, user_id2, '2']))
+    reply = db_readline()
+    if reply == '1':
+        return True
+    else:
+        return None
+
+def set_root(user_id1, user_id2):
+    db_write(' '.join(['modify_privilege', user_id1, user_id2, '3']))
+    reply = db_readline()
+    if reply == '1':
+        return True
+    else:
+        return None
+
+def set_user(user_id1, user_id2):
+    db_write(' '.join(['modify_privilege', user_id1, user_id2, '1']))
+    reply = db_readline()
+    if reply == '1':
+        return True
+    else:
+        return None
+
 if __name__ == '__main__':
     clean()
-    if debug:
-        print(register("lyx", "123", "qaq", "qqq"))
-        print(register("lyc", "123", "qaq", "qqq"))
-        print(register("lyc", "123", "qaq", "qqq"))
-        print(add_train('xiaohuoche', 'littletrain', 'C', [['菜鸡站', '07:34', '08:00', '00:01', '￥0.0', '￥0.0'], ['脑残站', '08:02', '12:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
-        print(add_train('dahuoche', 'bigtrain', 'D', [['B', '12:34', '13:00', '00:00', '￥0.0', '￥0.0'], ['C', '13:01', '14:00', '00:00', '￥1.5', '￥3.0']], ['普通的票', 'VIP']))
-        print(add_train('train', 'train', 'C', [['A', '07:00', '08:00', '00:10', '￥0.0'], ['B', '08:10', '12:00', '00:10', '￥3.0']], ['VIP']))
-        print(sale_train('xiaohuoche'))
-        print(sale_train('dahuoche'))
-        print(sale_train('train'))
-        print(query_ticket('菜鸡站', '脑残站', '2018-06-01', 'CD'))
-        print(buy_ticket('2018', '2', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'VIP'))
-        print(query_order('2018', '2018-06-01', 'C'))
-        print(refund_ticket('2018', '1', 'xiaohuoche', '菜鸡站', '脑残站', '2018-06-01', 'VIP'))
-        print(query_order('2018', '2018-06-01', 'C'))
-        print(query_transfer('A', 'C', '2018-06-05', 'CD'))

@@ -21,8 +21,8 @@
 			<br />
 			<p class = "text-warning"> {{ note }} </p>
 			<input type="text" id = 'name' name="name" class="form-control" placeholder="用户名，5~18位英文字符或数字" minlength = "5" maxlength = "18" required autofocus value = {{ form['name'] }}>
-			<input type="password" id = 'password' name="password" class="form-control" placeholder="密码，5~18位英文字符或数字" minlength = "3" maxlength = "18" required>
-			<input type="password" id = 'password１'class="form-control" placeholder="请重复输入密码" minlength = "3" maxlength = "18" required>
+			<input type="password" id = 'password' name="password" class="form-control" placeholder="密码，5~18位英文字符或数字" minlength = "5" maxlength = "18" required>
+			<input type="password" id = 'password1' class="form-control" placeholder="请重复输入密码" minlength = "5" maxlength = "18" required>
 			<input type="email" id = 'email' name="email" class="form-control" placeholder="邮箱" required  value = {{ form['email'] }}>
 			<input type="tel" id = 'phone' name="phone" class="form-control" placeholder="手机号" required  value = {{ form['phone'] }}>
 			<br />

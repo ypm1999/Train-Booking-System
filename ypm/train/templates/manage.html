@@ -68,14 +68,27 @@
 				</div>
 			</div>
 		</div>
-  {% if current_user.id == '2018' %}
+  {% if current_user.is_root() %}
     <div class = "text-center">
-      <form action = "{{ url_for('try_clean') }}" method = "POST">
-        <div class = "col-sm-2"></div>
-        <div class = "col-sm-8">
-          <button type = "submit" class = "btn btn-danger btn-lg btn-block"> 删库跑路　</button>
+
+      <div class = "row">
+        <form action = "{{ url_for('try_clean') }}" method = "POST">
+          <div class = "col-sm-2"></div>
+          <div class = "col-sm-8">
+            <button type = "submit" class = "btn btn-danger btn-lg btn-block"  onclick="return confirm('fsy,你确定要跑路吗？')"> 删库跑路　</button>
+          </div>
+        </form>
+      </div>
+      <br />
+      <div class = "row">
+        <div class = "col-sm-3"></div>
+        <div class = "col-sm-3">
+          <a class="btn btn-warning btn-lg btn-block" href="{{ url_for('try_backup') }}">备份数据库</a>
         </div>
-      </form>
+        <div class = "col-sm-3">
+          <a class="btn btn-warning btn-lg btn-block" href="{{ url_for('try_rollback') }}">恢复上一次的备份</a>
+        </div>
+      </div>
     </div>
   {% endif %}
 </div>

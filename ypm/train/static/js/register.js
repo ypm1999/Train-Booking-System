@@ -2,7 +2,7 @@ function check(){
 	var phone = $("#phone").val();
   var name = $("#phone").val();
   var password = $("#password").val();
-  var password１ = $("#password１").val();
+  var password1 = $("#password1").val();
   if(!(/^[0-9a-zA-Z_]+$/.test(name))){
     alert("用户名只能包含数字,字母或_");
   	return false;
@@ -15,7 +15,7 @@ function check(){
     alert("两次输入的密码不相同");
   	return false;
   }
-  if(!(/^1[3|4|5|8]\d{9}$/.test(phone))){
+  if(!(/^1[3|4|5|7|8]\d{9}$/.test(phone))){
     alert("请输入正确的11位手机号");
   	return false;
   }

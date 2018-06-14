@@ -18,17 +18,21 @@
   </div>
 
   <div class="text-center">
-    <form class="form-signin", method = "POST" action = "/login">
+    <form class="form-signin", method = "POST" action = "{{ url_for('user_login') }}">
       <h1 class="h3 mb-3 font-weight-normal">请　登　录</h1>
-      <input type="text" name="userid" class="form-control" placeholder="User ID" required autofocus>
-      <input type="password" name="password" class="form-control" placeholder="Password" required>
-      <div class="checkbox mb-3">
-        <label>
-          <input type="checkbox" name = "remember"> 记住我
-        </label>
+      <input type="text" name="userid" id="userid" class="form-control" placeholder="用户ID" required autofocus>
+      <input type="password" name="password" id="password" class="form-control" placeholder="密码" required>
+      <div class="checkbox mb-5">
+        <input type="checkbox" name = "remember" /> 记住我
+        <input type="hidden" name = "remember" />
       </div>
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      <button class="btn btn-lg btn-primary btn-block" type="submit"　onclick="return check()">登　录</button>
       <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
     </form>
   </div>
+{% endblock %}
+
+
+{% block js_input %}
+  <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 {% endblock %}

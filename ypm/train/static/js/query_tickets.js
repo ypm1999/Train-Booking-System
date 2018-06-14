@@ -5,7 +5,8 @@ var seats = ['商务座', '一等座', '二等座', '高级软卧', '软卧', '�
 $(function () {
     $('#datetimepicker').datetimepicker({
       format: 'YYYY-MM-DD',
-      locale: 'zh-CN'
+      locale: 'zh-CN',
+      ignoreReadonly: true
     });
 
     makeCheckBox();

@@ -149,10 +149,10 @@ def manage_orders():
 @app.route('/Data/searchTrain', methods = ['GET', 'POST'])
 def query_train_data():
     train_id = request.args['train_id']
-    print train_id
+    print(train_id)
     if train_id == '':
         return json.dumps({'train_id':'', 'name':'', 'station':[], 'saled':''})
-    print "train_id: %s" % train_id
+    print("train_id: %s" % train_id)
     # station1 = {'name':'上海1', 'arrive': '10:30', 'leave':'10:40', '硬座': '￥1200'}
     # station2 = {'name':'上海2', 'arrive': '10:31', 'leave':'10:40', '硬座': '￥1201'}
     # station3 = {'name':'上海3', 'arrive': '10:32', 'leave':'10:40', '硬座': '￥1202'}

@@ -14,7 +14,7 @@ class User(UserMixin):
     name = ''
     email = ''
     phone = ''
-    admin = int(0)
+    privilege = int(0)
     def getuser(self, ID):
         temp = query_profile(ID);
         if temp == None:
@@ -23,7 +23,7 @@ class User(UserMixin):
         self.name = temp['name']
         self.email = temp['email']
         self.phone = temp['phone']
-        self.admin = temp['admin']
+        self.privilege = temp['admin']
         return self
 
     def is_authenicated(self):
@@ -36,10 +36,10 @@ class User(UserMixin):
         return False
 
     def is_admin(self):
-        return self.admin >= 2
+        return self.privilege >= 2
 
     def is_root(self):
-        return self.admin == 3
+        return self.privilege == 3
 
     def get_id(self):
         return unicode(self.id)
