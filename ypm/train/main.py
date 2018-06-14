@@ -2,22 +2,19 @@
 # -*- coding:utf-8 -*-
 import sys
 import os
-reload(sys)
-sys.setdefaultencoding('utf-8')
 from flask import *
 from database import *
 from flask_login import (LoginManager, current_user, login_required, login_user, logout_user, confirm_login, fresh_login_required)
 from user import LM, User
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
 app = Flask(__name__)
 app.jinja_env.variable_start_string = '{{ '
 app.jinja_env.variable_end_string = ' }}'
 app.config['SECRET_KEY'] = 'ASSUEIIJSUasdfdsfeIIJJLL'
 LM.init_app(app)
 
-@app.route('/test', methods = ['GET', 'POST'])
-def test():
-    return render_template('test.html')
 
 @app.route('/', methods = ['GET', 'POST'])
 def home():
@@ -35,6 +32,8 @@ def user_register():
             flash(message="注册成功! 你的ID是%s，请牢记。" % id, category='success')
             if user.is_admin():
                 flash(message="您注册为管理猿", category='info')
+            elif user.is_root():
+                flash(message="您注册为管理猿王", category='info')
             return redirect(url_for('home'))
         else:
             return render_template('register.html', note = '注册失败，请检查注册信息', form = form)
@@ -111,7 +110,7 @@ def query_orders(id = None):
 @login_required
 def manage():
     if not current_user.is_admin():
-        flash(message='You are not manager !', category='warning')
+        flash(message='您不是管理员！', category='warning')
         return redirect(url_for('home'))
     else:
         return render_template("manage.html")
@@ -121,7 +120,7 @@ def manage():
 @login_required
 def manage_users():
     if not current_user.is_admin():
-        flash(message='You are not manager !', category='warning')
+        flash(message='您不是管理员！', category='warning')
         return redirect(url_for('home'))
     else:
         if request.method == 'POST':
@@ -134,7 +133,7 @@ def manage_users():
 @login_required
 def manage_orders():
     if not current_user.is_admin():
-        flash('You are not manager !')
+        flash('您不是管理员！')
         return redirect(url_for('home'))
     else:
         if request.method == 'POST':
@@ -160,7 +159,7 @@ def query_train_data():
 @login_required
 def manage_trains():
     if not current_user.is_admin():
-        flash('You are not manager !')
+        flash('您不是管理员！')
         return redirect(url_for('home'))
     else:
         return render_template('manage_trains.html');
@@ -170,7 +169,7 @@ def manage_trains():
 @login_required
 def try_add_train():
     if not current_user.is_admin():
-        flash(message='You are not manager !', category='warning')
+        flash(message='您不是管理员！', category='warning')
         return redirect(url_for('home'))
     else:
         id = request.form['train_id'];
@@ -178,12 +177,10 @@ def try_add_train():
         catelog = request.form['catelog'];
         m = int(request.form['seatNumber']);
         n = int(request.form['stationnumber']);
-
         seats = []
         for i in range(m):
             seats.append(request.form['head' + str(i)]);
             print 'head' + str(i)
-
         stations = []
         for i in range(n):
             tmp = ''
@@ -204,7 +201,7 @@ def try_add_train():
 @login_required
 def try_del_train():
     if not current_user.is_admin():
-        flash(message='You are not manager !', category='warning')
+        flash(message='您不是管理员！', category='warning')
         return redirect(url_for('home'))
     else:
         train_id = request.form["search_id"];
@@ -219,7 +216,7 @@ def try_del_train():
 @login_required
 def try_sale_train():
     if not current_user.is_admin():
-        flash(message='You are not manager !', category='warning')
+        flash(message='您不是管理员！', category='warning')
         return redirect(url_for('home'))
     else:
         train_id = request.form["search_id"];
@@ -251,11 +248,7 @@ def query_tieket_data():
     date = request.args['date']
     catelog = request.args['catelog']
     #TODO query_ticket(loc1, loc2, date, catelog)
-    print(loc1, loc2, date, catelog)
     trains = query_ticket(loc1, loc2, date, catelog)
-    print('#########################################')
-    print(trains)
-    print('#########################################')
     if trains == None:
         trains = []
     return json.dumps(trains)
@@ -264,9 +257,9 @@ def query_tieket_data():
 def try_query_tickets():
     return render_template("query_tickets.html", form = request.form)
 
-@app.route('/tictek/buy', methods = ['GET', 'POST'])
+@app.route('/ticket/buy', methods = ['GET', 'POST'])
 @login_required
-def try_book_tictek():
+def try_book_ticket():
     form = request.form;
     if buy_ticket(current_user.id, form['number'], form['train_id'], form['loc1'], form['loc2'], form['date'], form['seat']):
         flash(message='购票成功！', category = 'success');
@@ -276,9 +269,9 @@ def try_book_tictek():
         return render_template("query_tickets.html", form = form)
 
 
-@app.route('/tictek/refund', methods = ['POST'])
+@app.route('/ticket/refund', methods = ['POST'])
 @login_required
-def try_refund_tictek():
+def try_refund_ticket():
     user_id = request.form['user_id']
     train_id = request.form['train_id']
     num = request.form['num']
@@ -296,8 +289,22 @@ def try_refund_tictek():
 @app.route('/manage/clean', methods = ['POST'])
 @login_required
 def try_clean():
-    if current_user.id == '2018':
-        print '11111'
+    if current_user.is_root():
+        pass
+    return redirect(url_for('manage'));
+
+@app.route('/manage/rollback', methods = ['POST'])
+@login_required
+def try_rollback():
+    if current_user.is_root():
+        pass
+    return redirect(url_for('manage'));
+
+@app.route('/manage/backup', methods = ['POST'])
+@login_required
+def try_clean():
+    if current_user.is_root():
+        pass
     return redirect(url_for('manage'));
 
 if __name__ == '__main__':

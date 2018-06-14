@@ -56,7 +56,7 @@
             <h2 class="modal-title" id="myModalLabel">退票</h2>
           </div>
           <div class = "box">
-            <form id = "orderForm" class = "" action = "{{ url_for('try_refund_tictek') }}" method = "POST">
+            <form id = "orderForm" class = "" action = "{{ url_for('try_refund_ticket') }}" method = "POST">
               <div class="modal-body">
                 <input type = "hidden" name = "user_id" class = "form-control" readonly/>
                 <input type = "hidden" name = "train_id" class = "form-control" readonly/>
