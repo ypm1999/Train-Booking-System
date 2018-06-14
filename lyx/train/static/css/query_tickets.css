@@ -1,6 +1,9 @@
+.pull-down{
+  padding-top:37%
+}
 
 .mytext{
-  font-size:17pt;
+  font-size:16pt;
   color : rgb(18, 18, 18)
 }
 
@@ -14,21 +17,6 @@ vertical-align: middle!important;
 border: 2px solid rgba(90, 143, 233, 0.5)!important;
 }
 
-.mybtn{
-  padding : 0 20px 0 20px;
-}
+.box{
 
-.myinput{
-  width:100% !important;
-}
-
-.mycontainer{
-  padding: 20px 8% 15px;
-}
-
-.pull-down{
-  padding-top:1rem;
-}
-.headtext{
-  font-size:16pt;
 }

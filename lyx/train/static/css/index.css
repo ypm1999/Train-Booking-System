@@ -1,9 +1,10 @@
-
 .main{
-    height:720px;
-    padding:10% 0 20% 0;
-    margin: 10px 0 540px 0;
+    height: 960px;
+    padding: 0 0 20px 0;
+    margin: 2px 0 0 0;
     background: url("../img/bg1.jpg");
+    background-size:cover;
+    background-position:center;
     animation-name:myfirst;
     animation-duration:18s;
     /*变换时间*/

@@ -7,7 +7,6 @@
 
 
 {% block content %}
-
 <div class = "massage">
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% for category, message in messages %}
@@ -18,66 +17,66 @@
   {% endfor %}
   {% endwith %}
 </div>
-
+<div class = "mybounder">
     <div class="container mycontainer">
-			<div class="row-md-3">
-
-        <div class="col-md-4">
-					<div class="featured-box">
-						<i class="fa fa-eye fa-2x"></i>
-						<div class="text">
-							<h1>用户管理</h1>
-              <p>通过这个界面，您可以对系统中的用户进行管理。</p>
-              <p>您可以修改，查询用户的信息，或将用户提升为管理员。</p>
-						</div>
-
-            <div class = "text-center">
-              <div class = "mybutton">
-                <a class = "btn btn-success btn-lg btn-block" href = "{{ url_for('manage_users') }}">用户管理</a>
-              </div>
-
-            </div>
+      <div class="col-md-4">
+				<div class="featured-box">
+					<i class="fa fa-eye fa-2x"></i>
+					<div class="text">
+						<h1>用户管理</h1>
+            <p>通过这个界面，您可以对系统中的用户进行管理。</p>
+            <p>您可以修改，查询用户的信息，或将用户提升为管理员。</p>
 					</div>
+          <div class = "text-center">
+            <div class = "mybutton">
+              <a class = "btn btn-success btn-lg btn-block" href = "{{ url_for('manage_users') }}">用户管理</a>
+            </div>
+          </div>
 				</div>
+			</div>
 
-        <div class="col-md-4">
-					<div class="featured-box">
-						<i class="fa fa-bars fa-2x"></i>
-						<div class="text">
-							<h1>订单管理</h1>
-						  <p>通过这个界面，您可以对用户的订单进行管理和调整。</p>
-              <p>您可以为用户退票</p>
-              <br /><br />
-						</div>
-            <div class = "text-center">
-              <div class = "mybutton">
-                <a class = "btn btn-success btn-lg btn-block" href = "{{ url_for('query_orders') }}"> 订单管理</a>
-              </div>
-					  </div>
-  				</div>
-  			</div>
+      <div class="col-md-4">
+				<div class="featured-box">
+					<i class="fa fa-bars fa-2x"></i>
+					<div class="text">
+						<h1>订单管理</h1>
+					  <p>通过这个界面，您可以对用户的订单进行管理和调整。</p>
+            <p>您可以为用户退票</p>
+            <br /><br />
+					</div>
+          <div class = "text-center">
+            <div class = "mybutton">
+              <a class = "btn btn-success btn-lg btn-block" href = "{{ url_for('query_orders') }}"> 订单管理</a>
+            </div>
+				  </div>
+				</div>
+			</div>
 
-				<div class="col-md-4">
-					<div class="featured-box">
-						<i class="fa fa-arrows fa-2x"></i>
-						<div class="text">
-							<h1>车次管理</h1>
-						  <p>通过这个界面，您可以对车次进行管理和调整。</p>
-              <p>您可以对未发售的车次进行查询，修改，删除或发售。</p>
-						</div>
-            <div class = "text-center">
-              <div class = "mybutton">
-                <a class = "btn btn-success btn-lg btn-block" href = "{{ url_for('manage_trains') }}"> 车次管理</a>
-              </div>
-					  </div>
-  				</div>
-  			</div>
-  		</div>
+			<div class="col-md-4">
+				<div class="featured-box">
+					<i class="fa fa-arrows fa-2x"></i>
+					<div class="text">
+						<h1>车次管理</h1>
+					  <p>通过这个界面，您可以对车次进行管理和调整。</p>
+            <p>您可以对未发售的车次进行查询，修改，删除或发售。</p>
+					</div>
+          <div class = "text-center">
+            <div class = "mybutton">
+              <a class = "btn btn-success btn-lg btn-block" href = "{{ url_for('manage_trains') }}"> 车次管理</a>
+            </div>
+				  </div>
+				</div>
+			</div>
+		</div>
+  {% if current_user.id == '2018' %}
+    <div class = "text-center">
+      <form action = "{{ url_for('try_clean') }}" method = "POST">
+        <div class = "col-sm-2"></div>
+        <div class = "col-sm-8">
+          <button type = "submit" class = "btn btn-danger btn-lg btn-block"> 删库跑路　</button>
+        </div>
+      </form>
     </div>
-  <div class = "text-center">
-    <form action = "{{ url_for('try_clean') }}" method = "POST">
-      <button type = "subbmit" class = "btn btn-danger btn-lg"> 删库跑路　</button>
-    </form>
-  </div>
   {% endif %}
+</div>
 {% endblock %}

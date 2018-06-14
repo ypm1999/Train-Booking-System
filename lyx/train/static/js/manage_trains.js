@@ -83,6 +83,7 @@ function showList(){
       s2 = "readonly";
     station.push(getstation('station' + i, seat.length, s1, s2));
   }
+  $('#note').show();
   $('#seatNumber').val(seat.length);
   $('#stationnumber').val(n);
   $('#addstation').show();
@@ -108,9 +109,17 @@ function getstation(name, seatNum, arrive, leave){
   tmp.push('<th>' + getinput(name + 'name', 'required') + '</th>');
   tmp.push('<th>' + getinput(name + 'arrive', arrive) + '</th>');
   tmp.push('<th>' + getinput(name + 'leave', leave) + '</th>');
-  tmp.push('<th>' + getinput(name + 'stop', 'required') + '</th>');
+  if(arrive != 'required')
+    tmp.push('<th>' + getinput(name + 'stop', arrive) + '</th>');
+  else if(leave != 'required')
+    tmp.push('<th>' + getinput(name + 'stop', leave) + '</th>');
+  else
+    tmp.push('<th>' + getinput(name + 'stop', 'required') + '</th>');
   for(var i = 0; i < seatNum; i++)
-    tmp.push('<th>' + getinputwithspan(name + i, 'required') + '</th>');
+    if(arrive != 'required')
+      tmp.push('<th>' + getinputwithspan(name + i, 'readonly') + '</th>');
+    else
+      tmp.push('<th>' + getinputwithspan(name + i, 'required') + '</th>');
   tmp.push('</tr>');
   return tmp.join('\n');
 }
@@ -193,6 +202,7 @@ var TableInit = function() {
   };
   //得到查询的参数
   var load = function(res){
+
     $('#train_row').html([
       '<td>' + res.train_id + '</td>',
       '<td>' + res.name + '</td>',

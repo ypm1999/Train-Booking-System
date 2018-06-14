@@ -6,8 +6,17 @@
 
 {% endblock %}
 
-
 {% block content %}
+<div class = "massage">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">
+      <a href="#" class="close" data-dismiss="alert">&times;</a>
+      {{ message }}
+    </div>
+  {% endfor %}
+  {% endwith %}
+</div>
     <div class="container">
       <div class="page-header">
         <h1>列车管理</h1>
@@ -35,7 +44,7 @@
               <h2 class="modal-title">添加车次</h2>
             </div>
 
-              <form id = "addTrainForm" action = "{{ url_for('add_train') }}" method = "POST">
+              <form id = "addTrainForm" action = "{{ url_for('try_add_train') }}" method = "POST">
                 <div class="modal-body">
                   <br />
                   <div class = "row">
@@ -111,7 +120,11 @@
                       </div>
                     </div>
                   </div>
-
+                  <div class = "row"　id="note" hidden>
+                    <div class = "text-center">
+                      <h2>注意：价格为上一站到本站的车票价格</h2>
+                    </div>
+                  </div>
 
                   <input type = "text" name = "seatNumber"  id = "seatNumber" hidden/>
                   <input type = "text" name = "stationnumber" id = "stationnumber" hidden/>
@@ -164,17 +177,18 @@
       <div class = "row">
           <form id = "buttons" class = "text-center"　action = "/manage/train/sale" method = "POST" hidden>
             <input id = "search_id" type = "hidden" />
-            <div class = "col-sm-4">
+            <div class = "col-sm-2"></div>
+            <div class = "col-sm-3">
               <button type = "submit" class = "btn btn-success btn-lg" onclick = "sale()">
                 <div class = "mybtn">发售</div>
               </button>
             </div>
-            <div class = "col-sm-4">
+            <div class = "col-sm-2">
               <button type = "button" class = "btn btn-success btn-lg" onclick = "modify()" hidden>
                 <div class = "mybtn">修改</div>
               </button>
             </div>
-            <div class = "col-sm-4">
+            <div class = "col-sm-3">
               <button type = "submit" class = "btn btn-success btn-lg" onclick = "delete_train()">
                 <div class = "mybtn">删除</div>
               </button>

@@ -204,7 +204,8 @@ def try_del_train():
         flash(message='You are not manager !', category='warning')
         return redirect(url_for('home'))
     else:
-        if(delete_train(request.form["search_id"])):
+        train_id = request.form["search_id"];
+        if(delete_train(train_id)):
             flash(message="删除车次成功!", category='success')
         else:
             flash(message="删除车次失败!", category='success')
@@ -218,7 +219,8 @@ def try_sale_train():
         flash(message='You are not manager !', category='warning')
         return redirect(url_for('home'))
     else:
-        if(seal_train(request.form["search_id"])):
+        train_id = request.form["search_id"];
+        if(sale_train(train_id)):
             flash(message="发售车次成功!", category='success')
         else:
             flash(message="发售车次失败!", category='success')
@@ -250,7 +252,7 @@ def query_tieket_data():
 
 @app.route('/ticket/query', methods = ['GET', 'POST'])
 def try_query_tickets():
-    return render_template("query_trains.html", form = request.form)
+    return render_template("query_tickets.html", form = request.form)
 
 @app.route('/tictek/buy', methods = ['GET', 'POST'])
 @login_required
@@ -261,7 +263,7 @@ def try_book_tictek():
         redirect( url_for('home') );
     else:
         flash(message='购票失败！', category = 'danger');
-        return render_template("query_trains.html", form = form)
+        return render_template("query_tickets.html", form = form)
 
 
 @app.route('/tictek/refund', methods = ['POST'])
