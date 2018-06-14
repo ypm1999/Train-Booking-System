@@ -51,7 +51,7 @@ def query_profile(user_id):
     if reply == '0':
         return None
     tmp = reply.split(' ')
-    return {'name': tmp[0], 'email': tmp[1], 'phone': tmp[2], 'admin': int(tmp[3]) == 2}
+    return {'name': tmp[0], 'email': tmp[1], 'phone': tmp[2], 'admin': int(tmp[3])}
 
 # if success return 1
 # else return 0
@@ -298,6 +298,22 @@ def delete_train(train_id):
 # 删库
 def clean():
     db_write('clean')
+    reply = db_readline()
+    if reply == '1':
+        return True
+    else:
+        return None
+
+def set_manager(user_id1, user_id2):
+    db_write(' '.join(['modify_privilege', user_id1, user_id2, '2']))
+    reply = db_readline()
+    if reply == '1':
+        return True
+    else:
+        return None
+
+def set_user(user_id1, user_id2):
+    db_write(' '.join(['modify_privilege', user_id1, user_id2, '1']))
     reply = db_readline()
     if reply == '1':
         return True
