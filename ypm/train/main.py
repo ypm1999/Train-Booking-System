@@ -114,10 +114,10 @@ def query_orders(id = None):
 def to_manager():
     id1 = current_user.id;
     id2 = request.form['id'];
-    if(set_manage(id1, id2))
-        flash(message="将用户提升为管理猿成功！", catagory = "success")
-    else
-        flash(message="将用户提升为管理猿失败！", catagory = "warning")
+    if(set_manager(id1, id2)):
+        flash(message="将用户提升为管理猿成功！", category = "success")
+    else:
+        flash(message="将用户提升为管理猿失败！", category = "warning")
     return redirect(url_for('user_info'));
 
 
@@ -126,10 +126,10 @@ def to_manager():
 def to_root():
     id1 = current_user.id;
     id2 = request.form['id'];
-    if(set_manage(id1, id2))
-        flash(message="将用户提升为管理猿王成功！", catagory = "success")
-    else
-        flash(message="将用户提升为管理猿王失败！", catagory = "warning")
+    if(set_root(id1, id2)):
+        flash(message="将用户提升为管理猿王成功！", category = "success")
+    else:
+        flash(message="将用户提升为管理猿王失败！", category = "warning")
     return redirect(url_for('user_info'));
 
 @app.route('/user/toUser', methods = ['POST'])#and manage_orders
@@ -137,10 +137,10 @@ def to_root():
 def to_user():
     id1 = current_user.id;
     id2 = request.form['id'];
-    if(set_manage(id1, id2))
-        flash(message="将管理员降为普通用户成功！", catagory = "success")
-    else
-        flash(message="将管理员降为普通用户失败！", catagory = "warning")
+    if(set_user(id1, id2)):
+        flash(message="将管理员降为普通用户成功！", category = "success")
+    else:
+        flash(message="将管理员降为普通用户失败！", category = "warning")
     return redirect(url_for('user_info'));
 #管理员界面，管理用户，管理订单，管理车次。
 @app.route('/manage', methods = ['GET', 'POST'])
@@ -322,20 +322,6 @@ def try_refund_ticket():
     else:
         flash(message="退票失败，请重试！", category='warning')
     return query_orders(user_id)
-
-@app.route('/manage/clean', methods = ['POST'])
-@login_required
-def try_clean():
-    if current_user.is_root():
-        pass
-    return redirect(url_for('manage'));
-
-@app.route('/manage/rollback', methods = ['POST'])
-@login_required
-def try_rollback():
-    if current_user.is_root():
-        pass
-    return redirect(url_for('manage'));
 
 
 @app.route('/manage/clean', methods = ['POST'])

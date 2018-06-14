@@ -1,4 +1,4 @@
-function check_login(){
+function check(){
 	var id = $("#userid").val();
   var password = $("#password").val();
   if(!(/^[0-9]+$/.test(id)) || Number(id) < 2018){
