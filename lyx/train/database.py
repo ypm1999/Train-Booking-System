@@ -258,10 +258,10 @@ def query_train(train_id):
     if train_id == '':
         return None
     db_write(' '.join(['query_train', train_id]))
-    reply = db_readline()
-    if reply == '0':
+    saled = db_readline()
+    if saled == '0':
         return None
-    print(reply)
+    reply = db_readline()
     train_id = reply.split()[0]
     name = reply.split()[1]
     catalog = reply.split()[2]
@@ -272,9 +272,13 @@ def query_train(train_id):
     for i in range(station_num):
         station.append(_to_station(db_readline().split(), ticket_kind_list))
 
+    if saled == '1':
+        saled = '是'
+    else:
+        saled = '否'
     return {'train_id': train_id,
             'name': name,
-            'saled': '否',
+            'saled': saled,
             'catalog': catalog,
             'station': station,
             'ticket_kind_list': ticket_kind_list}

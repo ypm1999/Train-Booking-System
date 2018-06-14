@@ -30,7 +30,7 @@ bool Register() {
 	User user;
 	user.in();
 	user.Id = UserBpt.size() + 2018;
-	user.Privilege = (user.Id == 2018) ? 2 : 1;
+	user.Privilege = (user.Id == 2018) ? 3 : 1;
 	UserBpt.insert(user.Id, user);
 	printf("%d\n", user.Id);
 	return 1;

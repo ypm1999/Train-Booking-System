@@ -267,10 +267,15 @@ bool query_train() {
 	scanf("%s", Tid);
 	auto itTB = TrainBpt.search(TrainKey(Tid, 0));
 	//cout << "pub" << itTB->pub << endl;
-	if (!itTB.valid() || !itTB->pub) {
+	if (!itTB.valid()) {
 		puts("0");
 		return 0;
 	}
+    if (!itTB->pub) {
+        puts("-1");
+    } else {
+        puts("1");
+    }
 
 	printf("%s %s %c %d %d ", Tid, itTB->TrainName, itTB->TrainCata, itTB->StationNum, itTB->PriceNum);
 	for (int i = 0; i < itTB->PriceNum; i++)

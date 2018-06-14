@@ -290,21 +290,42 @@ def try_refund_ticket():
 @login_required
 def try_clean():
     if current_user.is_root():
-        pass
+        user = User().getuser(current_user.id)
+        logout_user()
+        try:
+            clean()
+            register(user.name, user.password, user.email, user.phone)
+            user = User().getuser(2018)
+            login_user(user, False)
+            flash(message='删库成功', category='success')
+        except:
+            flash(message='删库有风险,请重新来过', category='danger')
+    else:
+        flash('您不是管理员!', category='warning')
     return redirect(url_for('manage'));
 
 @app.route('/manage/rollback', methods = ['POST'])
 @login_required
 def try_rollback():
     if current_user.is_root():
-        pass
+        if os.system('unzip -o data.zip'):
+            flash('已恢复到上一次备份', category='success')
+        else:
+            flash('备份失败', category='warning')
+    else:
+        flash('您不是管理员!', category='warning')
     return redirect(url_for('manage'));
 
 @app.route('/manage/backup', methods = ['POST'])
 @login_required
-def try_clean():
+def try_backup():
     if current_user.is_root():
-        pass
+        if os.system('zip data.zip TrainBpt UserBpt StationBpt OrderBpt'):
+            flash('备份成功', category='success')
+        else:
+            flash('备份失败', category='warning')
+    else:
+        flash('您不是管理员!', category='warning')
     return redirect(url_for('manage'));
 
 if __name__ == '__main__':

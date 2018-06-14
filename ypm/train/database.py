@@ -51,7 +51,7 @@ def query_profile(user_id):
     if reply == '0':
         return None
     tmp = reply.split(' ')
-    return {'name': tmp[0], 'email': tmp[1], 'phone': tmp[2], 'admin': int(tmp[3]) == 2}
+    return {'name': tmp[0], 'email': tmp[1], 'phone': tmp[2], 'admin': tmp[3]}
 
 # if success return 1
 # else return 0
