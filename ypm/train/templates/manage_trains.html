@@ -47,7 +47,7 @@
               <form id = "addTrainForm" action = "{{ url_for('try_add_train') }}" method = "POST">
                 <div class="modal-body">
                   <br />
-                  <div class = "row">
+                  <div class = "row" id = 'checkbox'>
                     <div class = "mytext">
                       <div class = "col-sm-2">&nbsp列车座席：&nbsp</div>
                       <div class = "col-sm-9">
@@ -120,9 +120,9 @@
                       </div>
                     </div>
                   </div>
-                  <div class = "row"　id="note" hidden>
+                  <div class="row" id="notes" hidden>
                     <div class = "text-center">
-                      <h2>注意：价格为上一站到本站的车票价格</h2>
+                      <h4>注意：价格为上一站到本站的车票价格;时间按24小时计。</h4>
                     </div>
                   </div>
 
@@ -144,7 +144,7 @@
                   </div>
 
                   <div class="modal-footer">
-                    <button id = "submitadd" type="submit" class="btn btn-primary btn-lg" disabled>添加</button>
+                    <button id = "submitadd" type="submit" class="btn btn-primary btn-lg" onclick="return checkadd()"  disabled>添加</button>
                   </div>
                 </form>
               </div>

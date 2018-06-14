@@ -71,7 +71,7 @@ var TableInit = function() {
   window.operateEvents = {
       "click #orderTicket": function(e, value, row, index) {
         var order = document.getElementById("orderForm");
-        order.user_id = user_id;
+        order.user_id.value = user_id;
         order.train_id.value = row.train_id;
         order.loc1.value = row.loc1;
         order.loc2.value = row.loc2;

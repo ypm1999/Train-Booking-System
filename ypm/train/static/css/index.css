@@ -3,8 +3,6 @@
     padding: 0 0 20px 0;
     margin: 2px 0 0 0;
     background: url("../img/bg1.jpg");
-    background-size:cover;
-    background-position:center;
     animation-name:myfirst;
     animation-duration:18s;
     /*变换时间*/

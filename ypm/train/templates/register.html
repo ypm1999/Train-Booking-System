@@ -15,29 +15,25 @@
 	{% endfor %}
 	{% endwith %}
 </div>
-
-
 	<div class="text-center">
 		<form class="form-signin" method="POST" action="/register">
-      {{ form.hidden_tag() }}
-			<h1 class="h3 mb-3 font-weight-normal">Please register</h1>
+			<h1 class="h3 mb-3 font-weight-normal">请　注　册</h1>
 			<br />
 			<p class = "text-warning"> {{ note }} </p>
-			{{ form.csrf_token }}
-			{{ form.name(class = 'form-control', placeholder="User name", required = "required") }}
-			{{ form.password(class = 'form-control', placeholder="Password", required = "required") }}
-			{{ form.email(class = 'form-control', placeholder="Email", required = "required") }}
-			{{ form.phone(class = 'form-control', placeholder="Phone number", required = "required") }}
-			<!--
-			<input type="text" name="username" class="form-control" placeholder="Account name" required autofocus>
-			<input type="password" name="password" class="form-control" placeholder="Password" required>
-			<input type="text" name="email" class="form-control" placeholder="Email" required>
-			<input type="text" name="phone" class="form-control" placeholder="Phone number" required>
-			--->
+			<input type="text" id = 'name' name="name" class="form-control" placeholder="用户名，5~18位英文字符或数字" minlength = "5" maxlength = "18" required autofocus value = {{ form['name'] }}>
+			<input type="password" id = 'password' name="password" class="form-control" placeholder="密码，5~18位英文字符或数字" minlength = "3" maxlength = "18" required>
+			<input type="password" id = 'password１'class="form-control" placeholder="请重复输入密码" minlength = "3" maxlength = "18" required>
+			<input type="email" id = 'email' name="email" class="form-control" placeholder="邮箱" required  value = {{ form['email'] }}>
+			<input type="tel" id = 'phone' name="phone" class="form-control" placeholder="手机号" required  value = {{ form['phone'] }}>
 			<br />
-			<button class="btn btn-lg btn-primary btn-block" type="submit">注册</button>
+			<button class="btn btn-lg btn-primary btn-block" type="submit" onclick = "return check()">注册</button>
 			<p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
 		</form>
 	</div>
 </html>
+{% endblock %}
+
+
+{% block js_input %}
+  <script src="{{ url_for('static', filename='js/register.js') }}"></script>
 {% endblock %}

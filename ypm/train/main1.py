@@ -5,6 +5,7 @@ import os
 reload(sys)
 sys.setdefaultencoding('utf-8')
 from flask import *
+from form import *
 from database import *
 from flask_login import (LoginManager, current_user, login_required, login_user, logout_user, confirm_login, fresh_login_required)
 from user import LM, User
@@ -26,19 +27,19 @@ def home():
 #用户管理，注册，登录，登出，profile，修改profile, 订单
 @app.route('/register', methods = ['GET', 'POST'])
 def user_register():
-    form = request.form;
+    user = UserForm(request.form)
     if request.method == 'POST':
-        id = register(form['name'], form['password'], form['email'], form['phone']);
+        id = register(user.name.data, user.password.data, user.email.data, user.phone.data);
         if id:
             user = User().getuser(id)
             login_user(user, False)
-            flash(message="注册成功! 你的ID是%s，请牢记。" % id, category='success')
+            flash(message="注册成功! 你的ID是%s。" % id, category='success')
             if user.is_admin():
                 flash(message="您注册为管理猿", category='info')
             return redirect(url_for('home'))
         else:
-            return render_template('register.html', note = '注册失败，请检查注册信息', form = form)
-    return render_template('register.html', note = '注册为新用户', form = form)
+            return render_template('register.html', note = '注册失败', form = user)
+    return render_template('register.html', note = '注册为新用户', form = user)
 
 
 @app.route('/login', methods = ['POST', 'GET'])
@@ -54,7 +55,6 @@ def user_login():
             flash(message = "登录成功!", category = "success")
             return redirect( next or url_for('home') )
     return render_template("login.html")
-
 
 @app.route('/logout')
 @login_required
@@ -94,6 +94,9 @@ def get_order_data():
     return json.dumps(orders)
     # TODO query_order(user_id, date, catelog)
     # catelog 自动设置为全集
+    # order1 = {'train_id':'G12306', 'time1':'2018-06-11<br/>06:30', 'time2':'2018-06-11<br/>06:35', 'loc1':"北京", 'loc2': "上海", 'num': 1, 'ticket_kind': "高级软卧", 'price':"500.00"}
+    # order2 = {'train_id':'G12306', 'time1':'2018-06-11<br/>06:30', 'time2':'2018-06-11<br/>06:35', 'loc1':"北京", 'loc2': "上海", 'num': 1, 'ticket_kind': "高级软卧", 'price':"5010.00"}
+    # return json.dumps([order1, order2])
 
 @app.route('/user/orders', methods = ['POST', 'GET'])#and manage_orders
 @login_required
@@ -102,7 +105,7 @@ def query_orders(id = None):
     if(not current_user.is_admin()):
         tmp = "readonly";
     if id == None:
-        id = current_user.id
+        id = current_user.id;
     return render_template('query_orders.html', user_id = id, readonly = tmp)
 
 
@@ -150,6 +153,10 @@ def query_train_data():
     if train_id == '':
         return json.dumps({'train_id':'', 'name':'', 'station':[], 'saled':''})
     print "train_id: %s" % train_id
+    # station1 = {'name':'上海1', 'arrive': '10:30', 'leave':'10:40', '硬座': '￥1200'}
+    # station2 = {'name':'上海2', 'arrive': '10:31', 'leave':'10:40', '硬座': '￥1201'}
+    # station3 = {'name':'上海3', 'arrive': '10:32', 'leave':'10:40', '硬座': '￥1202'}
+    # train1 = {'train_id':train_id, 'name': 'C919', "saled" : '否', 'station':[station1, station2, station3]}
     train = query_train(train_id)
     print train
     if train == None:
@@ -233,6 +240,8 @@ def try_sale_train():
 #查票，购票，退票
 @app.route('/Data/trains/transfer', methods = ['GET', 'POST'])
 def query_tieket_transfer_data():
+    train1 = {'id':'G12306', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
+    train2 = {'id':'G11007', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '软卧': str(100) + '张<br />' + '￥1200'}
     loc1 = request.args['loc1']
     loc2 = request.args['loc2']
     date = request.args['date']
@@ -245,7 +254,8 @@ def query_tieket_transfer_data():
 
 @app.route('/Data/trains', methods = ['GET', 'POST'])
 def query_tieket_data():
-
+    train1 = {'id':'G12306', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '硬座': str(100) + '张<br />' + '￥1200', '软卧': str(100) + '张<br />' + '￥1200'}
+    train2 = {'id':'G11007', 'startTime': '2018-06-01<br />06:30', 'arriveTime': '2018-06-01<br />10:50', '软卧': str(100) + '张<br />' + '￥1200'}
     loc1 = request.args['loc1']
     loc2 = request.args['loc2']
     date = request.args['date']

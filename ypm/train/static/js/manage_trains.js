@@ -1,4 +1,5 @@
 var exist = false;
+var seat = new Array();
 function searchTrain() {
   if(!exist){
     var oTable = new TableInit();
@@ -40,7 +41,7 @@ function showList(){
     alert("请输入正确的车站数！");
     return;
   }
-  var seat = new Array();
+  seat = [];
   for(var i in seats){
     if(temp[seats[i]] == 'on')
       seat.push(seats[i]);
@@ -83,7 +84,8 @@ function showList(){
       s2 = "readonly";
     station.push(getstation('station' + i, seat.length, s1, s2));
   }
-  $('#note').show();
+  console.log($('#notes'));
+  $('#notes').show();
   $('#seatNumber').val(seat.length);
   $('#stationnumber').val(n);
   $('#addstation').show();
@@ -106,7 +108,7 @@ function getstation(name, seatNum, arrive, leave){
   var tmp = [];
   name += '_';
   tmp.push('<tr>');
-  tmp.push('<th>' + getinput(name + 'name', 'required') + '</th>');
+  tmp.push('<th>' + getinput(name + 'name', 'required maxlength = "8"') + '</th>');
   tmp.push('<th>' + getinput(name + 'arrive', arrive) + '</th>');
   tmp.push('<th>' + getinput(name + 'leave', leave) + '</th>');
   if(arrive != 'required')
@@ -451,6 +453,46 @@ function modify() {
     $('#addTrain').show();
     $('#station').hide();
     $('#train').hide();
+}
+
+function checkadd(){
+  var m = form.seatNumber;
+  var n = form.stationnumber;
+  var t = $('#checkbox').serializeArray();
+  var cnt = 0;
+  for(var i in t){
+    if(t[i]['value'] == 'on')
+      if(t[i]['name'] in seats)
+        cnt++;
+      else{
+        alter('请在修改列车信息后重新生成车站表单！');
+        return false;
+      }
+  }
+  if(cnt != n){
+    alter('请在修改列车信息后重新生成车站表单！');
+    return false;
+  }
+  var tim = /^(20|21|22|23|[0-1]\d):[0-5]\d$/;
+  var price = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/
+  for(i = 0; i < n; i++){
+    var name = $("input[name='station" + i + "'_name]").val();
+    var name1 = $("input[name='station" + i + "'_arrive]").val();
+    var name2 = $("input[name='station" + i + "'_leave]").val();
+    var name3 = $("input[name='station" + i + "'_stop]").val();
+    if(!tim.test(name1) || !tim.test(name2) || !tim.test(name3)){
+      alter('请在'+ name +'站(第'+ (i + 1) '个)输入正确的时间格式');
+      return false;
+    }
+    for(var j = 0; j < m; j++){
+      var pri = $("input[name='station" + i + "'_"+ j +"]").val();
+      if(!price.test(pri)){
+        alter('请在'+ name +'站(第'+ (i + 1) '个)输入正确的价格');
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 function sale(){

@@ -29,7 +29,7 @@
           <form action="" method="POST" class="form-inline">
             <div class="col-sm-5">
               <div class="input-group input-group-lg myinput">
-                <input type="text" id="user_id" class="form-control"  placeholder="Train ID" value = {{ user_id }} {{ readonly }}/>
+                <input type="text" id="user_id" class="form-control"  placeholder="列车编号" value = {{ user_id }} {{ readonly }}/>
               </div>
             </div>
             <div class="col-sm-5">
@@ -77,11 +77,11 @@
                   <div class = "col-sm-2"></div>
                   <div class = "col-sm-4">
                     <h2><label class = "label label-default">退票数量</label></h2>
-                    <input type = "text" name = "num" class = "form-control" placeholder="退票数量不能超过已订票数" required/>
+                    <input type = "text" name = "num" class = "form-control" onclick="return checkadd()" placeholder="退票数量不能超过已订票数" required/>
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="submit" class="btn btn-primary"　onclick = 'refund()'>退票</button>
+                  <button type="submit" class="btn btn-primary"　onclick = 'return refund()'>退票</button>
                 </div>
               </div>
             </form>
