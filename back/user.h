@@ -88,17 +88,18 @@ bool modify_privilege() {
 	int i1, i2, p;
 	scanf("%d%d%d", &i1, &i2, &p);
 	auto itU1 = UserBpt.search(i1);
-	if (itU1.valid() && (*itU1).Privilege == 2) {
+	if (itU1.valid() && (*itU1).Privilege >= 2) {
 		auto itU2 = UserBpt.search(i2);
-		if(itU2.valid()){
+		if(itU2.valid()) {
+			User &u1 = (*itU1);
 			User &u2 = (*itU2);
-			if (u2.Privilege == 2 && p == 1) {
+			if (u1.Privilege > u2.Privilege) {
+				u2.Privilege = p;
+				itU2.save();
+			} else if (u1.Privilege == u2.Privilege) {
+			} else {
 				puts("0");
 				return 0;
-			}
-			if (u2.Privilege == 1 && p == 2) {
-				u2.Privilege = 2;
-				itU2.save();
 			}
 			puts("1");
 			return 1;

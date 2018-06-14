@@ -288,7 +288,7 @@ bool query_train() {
 		if (itTB->arr_time == -1 || itTB->start_time == -1) printf("xx:xx ");
 		else printTime(itTB->start_time - itTB->arr_time);
 		for (int j = 0; j < itTB->PriceNum; j++)
-			printf("￥%f%c", itTB->Price[j], " \n"[j == itTB->PriceNum - 1]);
+			printf("￥%.2f%c", itTB->Price[j], " \n"[j == itTB->PriceNum - 1]);
 	}
 	return 1;
 }

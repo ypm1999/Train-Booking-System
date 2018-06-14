@@ -54,7 +54,7 @@ struct ticket {
 		totime(time2, time);
 		printf("%s %s %s ", loc2, date, time);
 		for (int i = 0; i < num; i++)
-			printf("%s %d %lf%c", ticketKind[i], leftTicket[i], price[i], " \n"[i == num - 1]);
+			printf("%s %d %.2f%c", ticketKind[i], leftTicket[i], price[i], " \n"[i == num - 1]);
 	}
 	int get_arrive_time() const {
 		return date1 * 1440 + time1;
@@ -75,7 +75,7 @@ bool cmp_arrive_time(const ticket &a, const ticket &b) {
 }
 
 bool cmp_start_time(const ticket &a, const ticket &b) {
-	return a.get_arrive_time() < b.get_arrive_time();
+	return a.get_start_time() < b.get_start_time();
 }
 
 
@@ -506,7 +506,7 @@ bool query_order(){
  	short n[5][5], num[5];
 	double p[5][5];
 //	std::cout << strlen(cata) << std::endl;
-	for (int i = 0; i < strlen(cata); i++){
+	for (int i = 0; i < (int)strlen(cata); i++){
 		auto itO = OrderBpt.lower_bound(OrderKey(id, cata[i], d));
 		if (!itO.valid())
 			continue;
@@ -561,7 +561,7 @@ bool query_order(){
 		printf("%s ", l2[i]);
 		printDate(ard[i]); printTime(art[i]);
 		for (int j = 0; j < num[i]; j++)
-			printf("%s %d %f%c", tk[i][j], n[i][j], p[i][j], " \n"[j == num[i] - 1]);
+			printf("%s %d %.2f%c", tk[i][j], n[i][j], p[i][j], " \n"[j == num[i] - 1]);
 	}
 	return 1;
 }
