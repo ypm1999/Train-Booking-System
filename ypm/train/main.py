@@ -291,10 +291,14 @@ def query_tieket_transfer_data():
 def query_tieket_data():
 
     loc1 = request.args['loc1']
+    print "111"
     loc2 = request.args['loc2']
+    print "111"
     date = request.args['date']
+    print "111"
     catelog = request.args['catelog']
     #TODO query_ticket(loc1, loc2, date, catelog)
+    print(loc1, loc2, date, catelog)
     trains = query_ticket(loc1, loc2, date, catelog)
     if trains == None:
         trains = []

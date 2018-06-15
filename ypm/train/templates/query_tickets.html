@@ -109,7 +109,7 @@
                     <h2><label class = "label label-default">购买数量</label></h2>
                   </div>
                   <div class = "row">
-                    <input type = "text" name = "number" class = "form-control" required/>
+                    <input type = "text" name = "number" onkeyup="value=value.replace(/[^\d]/g,'')" class = "form-control" required/>
                   </div>
                 </div>
               </div>

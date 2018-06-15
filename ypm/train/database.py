@@ -123,7 +123,6 @@ def query_ticket(loc1, loc2, date, catalog):
 def query_transfer(loc1, loc2, date, catalog):
     if loc1 == '' or loc2 == '' or date == '' or catalog == '':
         return None
-    print('#############################query_transfer||||||||||||||', loc1, loc2, date, catalog)
     db_write(' '.join(['query_transfer', loc1, loc2, date, catalog]))
     reply = db_readline()
     if reply == '-1':

@@ -77,7 +77,7 @@
                   <div class = "col-sm-2"></div>
                   <div class = "col-sm-4">
                     <h2><label class = "label label-default">退票数量</label></h2>
-                    <input type = "text" name = "num" class = "form-control" onclick="return checkadd()" placeholder="退票数量不能超过已订票数" required/>
+                    <input type = "text" name = "num" class = "form-control" onkeyup="value=value.replace(/[^\d]/g,'')" onclick="return refund()" placeholder="退票数量不能超过已订票数" required/>
                   </div>
                 </div>
                 <div class="modal-footer">
