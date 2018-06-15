@@ -11,3 +11,6 @@ function check(){
   }
   return true;
 }
+function get_captcha(){
+	
+}
