@@ -14,7 +14,7 @@ class User {
 	friend bool query_profile();
 	friend bool modify_privilege();
 
-	char Name[41], Password[21], Email[21], Phone[21];
+	char Name[41], Password[41], Email[21], Phone[21];
 	int Privilege, Id;
 	void in(){
 		scanf("%s%s%s%s", Name, Password, Email, Phone);
@@ -38,7 +38,7 @@ bool Register() {
 
 bool login() {
 	int i;
-	char passwd[21];
+	char passwd[41];
 	scanf("%d%s", &i, passwd);
 
 	auto itU = UserBpt.search(i);

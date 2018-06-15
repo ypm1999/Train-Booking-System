@@ -1,11 +1,14 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
+from hashlib import md5
 from subprocess import Popen, PIPE, STDOUT
 
 debug = 1
 
 endl = '<br />'
+
+salt = 'FasdWW@w1s145'
 
 db = Popen(['./db'], stdin = PIPE, stdout = PIPE)
 
@@ -22,6 +25,7 @@ def db_readline():
 def register(name, password, email, phone):
     if name == '' or password == '' or email == '' or phone == '':
         return None
+    # password = md5(salt + password).hexdigest()
     db_write(' '.join(['register', name, password, email, phone]))
     reply = db_readline()
     if reply == '-1':
@@ -33,6 +37,7 @@ def register(name, password, email, phone):
 def try_login(user_id, password):
     if user_id == '' or password == '':
         return None
+    # password = md5(salt + password).hexdigest()
     db_write(' '.join(['login', user_id, password]))
     reply = db_readline()
     if reply == '1':
