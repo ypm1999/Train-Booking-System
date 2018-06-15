@@ -29,24 +29,28 @@
       <div style="padding: 30px 10% 15px;">
         <div class="input-group input-group-lg">
           <span class="input-group-addon">用户名</span>
-          <input type="text" class="form-control" name = "name" placeholder="Username" value = {{ user.name }} required>
+          <input type="text" class="form-control" id = "name" name = "name" placeholder="Username" value = {{ user.name }} required>
         </div><br>
         <div class="input-group input-group-lg">
           <span class="input-group-addon">&nbsp&nbsp ID &nbsp&nbsp&nbsp</span>
           <span class="form-control"> {{ user.id }} </span>
-          <input type = "hidden" name = "id" value = {{ user.id }} readonly/>
+          <input type = "hidden" id="id" name = "id" value = {{ user.id }} readonly/>
         </div><br>
         <div class="input-group input-group-lg">
           <span class="input-group-addon">&nbsp 密码 &nbsp</span>
-          <input type="password" class="form-control" name = "password" placeholder="Password" value = {{ user.password }}  required>
+          <input type="password" class="form-control" id="password" name = "password" placeholder="原密码" required>
+        </div><br>
+        <div class="input-group input-group-lg">
+          <span class="input-group-addon">新密码</span>
+          <input type="password" class="form-control" id="password1" name = "password1" placeholder="可不填写">
         </div><br>
         <div class="input-group input-group-lg">
           <span class="input-group-addon">&nbsp 邮箱 &nbsp</span>
-          <input type="text" class="form-control" name = "email" placeholder="Email" value = {{ user.email }} required>
+          <input type="text" class="form-control" id="email" name = "email" placeholder="邮箱" value = {{ user.email }} required>
         </div><br>
         <div class="input-group input-group-lg">
           <span class="input-group-addon">手机号</span>
-          <input type="text" class="form-control" name = "phone" placeholder="Phone" value = {{ user.phone }} required>
+          <input type="text" class="form-control" id="phone" name = "phone" placeholder="Phone" value = {{ user.phone }} required>
         </div><br>
         <div class="form-actions">
           <div class = "text-center">
@@ -74,5 +78,5 @@
 {% endblock %}
 
 {% block js_input %}
-  <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 {% endblock %}

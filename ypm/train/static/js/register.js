@@ -1,6 +1,6 @@
 function check(){
 	var phone = $("#phone").val();
-  var name = $("#phone").val();
+  var name = $("#name").val();
   var password = $("#password").val();
   var password1 = $("#password1").val();
   if(!(/^[0-9a-zA-Z_]+$/.test(name))){

@@ -2,6 +2,9 @@
 # -*- coding:utf-8 -*-
 import sys
 import os
+
+#from Cryptodome.PublicKey import RSA
+#from Cryptodome.Cipher import PKCS1_OAEP, PKCS1_v1_5
 from flask import *
 from copy import copy
 from database import *
@@ -16,6 +19,47 @@ app.jinja_env.variable_end_string = ' }}'
 app.config['SECRET_KEY'] = 'ASSUEIIJSUasdfdsfeIIJJLL'
 LM.init_app(app)
 
+'''
+def create_rsa_key(password="123456"):
+    """
+    创建RSA密钥
+    步骤说明：
+    1、从 Crypto.PublicKey 包中导入 RSA，创建一个密码
+    2、生成 1024/2048 位的 RSA 密钥
+    3、调用 RSA 密钥实例的 exportKey 方法，传入密码、使用的 PKCS 标准以及加密方案这三个参数。
+    4、将私钥写入磁盘的文件。
+    5、使用方法链调用 publickey 和 exportKey 方法生成公钥，写入磁盘上的文件。
+    """
+
+    key = RSA.generate(1024)
+    encrypted_key = key.exportKey(passphrase=password, pkcs=8,
+                                  protection="scryptAndAES128-CBC")
+    with open("my_private_rsa_key.bin", "wb") as f:
+        f.write(encrypted_key)
+    with open("my_rsa_public.pem", "wb") as f:
+        f.write(key.publickey().exportKey())
+
+
+def encrypt_and_decrypt_test(password="123456"):
+    # 加载公钥
+    recipient_key = RSA.import_key(
+        open("my_rsa_public.pem").read()
+    )
+    cipher_rsa = PKCS1_v1_5.new(recipient_key)
+
+    en_data = cipher_rsa.encrypt(b"123456")
+    print(len(en_data), en_data)
+
+    # 读取密钥
+    private_key = RSA.import_key(
+        open("my_private_rsa_key.bin").read(),
+        passphrase=password
+    )
+    cipher_rsa = PKCS1_v1_5.new(private_key)
+    data = cipher_rsa.decrypt(en_data, None)
+
+    print(data)
+'''
 
 @app.route('/', methods = ['GET', 'POST'])
 def home():
@@ -79,10 +123,14 @@ def user_info(id = None):
     else:
         if request.method == 'POST':
             form = request.form;
-            if(modify_profile(form['id'], form["name"], form["password"], form["email"], form["phone"])):
+            if(not try_login(form['id'], form['password'])):
+                flash(message="密码校验失败，请输入用户id为%s的正确密码." % form['id'], category='warning')
+                return render_template("profile.html", user = user.getuser(form['id']))
+            if(modify_profile(form['id'], form["name"], form["password1"], form["email"], form["phone"])):
                 flash(message="修改个人信息成功！", category='success')
             else:
                 flash(message="修改个人信息失败.", category='warning')
+            return render_template("profile.html", user = user.getuser(form['id']))
     return render_template("profile.html", user = user)
 
 @app.route('/Data/user/orders', methods = ['GET'])
@@ -388,4 +436,5 @@ def try_backup():
 
 
 if __name__ == '__main__':
+#    encrypt_and_decrypt_test()
     app.run(debug = True, port=5000)

@@ -481,13 +481,13 @@ function checkadd(){
     var name2 = $("input[name='station" + i + "'_leave]").val();
     var name3 = $("input[name='station" + i + "'_stop]").val();
     if(!tim.test(name1) || !tim.test(name2) || !tim.test(name3)){
-      alter('请在'+ name +'站(第'+ (i + 1) '个)输入正确的时间格式');
+      alter('请在'+ name +'站(第'+ (i + 1) + '个)输入正确的时间格式');
       return false;
     }
     for(var j = 0; j < m; j++){
       var pri = $("input[name='station" + i + "'_"+ j +"]").val();
       if(!price.test(pri)){
-        alter('请在'+ name +'站(第'+ (i + 1) '个)输入正确的价格');
+        alter('请在'+ name +'站(第'+ (i + 1) + '个)输入正确的价格');
         return false;
       }
     }
