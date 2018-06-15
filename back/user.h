@@ -93,16 +93,15 @@ bool modify_privilege() {
 		if(itU2.valid()) {
 			User &u1 = (*itU1);
 			User &u2 = (*itU2);
-			if (u1.Privilege > u2.Privilege) {
+			if (u1.Privilege > u2.Privilege && u1.Privilege >= p) {
 				u2.Privilege = p;
 				itU2.save();
-			} else if (u1.Privilege == u2.Privilege) {
+				puts("1");
+				return 1;
 			} else {
 				puts("0");
 				return 0;
 			}
-			puts("1");
-			return 1;
 		}
 	}
 	puts("0");
